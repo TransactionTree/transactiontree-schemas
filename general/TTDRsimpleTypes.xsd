@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2024 rel. 2 (x64) (https://www.altova.com) by Jason Shapiro (Private) -->
-<!-- Copyright 2021, TransactionTree, Inc. -->
+<!-- Copyright 2025, TransactionTree, Inc. -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:simpleType name="DecimalCommonData">
 		<xs:restriction base="xs:decimal">
