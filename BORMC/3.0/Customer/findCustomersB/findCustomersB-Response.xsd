@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           targetNamespace="https://www.transactiontree.com/schema/loyalty/findCustomersB/response/1.0"
+           xmlns="https://www.transactiontree.com/schema/loyalty/findCustomersB/response/1.0">
+
+  <xs:annotation>
+    <xs:documentation>
+      Purpose
+      -------
+      Describes the RESPONSE envelope returned by /loyalty-app/control/findCustomersB.
+      The service always builds a RESPONSE element with RESPONSE_CODE and may include
+      contextual echoes (e.g., STORE_ID) or a result payload (customer list) rendered
+      by higher layers. Structure of the full result set may vary by tenant.
+
+      Notes
+      -----
+      • RESPONSE_DATE is a string timestamp (server time).
+      • RESPONSE_CODE uses defined errors below; success codes may be "S###".
+      • For portability, this schema permits any additional elements via xs:any.
+    </xs:documentation>
+  </xs:annotation>
+
+  <!-- Allow either specific error codes or any S### success code -->
+  <xs:simpleType name="ResponseCode">
+    <xs:annotation>
+      <xs:documentation>
+        Codes observed in service:
+          E101 – Missing XmlInput
+          E102 – XML parse error (SAX)
+          E103 – Parser configuration error
+          E104 – IO error reading XmlInput
+          E105 – No effective filters supplied
+          E127 – Invalid/unknown STORE_ID
+        Success codes may be present as "S###" (not fixed here to preserve forward compatibility).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="E101"/>
+          <xs:enumeration value="E102"/>
+          <xs:enumeration value="E103"/>
+          <xs:enumeration value="E104"/>
+          <xs:enumeration value="E105"/>
+          <xs:enumeration value="E127"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:pattern value="S[0-9]{3}"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <xs:element name="RESPONSE">
+    <xs:annotation>
+      <xs:documentation>
+        Top-level response container. RESPONSE_CODE indicates outcome;
+        other fields are optional echoes or payload containers.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Server timestamp when this response was generated.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="RESPONSE_CODE" type="ResponseCode">
+          <xs:annotation><xs:documentation>Outcome code (see documentation on meanings above).</xs:documentation></xs:annotation>
+        </xs:element>
+
+        <!-- Common echoes / context (optional) -->
+        <xs:element name="STORE_ID" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Store context echoed when supplied.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Customer identifier (if single-hit flows echo it).</xs:documentation></xs:annotation>
+        </xs:element>
+
+        <!-- Optional: room for tenant-specific result blocks (customer lists, counts, etc.) -->
+        <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax">
+          <xs:annotation>
+            <xs:documentation>
+              Tenant/brand-specific result payload (e.g., CUSTOMERS/CUSTOMER list, total count, paging tokens).
+              Left open intentionally to avoid over-constraining varied response renderings.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:any>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

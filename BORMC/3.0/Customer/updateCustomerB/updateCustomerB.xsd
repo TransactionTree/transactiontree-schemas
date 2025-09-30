@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="https://www.transactiontree.com/schema/loyalty/updateCustomerB/1.0" xmlns="https://www.transactiontree.com/schema/loyalty/updateCustomerB/1.0">
+	<xs:annotation>
+		<xs:documentation>
+      Purpose:
+        Defines the request payload for the /loyalty-app/control/updateCustomerB endpoint.
+        The service parses XML and applies business rules (no native XSD validation in code);
+        this schema documents the accepted structure and the rules enforced downstream.
+
+      Key ideas:
+        • A single CUSTOMER with optional identity fields, store/loyalty info, cross-references,
+          and contact collections (postal, email, phone).
+        • Collections are repeatable (0..n). Scalar fields are optional (0..1) unless your
+          tenant’s policy requires them.
+        • Several business rules (e.g., store existence, email format, date parsing) are enforced
+          in the service and are documented here for clarity.
+
+      Versioning:
+        targetNamespace includes /1.0. Add new versions by publishing a new namespace.
+    </xs:documentation>
+	</xs:annotation>
+	<!-- ===== Simple types (with documentation) ===== -->
+	<xs:simpleType name="YNFlag">
+		<xs:annotation>
+			<xs:documentation>
+        A simple Yes/No switch used for solicitation and deliverability flags.
+        Allowed values:
+          Y = Yes / enabled
+          N = No / disabled
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Y"/>
+			<xs:enumeration value="N"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EmailType">
+		<xs:annotation>
+			<xs:documentation>
+        Email address validated by the service with this regex (copied here for consistency):
+          ^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$
+        Tip: keep under 254 chars. Invalid addresses trigger RESPONSE_CODE E222.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+			<xs:maxLength value="254"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PhoneType">
+		<xs:annotation>
+			<xs:documentation>
+        A free-form phone value. The service stores and may length-check phones but does not
+        enforce a strict pattern here. Keep to digits and separators; max 32 chars recommended.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ZipType">
+		<xs:annotation>
+			<xs:documentation>
+        Postal code. Business rules:
+          • If COUNTRY = CAN, code validates with LoyaltyAppConstants.CAN_ZIP_VALIDATION_02 and length ≤ 7.
+            Failures produce RESPONSE_CODE E166.
+          • US/other countries: validated via country/state coherence, not a strict regex here.
+        Tip: include uppercase and no trailing spaces.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Zip4Type">
+		<xs:annotation>
+			<xs:documentation>
+        Optional ZIP+4 add-on (e.g., 30303-1234). Not required; included where applicable.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="GenderCode">
+		<xs:annotation>
+			<xs:documentation>
+        Customer gender. Service normalization:
+          • Input "MALE"  → stored/treated as 'M'
+          • Input "FEMALE"→ stored/treated as 'F'
+          • Any other     → treated as 'U' (unknown/undisclosed)
+        This schema accepts MALE|FEMALE|U to keep intent explicit to clients.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MALE"/>
+			<xs:enumeration value="FEMALE"/>
+			<xs:enumeration value="U"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ContactPurposeTypeId">
+		<xs:annotation>
+			<xs:documentation>
+        Purpose/classification for a contact mechanism. Must be one of the OFBiz
+        ContactMechPurposeType IDs configured in your environment (dump included).
+        Used by the service to set or infer primary/general roles for a contact.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<!-- Full list captured from your DB export -->
+			<xs:enumeration value="AOS_EMAIL_ADDRESS"/>
+			<xs:enumeration value="AOS_MOBILE_PHONE"/>
+			<xs:enumeration value="BILLING_EMAIL"/>
+			<xs:enumeration value="BILLING_LOCATION"/>
+			<xs:enumeration value="CAMPAIGN_EMAIL"/>
+			<xs:enumeration value="CAMPAIGN_LOCATION"/>
+			<xs:enumeration value="FACEBOOK_URL"/>
+			<xs:enumeration value="FAX_BILLING"/>
+			<xs:enumeration value="FAX_NUMBER"/>
+			<xs:enumeration value="FAX_NUMBER_SEC"/>
+			<xs:enumeration value="FAX_SHIPPING"/>
+			<xs:enumeration value="GENERAL_LOCATION"/>
+			<xs:enumeration value="HOME_LOCATION"/>
+			<xs:enumeration value="ICAL_URL"/>
+			<xs:enumeration value="IDEAL_EMAIL_ADDRESS"/>
+			<xs:enumeration value="IDEAL_MOBILE_PHONE"/>
+			<xs:enumeration value="LINKEDIN_URL"/>
+			<xs:enumeration value="MARKETING_EMAIL"/>
+			<xs:enumeration value="O365"/>
+			<xs:enumeration value="ORDER_EMAIL"/>
+			<xs:enumeration value="OTHER_EMAIL"/>
+			<xs:enumeration value="OTHER_EMAIL_SEC"/>
+			<xs:enumeration value="OTHER_LOCATION"/>
+			<xs:enumeration value="PAYMENT_EMAIL"/>
+			<xs:enumeration value="PAYMENT_LOCATION"/>
+			<xs:enumeration value="PHONE_ASSISTANT"/>
+			<xs:enumeration value="PHONE_BILLING"/>
+			<xs:enumeration value="PHONE_CAMPAIGN"/>
+			<xs:enumeration value="PHONE_DID"/>
+			<xs:enumeration value="PHONE_HOME"/>
+			<xs:enumeration value="PHONE_HOME_SEC"/>
+			<xs:enumeration value="PHONE_MOBILE"/>
+			<xs:enumeration value="PHONE_PAYMENT"/>
+			<xs:enumeration value="PHONE_QUICK"/>
+			<xs:enumeration value="PHONE_SHIPPING"/>
+			<xs:enumeration value="PHONE_SHIP_ORIG"/>
+			<xs:enumeration value="PHONE_WORK"/>
+			<xs:enumeration value="PHONE_WORK_SEC"/>
+			<xs:enumeration value="PO_DELIV_ADDRESS"/>
+			<xs:enumeration value="PREVIOUS_LOCATION"/>
+			<xs:enumeration value="PRIMARY_EMAIL"/>
+			<xs:enumeration value="PRIMARY_LOCATION"/>
+			<xs:enumeration value="PRIMARY_PHONE"/>
+			<xs:enumeration value="PRIMARY_SKYPE"/>
+			<xs:enumeration value="PRIMARY_WEB_URL"/>
+			<xs:enumeration value="PUR_RET_LOCATION"/>
+			<xs:enumeration value="QUOTE_LOCATION"/>
+			<xs:enumeration value="RECEIVE_EMAIL_OWNER"/>
+			<xs:enumeration value="SHIPPING_LOCATION"/>
+			<xs:enumeration value="SHIP_ORIG_LOCATION"/>
+			<xs:enumeration value="SOCIAL_FACEBOOK"/>
+			<xs:enumeration value="SOCIAL_GOOGLE"/>
+			<xs:enumeration value="SOCIAL_INSTAGRAM"/>
+			<xs:enumeration value="SOCIAL_LINKEDIN"/>
+			<xs:enumeration value="SOCIAL_TWITTER"/>
+			<xs:enumeration value="SOCIAL_YOUTUBE"/>
+			<xs:enumeration value="SUPPORT_EMAIL"/>
+			<xs:enumeration value="TWITTER_URL"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SystemReferenceCode">
+		<xs:annotation>
+			<xs:documentation>
+        External system identifiers recognized by the service for CUSTOMER- and
+        CONTACT-level cross references. Used for dedupe, lookups, and loyalty logic.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ATG_CUST_ID"/>
+			<xs:enumeration value="KEDS_CUST_ID"/>
+			<xs:enumeration value="SACY_CUST_ID"/>
+			<xs:enumeration value="SPERRY_CUST_ID"/>
+			<xs:enumeration value="GRHP_CUST_ID"/>
+			<xs:enumeration value="APTOS_ID"/>
+			<xs:enumeration value="DW_ID"/>
+			<xs:enumeration value="CHEETAHMAIL_ID"/>
+			<xs:enumeration value="LEGACY_ID"/>
+			<xs:enumeration value="HARTEHANKS_ID"/>
+			<xs:enumeration value="HH_HOUSEHOLD_ID"/>
+			<xs:enumeration value="WINDSS_ID"/>
+			<xs:enumeration value="AFFINITY_ID"/>
+			<xs:enumeration value="LOYALTY_ID"/>
+			<xs:enumeration value="GROUP_FIO_ID"/>
+			<xs:enumeration value="STRI_PERS_ID"/>
+			<xs:enumeration value="POS_ID"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BirthdayString">
+		<xs:annotation>
+			<xs:documentation>
+        Birthday accepted as a text value. Supported formats in service:
+          yyyy-MM-dd | MM-dd | yyyy-MM | yyyy/MM/dd | MM/dd | yyyy/MM.
+        Invalid formats trigger RESPONSE_CODE E201.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ===== Complex types (with documentation) ===== -->
+	<xs:complexType name="CrossReferenceType">
+		<xs:annotation>
+			<xs:documentation>
+        A single system cross reference. Use multiple to attach more external identities
+        (e.g., ATG_CUST_ID, LOYALTY_ID) to the same CUSTOMER or CONTACT.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SYSTEM_REFERENCE" type="SystemReferenceCode">
+				<xs:annotation>
+					<xs:documentation>
+            Name of the external system identifier (e.g., ATG_CUST_ID).
+            Some values affect behavior (e.g., LOYALTY_ID dedupe and activation flow).
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SYSTEM_REFERENCE_ID" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>
+            The value in the external system (e.g., "1234567"). Keep within your partner’s
+            documented limits; the service stores and dedupes on this value.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CustomerMechReferencesType">
+		<xs:annotation>
+			<xs:documentation>
+        Container for cross references scoped to a specific CONTACT mechanism
+        (postal/email/phone). Useful for mapping a single address/email/phone to
+        upstream source IDs.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CROSS_REFERENCE" type="CrossReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PostalContactType">
+		<xs:annotation>
+			<xs:documentation>
+        A single postal contact entry. Includes address lines and flags for solicitation
+        and deliverability. The service validates country/state association via Geo/GeoAssoc
+        and may set primary/general purposes when missing.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Existing contact mechanism ID (if updating).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TO_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Recipient or addressee line for mailing labels.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ADDRESS1" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Primary street address line (recommended).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ADDRESS2" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Secondary line (apt, suite, unit).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CITY" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>City/locality.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="STATE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>State/province/region code; must associate with COUNTRY in Geo.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice minOccurs="0">
+				<xs:element name="ZIP" type="ZipType">
+					<xs:annotation>
+						<xs:documentation>Postal/ZIP code (alternate tag name).</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ZIPCODE" type="ZipType">
+					<xs:annotation>
+						<xs:documentation>Postal/ZIP code (preferred by current service paths).</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="ZIP4" type="Zip4Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Zip+4 add-on when available.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="COUNTRY" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Country code; must map to Geo(geoTypeId='COUNTRY').</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CONTACT_TYPE" type="ContactPurposeTypeId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Purpose (e.g., PRIMARY_LOCATION, SHIPPING_LOCATION).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ALLOW_SOLICITATION" type="YNFlag" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Consent flag for marketing/communications to this address.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DELIVERABLE" type="YNFlag" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Internal deliverability flag; Y indicates known deliverable address.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EXPIRE" type="YNFlag" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>When Y with CONTACT_MECH_ID present, service may expire/delete the contact.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CUSTOMER_MECH_REFERENCES" type="CustomerMechReferencesType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Cross references tied to this address (source IDs, upstream keys).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EmailContactType">
+		<xs:annotation>
+			<xs:documentation>
+        A single email contact entry. The email format is strictly validated (see EmailType).
+        Bad formats produce E222. EXPPIRE=Y with CONTACT_MECH_ID may retire the email.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Existing mechanism ID (update path).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EMAIL" type="EmailType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Primary email address for this entry.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CONTACT_TYPE" type="ContactPurposeTypeId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Purpose (e.g., PRIMARY_EMAIL, MARKETING_EMAIL).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ALLOW_SOLICITATION" type="YNFlag" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Opt-in/opt-out marker for email communications.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EMAIL_DELIVERABLE_FLAG" type="YNFlag" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Internal flag for email deliverability checks.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EXPIRE" type="YNFlag" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Mark this email contact as expired (when CONTACT_MECH_ID is provided).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CUSTOMER_MECH_REFERENCES" type="CustomerMechReferencesType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Cross references tied to this email (source message IDs, upstream keys).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PhoneContactType">
+		<xs:annotation>
+			<xs:documentation>
+        A single phone contact entry. The service may enforce length checks and purpose defaults.
+        Use CONTACT_TYPE=PRIMARY_PHONE for a main number where applicable.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Existing mechanism ID (update path).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PHONE" type="PhoneType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Phone number string (digits and separators). Max 32 chars recommended.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CONTACT_TYPE" type="ContactPurposeTypeId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Purpose (e.g., PRIMARY_PHONE, PHONE_MOBILE).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ALLOW_SOLICITATION" type="YNFlag" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Consent flag for phone/SMS communications.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EXPIRE" type="YNFlag" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Mark this phone contact as expired (when CONTACT_MECH_ID is provided).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CUSTOMER_MECH_REFERENCES" type="CustomerMechReferencesType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Cross references tied to this phone (upstream identifiers).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CustomerCrossReferencesType">
+		<xs:annotation>
+			<xs:documentation>
+        CUSTOMER-level cross references. Often used for loyalty IDs and external customer IDs.
+        Multiple references are allowed and may be brand/tenant specific.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CROSS_REFERENCE" type="CrossReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PostalContactsType">
+		<xs:annotation>
+			<xs:documentation>
+        Container for one or more postal CONTACT entries.
+        The service may assign primary/general purposes if none are supplied.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CONTACT" type="PostalContactType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="EmailContactsType">
+		<xs:annotation>
+			<xs:documentation>
+        Container for one or more email CONTACT entries. Invalid email format yields E222.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CONTACT" type="EmailContactType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PhoneContactsType">
+		<xs:annotation>
+			<xs:documentation>
+        Container for one or more phone CONTACT entries.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CONTACT" type="PhoneContactType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CustomerType">
+		<xs:annotation>
+			<xs:documentation>
+        The main customer payload. The service performs lookups/dedupe using cross references,
+        primary email, and optional store context. Many checks map to RESPONSE_CODE values
+        (see response schema).
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<!-- Identity / person -->
+			<xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Internal customer ID (if known) to perform updates.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FIRST_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Given name. Missing names can trigger E223 in some paths.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LAST_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Family name. Missing names can trigger E223 in some paths.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="GENDER" type="GenderCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Customer gender (MALE|FEMALE|U). Service normalizes internally.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BIRTHDAY" type="BirthdayString" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Private birthday date for a specific customer. If this date is set in a customer profile,
+            certain offers or discounts may be initiated only for that day. Accepted textual formats:
+            yyyy-MM-dd | MM-dd | yyyy-MM | yyyy/MM/dd | MM/dd | yyyy/MM. Invalid → E201.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Store / loyalty context -->
+			<xs:element name="ASSIGNED_STORE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Store the customer is assigned to. Must exist (else E127).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LOYALTY_STORE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Store used for loyalty context. Must exist (else E127).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PREFERRED_STORE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Customer’s preferred store. Must exist (else E127).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="STORE_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Store executing the update. Must exist; invalid → E127.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LOYALTY_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Loyalty identifier cross reference. Special behavior if ENABLE_LOYALTY_PROGRAM=YES; conflicts and
+            activation/replace flows map to codes like E128/E129/E131/E132/E133/E134 and success S103.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Segmentation / misc -->
+			<xs:element name="MKT_SEGMENT" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Marketing segment code (tenant/brand specific semantics).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CASHIER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Cashier/operator reference captured for auditing.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="REQ_REWARD_POINTS" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Requested reward points adjustment (if supported by tenant rules).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EV_BALANCE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Current or computed e-voucher / reward balance echoed by service.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Cross references -->
+			<xs:element name="CUSTOMER_CROSS_REFERENCES" type="CustomerCrossReferencesType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>External system IDs at the CUSTOMER level (dedupe and lookups).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Contacts -->
+			<xs:element name="POSTAL_CONTACTS" type="PostalContactsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>One or more postal addresses for the customer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="EMAIL_CONTACTS" type="EmailContactsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>One or more email addresses for the customer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PHONE_CONTACTS" type="PhoneContactsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>One or more phone numbers for the customer.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="REQUEST">
+		<xs:annotation>
+			<xs:documentation>
+        Envelope for the updateCustomerB request. Contains exactly one CUSTOMER.
+        Note: The service reads this XML from the "XmlInput" form parameter.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CUSTOMER" type="CustomerType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
