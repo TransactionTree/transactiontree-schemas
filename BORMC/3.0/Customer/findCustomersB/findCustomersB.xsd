@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="https://www.transactiontree.com/schema/loyalty/findCustomersB/1.0" xmlns="https://www.transactiontree.com/schema/loyalty/findCustomersB/1.0">
+	<xs:annotation>
+		<xs:documentation>
+      Purpose
+      -------
+      Defines the request payload for the endpoint /loyalty-app/control/findCustomersB.
+      The service parses XML, builds internal filters (including OFBiz findParty and
+      direct lookups), and returns matching customers. Code-level validation is applied
+      (no native XSD validation in the service), so this schema documents the accepted
+      structure and the rules enforced downstream.
+
+      High-level behavior (from service code)
+      ---------------------------------------
+      • The request is read from the "XmlInput" form parameter containing this XML.
+      • Root is REQUEST with a single CRITERIA element.
+      • At least one filter must be provided (else RESPONSE_CODE E105).
+      • STORE_ID, when provided, must exist (invalid → E127).
+      • PHONE_NUMBER is split into area code (first 3 chars) + the rest when length > 7.
+      • ZIP_CODE drives multiple search paths depending on length (5..9) and may be
+        combined with FIRST_NAME/LAST_NAME to refine.
+      • RECORDS_LIMIT is parsed to an integer and drives result window size.
+      • SYSTEM_REFERENCE + SYSTEM_REFERENCE_ID can short-circuit to exact matches.
+
+      Versioning
+      ----------
+      Namespace ends in /1.0. Add new versions by publishing a new namespace.
+    </xs:documentation>
+	</xs:annotation>
+	<!-- ===== Simple types ===== -->
+	<xs:simpleType name="EmailType">
+		<xs:annotation>
+			<xs:documentation>
+        Email filter. Uses the same validation regex seen elsewhere in the codebase:
+          ^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$
+        Tip: keep under 254 chars. If an invalid format is provided, the service may not
+        find matches or may respond with a parsing/validation code depending on path.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+			<xs:maxLength value="254"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PhoneType">
+		<xs:annotation>
+			<xs:documentation>
+        Phone filter. For length > 7 the service splits the first 3 characters as area code
+        and the remainder as contact number. Recommended: digits only (with optional separators).
+        Examples: "4045551212", "404-555-1212".
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ZipType">
+		<xs:annotation>
+			<xs:documentation>
+        ZIP or postal code filter. The service has special handling by length:
+          • 5  → matches postal_code_1 exactly
+          • 6+ → treated as postal_code_1 + prefix match on postal_code_2 (ZIP+ extension)
+        Combine with FIRST_NAME/LAST_NAME to narrow results. Provide digits only.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Zip4Type">
+		<xs:annotation>
+			<xs:documentation>
+        Optional extra ZIP+4 filter. Not always used by the current service logic, but included
+        for completeness when clients already split ZIP_CODE into base + ZIP4.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SystemReferenceCode">
+		<xs:annotation>
+			<xs:documentation>
+        External system identifier to search on. Values recognized across the codebase:
+        ATG_CUST_ID, KEDS_CUST_ID, SACY_CUST_ID, SPERRY_CUST_ID, GRHP_CUST_ID, APTOS_ID,
+        DW_ID, CHEETAHMAIL_ID, LEGACY_ID, HARTEHANKS_ID, HH_HOUSEHOLD_ID, WINDSS_ID,
+        AFFINITY_ID, LOYALTY_ID, GROUP_FIO_ID, STRI_PERS_ID, POS_ID.
+        Pair with SYSTEM_REFERENCE_ID to short-circuit to exact matches.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ATG_CUST_ID"/>
+			<xs:enumeration value="KEDS_CUST_ID"/>
+			<xs:enumeration value="SACY_CUST_ID"/>
+			<xs:enumeration value="SPERRY_CUST_ID"/>
+			<xs:enumeration value="GRHP_CUST_ID"/>
+			<xs:enumeration value="APTOS_ID"/>
+			<xs:enumeration value="DW_ID"/>
+			<xs:enumeration value="CHEETAHMAIL_ID"/>
+			<xs:enumeration value="LEGACY_ID"/>
+			<xs:enumeration value="HARTEHANKS_ID"/>
+			<xs:enumeration value="HH_HOUSEHOLD_ID"/>
+			<xs:enumeration value="WINDSS_ID"/>
+			<xs:enumeration value="AFFINITY_ID"/>
+			<xs:enumeration value="LOYALTY_ID"/>
+			<xs:enumeration value="GROUP_FIO_ID"/>
+			<xs:enumeration value="STRI_PERS_ID"/>
+			<xs:enumeration value="POS_ID"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="RecordsLimit">
+		<xs:annotation>
+			<xs:documentation>
+        Maximum number of records to return. Parsed as integer in the service and used to
+        set internal VIEW_SIZE (default around 51 in code). Recommended 1..500.
+        Values above tenant policy may be clamped.
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="1000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ===== CRITERIA type ===== -->
+	<xs:complexType name="CriteriaType">
+		<xs:annotation>
+			<xs:documentation>
+        All supported filters for customer search. At least one of these must be provided,
+        otherwise the service returns RESPONSE_CODE E105 (“no filters”).
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<!-- Identity -->
+			<xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Internal customer ID to match exactly. When present, typically narrows
+            to one customer (or none).
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SYSTEM_REFERENCE" type="SystemReferenceCode" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            External system identifier (e.g., ATG_CUST_ID). Use together with
+            SYSTEM_REFERENCE_ID for direct PartyIdentification lookups.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Identifier value in the external system. When provided, the service
+            attempts an exact match on (SYSTEM_REFERENCE, SYSTEM_REFERENCE_ID).
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Person -->
+			<xs:element name="FIRST_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            First name (prefix match in some paths). Combine with LAST_NAME or ZIP_CODE
+            to narrow. Case-insensitive match in the service layer.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LAST_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Last name (exact or prefix depending on path). Combine with FIRST_NAME or ZIP_CODE
+            to narrow results.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Location -->
+			<xs:element name="CITY" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            City filter. When CITY or STATE/PROVINCE is provided, the service switches to
+            address-based search (extInfo='P') and looks up matching postal addresses.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="STATE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            State/province/region code filter. If not present but PROVINCE is provided,
+            service copies PROVINCE into STATE internally.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PROVINCE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Alternate field for regional filter. Service assigns STATE = PROVINCE when STATE is empty.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ZIP_CODE" type="ZipType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            ZIP/postal code. Triggers SQL paths keyed by length:
+              5  → exact on postal_code_1
+              6–9 → split into postal_code_1 + prefix match on postal_code_2
+            Can be combined with FIRST_NAME and/or LAST_NAME to refine.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ZIP4" type="Zip4Type" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Optional ZIP+4 portion. Not always consulted by the service (it derives from ZIP_CODE length)
+            but included for clients who already separate it.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Contact -->
+			<xs:element name="EMAIL_ID" type="EmailType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Email filter. Service resolves to ContactMech(infoString) and then to parties via
+            PartyContactMechPurpose (date-filtered). Useful for exact customer lookups by email.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PHONE_NUMBER" type="PhoneType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Phone filter. If length > 7, service splits: first 3 chars as area code, remaining as contact number,
+            and resolves to parties via related purposes. Supply digits first for best results.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Context / paging -->
+			<xs:element name="STORE_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Store context filter. When provided, must exist in ProductStore (invalid → E127).
+            Some brand-aware logic may use this to determine brand segments downstream.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RECORDS_LIMIT" type="RecordsLimit" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Cap the number of results returned (parsed to integer by the service).
+            Default window in code is around 51 records if none supplied.
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<!-- Misc -->
+			<xs:element name="REQUEST_DATE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+            Optional client-supplied timestamp for auditing/tracing. Free text in the service;
+            recommend ISO-8601 (e.g., 2025-09-29T12:00:00Z).
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- ===== Root element ===== -->
+	<xs:element name="REQUEST">
+		<xs:annotation>
+			<xs:documentation>
+        Envelope for the findCustomersB request. Contains exactly one CRITERIA block.
+        The service rejects requests with no effective filters (E105).
+      </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CRITERIA" type="CriteriaType"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

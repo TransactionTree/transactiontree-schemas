@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           targetNamespace="https://www.transactiontree.com/schema/loyalty/updateCustomerB/response/1.0"
+           xmlns="https://www.transactiontree.com/schema/loyalty/updateCustomerB/response/1.0">
+
+  <xs:annotation>
+    <xs:documentation>
+      Purpose:
+        Describes the structure of the RESPONSE document returned by updateCustomerB.
+        The service always returns a top-level RESPONSE element with a RESPONSE_CODE
+        and optional context fields (CUSTOMER_ID, LOYALTY_ID, COUNTRY, STATE, ZIPCODE, etc.).
+
+      Notes:
+        • RESPONSE_DATE is a timestamp string the service sets.
+        • RESPONSE_CODE enumerations capture both successes and precise error conditions.
+        • Additional elements may be included depending on the code path and validation failure.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:simpleType name="ResponseCode">
+    <xs:annotation>
+      <xs:documentation>
+        Response codes observed in service code:
+          Success
+            S102: Operation completed (e.g., successful update/creation).
+            S103: Loyalty-related success (e.g., loyalty activation/assignment).
+          Common Errors
+            E101: Missing required request data (e.g., empty XmlInput) in certain paths.
+            E102/E103/E104: XML parsing/config errors (SAX/Parser/IO).
+            E106: Invalid STATE for COUNTRY association (Geo/GeoAssoc failed).
+            E107: Invalid COUNTRY (or mismatch) for given state/zip.
+            E108: Loyalty activation/assignment failed (specific path).
+            E110/E111/E112: Loyalty/identity-related issues per service logic.
+            E127: Unknown store (ASSIGNED_STORE / PREFERRED_STORE / LOYALTY_STORE / STORE_ID not found).
+            E128/E129/E131/E132/E133/E134: Loyalty ID conflicts or transition errors.
+            E162: Duplicate cross-reference conflict with another party.
+            E166: Canadian postal code invalid (regex/length check).
+            E201: Birthday format invalid.
+            E205: Address validation failure (per internal rules).
+            E222: Email format invalid.
+            E223: Missing/invalid required field in context (e.g., name/email/zip) depending on path.
+            E888: Missing tenant header or equivalent authorization context.
+            E899: Access token invalid/authorization failure.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <!-- Success -->
+      <xs:enumeration value="S102"/>
+      <xs:enumeration value="S103"/>
+
+      <!-- Errors -->
+      <xs:enumeration value="E101"/><xs:enumeration value="E102"/><xs:enumeration value="E103"/>
+      <xs:enumeration value="E104"/><xs:enumeration value="E106"/><xs:enumeration value="E107"/>
+      <xs:enumeration value="E108"/><xs:enumeration value="E110"/><xs:enumeration value="E111"/>
+      <xs:enumeration value="E112"/><xs:enumeration value="E127"/><xs:enumeration value="E128"/>
+      <xs:enumeration value="E129"/><xs:enumeration value="E131"/><xs:enumeration value="E132"/>
+      <xs:enumeration value="E133"/><xs:enumeration value="E134"/><xs:enumeration value="E162"/>
+      <xs:enumeration value="E166"/><xs:enumeration value="E201"/><xs:enumeration value="E205"/>
+      <xs:enumeration value="E222"/><xs:enumeration value="E223"/><xs:enumeration value="E888"/>
+      <xs:enumeration value="E899"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="RESPONSE">
+    <xs:annotation>
+      <xs:documentation>
+        Top-level response container. RESPONSE_CODE always present. Other elements are
+        populated when relevant (e.g., echoing the failing COUNTRY/STATE/ZIP for E106/E107/E166).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Server-side timestamp when the response was generated.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="RESPONSE_CODE" type="ResponseCode">
+          <xs:annotation><xs:documentation>Outcome code (see documentation above).</xs:documentation></xs:annotation>
+        </xs:element>
+
+        <!-- Context echoes (optional; present depending on code path) -->
+        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Customer identifier relevant to the result.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="LOYALTY_ID" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Loyalty identifier relevant to the result.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="ZIPCODE" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Echo of ZIP/ZIPCODE used in the failing/validated context.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="ZIP_CODE" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Alternate echo field used by some paths for postal codes.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="STATE" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>State/province value echoed, especially for E106/E107.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="COUNTRY" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Country value echoed, especially for E106/E107.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="EMAIL" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Email value echoed when email-specific errors occur.</xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
