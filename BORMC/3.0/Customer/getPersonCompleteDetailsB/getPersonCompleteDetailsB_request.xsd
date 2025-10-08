@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:annotation><xs:documentation>Request schema (skeleton) for getPersonCompleteDetailsB.</xs:documentation></xs:annotation>
+  <xs:element name="REQUEST">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="CRITERIA" minOccurs="0"/>
+        <xs:element ref="CUSTOMER" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="CRITERIA">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0"/>
+        <xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0"/>
+        <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0"/>
+        <xs:element name="EMAIL_ID" type="xs:string" minOccurs="0"/>
+        <xs:element name="PHONE_NUMBER" type="xs:string" minOccurs="0"/>
+        <xs:element name="FIRST_NAME" type="xs:string" minOccurs="0"/>
+        <xs:element name="LAST_NAME" type="xs:string" minOccurs="0"/>
+        <xs:element name="CITY" type="xs:string" minOccurs="0"/>
+        <xs:element name="STATE" type="xs:string" minOccurs="0"/>
+        <xs:element name="ZIP_CODE" type="xs:string" minOccurs="0"/>
+        <xs:element name="ZIP4" type="xs:string" minOccurs="0"/>
+        <xs:element name="COUNTRY" type="xs:string" minOccurs="0"/>
+        <xs:element name="RECORDS_LIMIT" type="xs:integer" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="CUSTOMER">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0"/>
+        <xs:element name="FIRST_NAME" type="xs:string" minOccurs="0"/>
+        <xs:element name="LAST_NAME" type="xs:string" minOccurs="0"/>
+        <xs:element name="GENDER" type="xs:string" minOccurs="0"/>
+        <xs:element name="BIRTHDAY" type="xs:string" minOccurs="0"/>
+        <xs:element name="ASSIGNED_STORE" type="xs:string" minOccurs="0"/>
+        <xs:element name="LOYALTY_STORE" type="xs:string" minOccurs="0"/>
+        <xs:element name="PREFERRED_STORE" type="xs:string" minOccurs="0"/>
+        <xs:element name="STORE_ID" type="xs:string" minOccurs="0"/>
+
+        <xs:element ref="CUSTOMER_CROSS_REFERENCES" minOccurs="0"/>
+        <xs:element ref="POSTAL_CONTACTS" minOccurs="0"/>
+        <xs:element ref="EMAIL_CONTACTS" minOccurs="0"/>
+        <xs:element ref="PHONE_CONTACTS" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="CUSTOMER_CROSS_REFERENCES">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="CROSS_REFERENCE" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="CROSS_REFERENCE">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0"/>
+        <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="POSTAL_CONTACTS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="CONTACT" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="EMAIL_CONTACTS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="CONTACT" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PHONE_CONTACTS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="CONTACT" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="CONTACT">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0"/>
+        <xs:element name="TO_NAME" type="xs:string" minOccurs="0"/>
+        <xs:element name="ADDRESS1" type="xs:string" minOccurs="0"/>
+        <xs:element name="ADDRESS2" type="xs:string" minOccurs="0"/>
+        <xs:element name="CITY" type="xs:string" minOccurs="0"/>
+        <xs:element name="STATE" type="xs:string" minOccurs="0"/>
+        <xs:element name="ZIPCODE" type="xs:string" minOccurs="0"/>
+        <xs:element name="ZIP4" type="xs:string" minOccurs="0"/>
+        <xs:element name="COUNTRY" type="xs:string" minOccurs="0"/>
+        <xs:element name="CONTACT_TYPE" type="xs:string" minOccurs="0"/>
+        <xs:element name="EMAIL" type="xs:string" minOccurs="0"/>
+        <xs:element name="PHONE" type="xs:string" minOccurs="0"/>
+        <xs:element name="ALLOW_SOLICITATION" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
