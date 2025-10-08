@@ -1,0 +1,71 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "getPersonCompleteDetailsB (controller)",
+    "version": "1.0.1"
+  },
+  "servers": [
+    {
+      "url": "{{baseUrl}}/loyalty-app"
+    }
+  ],
+  "paths": {
+    "/control/getPersonCompleteDetailsB": {
+      "post": {
+        "tags": [
+          "Control:Customer"
+        ],
+        "summary": "Get full person/customer details (controller XML)",
+        "parameters": [
+          {
+            "name": "X-tenant-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "XmlInput": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "XmlInput"
+                ]
+              },
+              "examples": {
+                "criteria": {
+                  "value": "<REQUEST><CRITERIA><CUSTOMER_ID>20026872</CUSTOMER_ID><RECORDS_LIMIT>100</RECORDS_LIMIT></CRITERIA></REQUEST>"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "XML response envelope with person details"
+          }
+        },
+        "x-schemas": {
+          "response": "getPersonCompleteDetailsB_response.v3.1.xsd"
+        }
+      }
+    }
+  }
+}
