@@ -1,38 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-  <xs:annotation><xs:documentation>Response schema (skeleton) for getPersonCompleteDetailsB.</xs:documentation></xs:annotation>
+<!-- getPersonCompleteDetailsB — Response Schema (v2)
+     Envelope returned by the service. Response codes are documented on RESPONSE_CODE below.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="2.0">
+
+  <!-- RESPONSE_CODE table (documented) -->
+  <xs:simpleType name="ResponseCodeType">
+    <xs:annotation>
+      <xs:documentation>
+        Selected codes observed in this family of endpoints:
+         • S100/S102/S103/S104 — success variants
+         • E101 — Missing/empty input
+         • E102/E103/E104 — malformed/parse/IO
+         • E105 — No effective filters / required context missing
+         • E106/E107 — invalid state/country association
+         • E127 — invalid store id / not found
+         • E133 — duplicate/conflict
+         • E166 — invalid Canadian ZIP format
+         • E201 — invalid date format
+         • E205 — address/postal validation failed
+         • E222 — invalid email format (when email present)
+         • E888 — tenant missing/invalid
+         • E899 — access token invalid/authorization failure
+        Exact meanings may be tenant-specific; see service code for details.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="S100"/><xs:enumeration value="S102"/><xs:enumeration value="S103"/><xs:enumeration value="S104"/>
+      <xs:enumeration value="E101"/><xs:enumeration value="E102"/><xs:enumeration value="E103"/><xs:enumeration value="E104"/>
+      <xs:enumeration value="E105"/><xs:enumeration value="E106"/><xs:enumeration value="E107"/>
+      <xs:enumeration value="E127"/><xs:enumeration value="E133"/><xs:enumeration value="E166"/>
+      <xs:enumeration value="E201"/><xs:enumeration value="E205"/><xs:enumeration value="E222"/>
+      <xs:enumeration value="E888"/><xs:enumeration value="E899"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="AddressOutType">
+    <xs:annotation><xs:documentation>Resolved postal address associated to the person (when available).</xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="ADDRESS1" type="xs:string" minOccurs="0"/>
+      <xs:element name="ADDRESS2" type="xs:string" minOccurs="0"/>
+      <xs:element name="CITY" type="xs:string" minOccurs="0"/>
+      <xs:element name="STATE" type="xs:string" minOccurs="0"/>
+      <xs:element name="ZIP" type="xs:string" minOccurs="0"/>
+      <xs:element name="ZIPCODE" type="xs:string" minOccurs="0"/>
+      <xs:element name="COUNTRY" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CustomerOutType">
+    <xs:annotation><xs:documentation>Person/customer composite returned on success.</xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0"/>
+      <xs:element name="FIRST_NAME" type="xs:string" minOccurs="0"/>
+      <xs:element name="LAST_NAME" type="xs:string" minOccurs="0"/>
+      <xs:element name="GENDER" type="xs:string" minOccurs="0"/>
+      <xs:element name="BIRTHDAY" type="xs:string" minOccurs="0"/>
+      <xs:element name="EMAIL_ID" type="xs:string" minOccurs="0"/>
+      <xs:element name="PHONE_NUMBER" type="xs:string" minOccurs="0"/>
+      <xs:element name="ASSIGNED_STORE" type="xs:string" minOccurs="0"/>
+      <xs:element name="LOYALTY_STORE" type="xs:string" minOccurs="0"/>
+      <xs:element name="LOYALTY_ID" type="xs:string" minOccurs="0"/>
+      <xs:element name="LOYALTY_ENNABLED" type="xs:string" minOccurs="0">
+        <xs:annotation><xs:documentation>Y/N or similar indicator that loyalty program is enabled on the person.</xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="EV_BALANCE" type="xs:string" minOccurs="0">
+        <xs:annotation><xs:documentation>Earned value / points balance (string for compatibility; numeric semantics).</xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="POS_SEGMENT" type="xs:string" minOccurs="0"/>
+      <xs:element name="MKT_SEGMENT" type="xs:string" minOccurs="0"/>
+      <xs:element name="ADDRESS" type="AddressOutType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:element name="RESPONSE">
+    <xs:annotation>
+      <xs:documentation>
+        Response envelope. On success (S100/S102/S103/S104), CUSTOMER carries details.
+        On error (E***), RESPONSE_CODE explains the failure condition; some fields like STATE/COUNTRY/ZIP may be echoed.
+      </xs:documentation>
+    </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0"/>
-        <xs:element name="CUSTOMER" minOccurs="0">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0"/>
-              <xs:element name="FIRST_NAME" type="xs:string" minOccurs="0"/>
-              <xs:element name="LAST_NAME" type="xs:string" minOccurs="0"/>
-              <xs:element name="GENDER" type="xs:string" minOccurs="0"/>
-              <xs:element name="BIRTHDAY" type="xs:string" minOccurs="0"/>
-              <xs:element name="EMAIL_ID" type="xs:string" minOccurs="0"/>
-              <xs:element name="PHONE_NUMBER" type="xs:string" minOccurs="0"/>
-              <xs:element name="ASSIGNED_STORE" type="xs:string" minOccurs="0"/>
-              <xs:element name="LOYALTY_STORE" type="xs:string" minOccurs="0"/>
-              <xs:element name="LOYALTY_ID" type="xs:string" minOccurs="0"/>
-              <xs:element name="LOYALTY_ENNABLED" type="xs:string" minOccurs="0"/>
-              <xs:element name="EV_BALANCE" type="xs:string" minOccurs="0"/>
-              <xs:element name="POS_SEGMENT" type="xs:string" minOccurs="0"/>
-              <xs:element name="MKT_SEGMENT" type="xs:string" minOccurs="0"/>
-              <xs:element name="ADDRESS1" type="xs:string" minOccurs="0"/>
-              <xs:element name="ADDRESS2" type="xs:string" minOccurs="0"/>
-              <xs:element name="CITY" type="xs:string" minOccurs="0"/>
-              <xs:element name="STATE" type="xs:string" minOccurs="0"/>
-              <xs:element name="ZIP" type="xs:string" minOccurs="0"/>
-              <xs:element name="ZIPCODE" type="xs:string" minOccurs="0"/>
-              <xs:element name="COUNTRY" type="xs:string" minOccurs="0"/>
-            </xs:sequence>
-          </xs:complexType>
+        <xs:element name="RESPONSE_DATE" type="xs:dateTime" minOccurs="0">
+          <xs:annotation><xs:documentation>Server timestamp (ISO8601) when the response was generated.</xs:documentation></xs:annotation>
         </xs:element>
-        <xs:element name="RESPONSE_CODE" type="xs:string"/>
+        <xs:element name="CUSTOMER" type="CustomerOutType" minOccurs="0"/>
+        <xs:element name="RESPONSE_CODE" type="ResponseCodeType"/>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

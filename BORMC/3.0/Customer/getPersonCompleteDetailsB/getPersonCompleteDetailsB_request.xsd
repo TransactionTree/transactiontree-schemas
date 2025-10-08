@@ -1,114 +1,240 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-  <xs:annotation><xs:documentation>Request schema (skeleton) for getPersonCompleteDetailsB.</xs:documentation></xs:annotation>
+<!-- getPersonCompleteDetailsB — Request Schema (v2)
+     Place this XML in POST body as form field: XmlInput
+     Endpoint:  /loyalty-app/control/getPersonCompleteDetailsB
+     Headers:   X-tenant-Key (required), Authorization (if required)
+     Notes:
+       • The service accepts either a CRITERIA search (typical) or a CUSTOMER anchor.
+       • Provide at least one useful filter inside CRITERIA; empty filters trigger E101/E105.
+       • Some constraints (email format, Canadian postal rules, state/country pairing) are documented
+         here and enforced by code (RESPONSE_CODEs like E222/E166/E106/E107, etc.).
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           version="1.0">
+
+  <!-- ========= Common simple types ========= -->
+  <xs:simpleType name="NonEmptyString">
+    <xs:annotation><xs:documentation>Non-empty string; app trims whitespace.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="EmailType">
+    <xs:annotation>
+      <xs:documentation>
+        Email format. Code enforces a pattern akin to:
+        ^[_A-Za-z0-9-+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$
+        Invalid → RESPONSE_CODE E222.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="^[-A-Za-z0-9._+]+@[-A-Za-z0-9.]+\.[A-Za-z]{2,}$"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="GenderCode">
+    <xs:annotation><xs:documentation>M=Male, F=Female, U=Unknown/Unspecified (as per code paths).</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="M"/><xs:enumeration value="F"/><xs:enumeration value="U"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="YN">
+    <xs:annotation><xs:documentation>Y/N indicator (e.g., ALLOW_SOLICITATION).</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Y"/><xs:enumeration value="N"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="CountryCode">
+    <xs:annotation>
+      <xs:documentation>
+        Country codes used in validation (e.g., USA, CAN). State/country association is validated
+        server-side (RESPONSE_CODE E106/E107 for mismatches).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="^[A-Z]{2,3}$"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ZipCanada">
+    <xs:annotation><xs:documentation>CAN postal code: A1A 1A1 or A1A1A1 — invalid → E166.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="^[A-Z]\d[A-Z]\s?\d[A-Z]\d$"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ZipUS">
+    <xs:annotation><xs:documentation>US ZIP: 5 or ZIP+4.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="^\d{5}(-?\d{4})?$"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ZipType">
+    <xs:annotation><xs:documentation>Postal code. App enforces CAN pattern when COUNTRY=CAN (E166).</xs:documentation></xs:annotation>
+    <xs:union memberTypes="ZipCanada ZipUS xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="PhoneType">
+    <xs:annotation><xs:documentation>Basic allowance for digits/plus/space/dash. E.164 specifics enforced app-side.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="^[0-9+()\-.\s]{5,20}$"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SystemReference">
+    <xs:annotation>
+      <xs:documentation>
+        Common enumerants from your codebase: ATG_CUST_ID, KEDS_CUST_ID, SACY_CUST_ID, SPERRY_CUST_ID,
+        GRHP_CUST_ID, APTOS_ID, DW_ID, CHEETAHMAIL_ID, LEGACY_ID, LOYALTY_ID, POS_ID, WINDSS_ID.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ATG_CUST_ID"/>
+      <xs:enumeration value="KEDS_CUST_ID"/>
+      <xs:enumeration value="SACY_CUST_ID"/>
+      <xs:enumeration value="SPERRY_CUST_ID"/>
+      <xs:enumeration value="GRHP_CUST_ID"/>
+      <xs:enumeration value="APTOS_ID"/>
+      <xs:enumeration value="DW_ID"/>
+      <xs:enumeration value="CHEETAHMAIL_ID"/>
+      <xs:enumeration value="LEGACY_ID"/>
+      <xs:enumeration value="LOYALTY_ID"/>
+      <xs:enumeration value="POS_ID"/>
+      <xs:enumeration value="WINDSS_ID"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DateFlexible">
+    <xs:annotation>
+      <xs:documentation>
+        Allowed by code for BIRTHDAY:
+          yyyy-MM-dd | yyyy/MM/dd | MM-dd | MM/dd | yyyy-MM | yyyy/MM
+        Invalid → E201.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="^(\d{4}[-/]\d{2}([-/]\d{2})?|(\d{2}[-/]\d{2}))$"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ========= Complex types ========= -->
+  <xs:complexType name="CrossReferenceType">
+    <xs:annotation><xs:documentation>Cross-reference pair to locate a customer.</xs:documentation></xs:annotation>
+    <xs:sequence>
+      <xs:element name="SYSTEM_REFERENCE" type="SystemReference" minOccurs="0"/>
+      <xs:element name="SYSTEM_REFERENCE_ID" type="NonEmptyString" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ContactType">
+    <xs:annotation>
+      <xs:documentation>Generic contact element. For EMAIL_CONTACTS, EMAIL is expected; for PHONE_CONTACTS, PHONE; for POSTAL_CONTACTS, address fields.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="CONTACT_MECH_ID" type="NonEmptyString" minOccurs="0"/>
+      <xs:element name="TO_NAME" type="xs:string" minOccurs="0"/>
+      <xs:element name="ADDRESS1" type="xs:string" minOccurs="0"/>
+      <xs:element name="ADDRESS2" type="xs:string" minOccurs="0"/>
+      <xs:element name="CITY" type="xs:string" minOccurs="0"/>
+      <xs:element name="STATE" type="xs:string" minOccurs="0"/>
+      <xs:element name="ZIPCODE" type="ZipType" minOccurs="0"/>
+      <xs:element name="ZIP4" type="xs:string" minOccurs="0"/>
+      <xs:element name="COUNTRY" type="CountryCode" minOccurs="0"/>
+      <xs:element name="CONTACT_TYPE" type="xs:string" minOccurs="0"/>
+      <xs:element name="EMAIL" type="EmailType" minOccurs="0"/>
+      <xs:element name="PHONE" type="PhoneType" minOccurs="0"/>
+      <xs:element name="ALLOW_SOLICITATION" type="YN" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ========= Top-level elements ========= -->
   <xs:element name="REQUEST">
+    <xs:annotation>
+      <xs:documentation>
+        Root. The service accepts either a CRITERIA search or a CUSTOMER anchor. If CRITERIA is used,
+        provide at least one meaningful filter (CUSTOMER_ID, EMAIL_ID, PHONE_NUMBER, SYSTEM_REFERENCE+ID, or NAME+ZIP).
+      </xs:documentation>
+    </xs:annotation>
     <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="CRITERIA" minOccurs="0"/>
-        <xs:element ref="CUSTOMER" minOccurs="0"/>
-      </xs:sequence>
+      <xs:choice>
+        <xs:element ref="CRITERIA"/>
+        <xs:element ref="CUSTOMER"/>
+      </xs:choice>
     </xs:complexType>
   </xs:element>
 
   <xs:element name="CRITERIA">
+    <xs:annotation>
+      <xs:documentation>
+        Filters validated by code:
+         • If COUNTRY and STATE are present, they must associate (GeoAssoc) → E106/E107 when invalid.
+         • If COUNTRY=CAN and ZIPCODE pattern invalid → E166.
+      </xs:documentation>
+    </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0"/>
-        <xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0"/>
-        <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0"/>
-        <xs:element name="EMAIL_ID" type="xs:string" minOccurs="0"/>
-        <xs:element name="PHONE_NUMBER" type="xs:string" minOccurs="0"/>
+        <xs:element name="CUSTOMER_ID" type="NonEmptyString" minOccurs="0"/>
+        <xs:element name="SYSTEM_REFERENCE" type="SystemReference" minOccurs="0"/>
+        <xs:element name="SYSTEM_REFERENCE_ID" type="NonEmptyString" minOccurs="0"/>
+        <xs:element name="EMAIL_ID" type="EmailType" minOccurs="0"/>
+        <xs:element name="PHONE_NUMBER" type="PhoneType" minOccurs="0"/>
         <xs:element name="FIRST_NAME" type="xs:string" minOccurs="0"/>
         <xs:element name="LAST_NAME" type="xs:string" minOccurs="0"/>
         <xs:element name="CITY" type="xs:string" minOccurs="0"/>
         <xs:element name="STATE" type="xs:string" minOccurs="0"/>
-        <xs:element name="ZIP_CODE" type="xs:string" minOccurs="0"/>
+        <xs:element name="ZIP_CODE" type="ZipType" minOccurs="0"/>
         <xs:element name="ZIP4" type="xs:string" minOccurs="0"/>
-        <xs:element name="COUNTRY" type="xs:string" minOccurs="0"/>
-        <xs:element name="RECORDS_LIMIT" type="xs:integer" minOccurs="0"/>
+        <xs:element name="COUNTRY" type="CountryCode" minOccurs="0"/>
+        <xs:element name="RECORDS_LIMIT" minOccurs="0">
+          <xs:annotation><xs:documentation>Max result rows; the service may cap/override.</xs:documentation></xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:integer">
+              <xs:minInclusive value="1"/><xs:maxInclusive value="10000"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
   <xs:element name="CUSTOMER">
+    <xs:annotation><xs:documentation>Anchor by known id and optional attributes. GENDER=M|F|U. BIRTHDAY accepts multiple formats (see DateFlexible).</xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0"/>
+        <xs:element name="CUSTOMER_ID" type="NonEmptyString" minOccurs="0"/>
         <xs:element name="FIRST_NAME" type="xs:string" minOccurs="0"/>
         <xs:element name="LAST_NAME" type="xs:string" minOccurs="0"/>
-        <xs:element name="GENDER" type="xs:string" minOccurs="0"/>
-        <xs:element name="BIRTHDAY" type="xs:string" minOccurs="0"/>
+        <xs:element name="GENDER" type="GenderCode" minOccurs="0"/>
+        <xs:element name="BIRTHDAY" type="DateFlexible" minOccurs="0"/>
         <xs:element name="ASSIGNED_STORE" type="xs:string" minOccurs="0"/>
         <xs:element name="LOYALTY_STORE" type="xs:string" minOccurs="0"/>
         <xs:element name="PREFERRED_STORE" type="xs:string" minOccurs="0"/>
         <xs:element name="STORE_ID" type="xs:string" minOccurs="0"/>
 
-        <xs:element ref="CUSTOMER_CROSS_REFERENCES" minOccurs="0"/>
-        <xs:element ref="POSTAL_CONTACTS" minOccurs="0"/>
-        <xs:element ref="EMAIL_CONTACTS" minOccurs="0"/>
-        <xs:element ref="PHONE_CONTACTS" minOccurs="0"/>
+        <xs:element name="CUSTOMER_CROSS_REFERENCES" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="CROSS_REFERENCE" type="CrossReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="POSTAL_CONTACTS" minOccurs="0">
+          <xs:complexType><xs:sequence><xs:element name="CONTACT" type="ContactType" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType>
+        </xs:element>
+        <xs:element name="EMAIL_CONTACTS" minOccurs="0">
+          <xs:complexType><xs:sequence><xs:element name="CONTACT" type="ContactType" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType>
+        </xs:element>
+        <xs:element name="PHONE_CONTACTS" minOccurs="0">
+          <xs:complexType><xs:sequence><xs:element name="CONTACT" type="ContactType" minOccurs="0" maxOccurs="unbounded"/></xs:sequence></xs:complexType>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="CUSTOMER_CROSS_REFERENCES">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="CROSS_REFERENCE" minOccurs="0" maxOccurs="unbounded"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
-  <xs:element name="CROSS_REFERENCE">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0"/>
-        <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
-  <xs:element name="POSTAL_CONTACTS">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="CONTACT" minOccurs="0" maxOccurs="unbounded"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
-  <xs:element name="EMAIL_CONTACTS">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="CONTACT" minOccurs="0" maxOccurs="unbounded"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
-  <xs:element name="PHONE_CONTACTS">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="CONTACT" minOccurs="0" maxOccurs="unbounded"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-
-  <xs:element name="CONTACT">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0"/>
-        <xs:element name="TO_NAME" type="xs:string" minOccurs="0"/>
-        <xs:element name="ADDRESS1" type="xs:string" minOccurs="0"/>
-        <xs:element name="ADDRESS2" type="xs:string" minOccurs="0"/>
-        <xs:element name="CITY" type="xs:string" minOccurs="0"/>
-        <xs:element name="STATE" type="xs:string" minOccurs="0"/>
-        <xs:element name="ZIPCODE" type="xs:string" minOccurs="0"/>
-        <xs:element name="ZIP4" type="xs:string" minOccurs="0"/>
-        <xs:element name="COUNTRY" type="xs:string" minOccurs="0"/>
-        <xs:element name="CONTACT_TYPE" type="xs:string" minOccurs="0"/>
-        <xs:element name="EMAIL" type="xs:string" minOccurs="0"/>
-        <xs:element name="PHONE" type="xs:string" minOccurs="0"/>
-        <xs:element name="ALLOW_SOLICITATION" type="xs:string" minOccurs="0"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
 </xs:schema>
