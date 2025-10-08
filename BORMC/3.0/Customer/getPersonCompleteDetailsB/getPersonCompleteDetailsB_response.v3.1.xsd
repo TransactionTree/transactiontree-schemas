@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           version="1.0">
+  <xs:simpleType name="ResponseCodeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="S100"/><xs:enumeration value="S102"/><xs:enumeration value="S103"/><xs:enumeration value="S104"/>
+      <xs:enumeration value="E101"/><xs:enumeration value="E102"/><xs:enumeration value="E103"/><xs:enumeration value="E104"/>
+      <xs:enumeration value="E105"/><xs:enumeration value="E106"/><xs:enumeration value="E107"/>
+      <xs:enumeration value="E127"/><xs:enumeration value="E133"/><xs:enumeration value="E166"/>
+      <xs:enumeration value="E201"/><xs:enumeration value="E205"/><xs:enumeration value="E222"/>
+      <xs:enumeration value="E888"/><xs:enumeration value="E899"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="YN"><xs:restriction base="xs:string"><xs:enumeration value="Y"/><xs:enumeration value="N"/></xs:restriction></xs:simpleType>
+  <xs:simpleType name="DateTimeLoose"><xs:restriction base="xs:string"><xs:pattern value="^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(\.\d{1,3})?$"/></xs:restriction></xs:simpleType>
+  <xs:complexType name="ContactOutType">
+    <xs:sequence>
+      <xs:element name="TO_NAME" type="xs:string" minOccurs="0"/>
+      <xs:element name="ADDRESS1" type="xs:string" minOccurs="0"/>
+      <xs:element name="ADDRESS2" type="xs:string" minOccurs="0"/>
+      <xs:element name="CITY" type="xs:string" minOccurs="0"/>
+      <xs:element name="STATE" type="xs:string" minOccurs="0"/>
+      <xs:element name="ZIPCODE" type="xs:string" minOccurs="0"/>
+      <xs:element name="ZIP" type="xs:string" minOccurs="0"/>
+      <xs:element name="COUNTRY" type="xs:string" minOccurs="0"/>
+      <xs:element name="EMAIL" type="xs:string" minOccurs="0"/>
+      <xs:element name="PHONE" type="xs:string" minOccurs="0"/>
+      <xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0"/>
+      <xs:element name="BAD_POSTAL_ADDRESS_STATUS" type="YN" minOccurs="0"/>
+      <xs:element name="BAD_EMAIL_ADDRESS_STATUS" type="YN" minOccurs="0"/>
+      <xs:element name="ALLOW_SOLICITATION" type="YN" minOccurs="0"/>
+      <xs:element name="CONTACT_TYPE" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ContactGroupOutType">
+    <xs:sequence>
+      <xs:element name="CONTACT" type="ContactOutType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CrossReferenceType">
+    <xs:sequence>
+      <xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0"/>
+      <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CrossReferencesOutType"><xs:sequence>
+      <xs:element name="CROSS_REFERENCE" type="CrossReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+  </xs:sequence></xs:complexType>
+  <xs:complexType name="MarketSegmentsType"><xs:sequence>
+    <xs:element name="MKT_SEGMENT" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+  </xs:sequence></xs:complexType>
+  <xs:complexType name="CustomerOutType">
+    <xs:sequence>
+      <xs:element name="FIRST_NAME" type="xs:string" minOccurs="0"/>
+      <xs:element name="LAST_NAME" type="xs:string" minOccurs="0"/>
+      <xs:element name="GENDER" minOccurs="0">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="MALE"/>
+          <xs:enumeration value="FEMALE"/>
+          <xs:enumeration value="UNKNOWN"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:element>
+      <xs:element name="BIRTHDAY" type="xs:string" minOccurs="0"/>
+      <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0"/>
+      <xs:element name="REQ_REWARD_POINTS" type="xs:string" minOccurs="0"/>
+      <xs:element name="EV_BALANCE" type="xs:string" minOccurs="0"/>
+      <xs:element name="CASHIER" type="xs:string" minOccurs="0"/>
+      <xs:element name="ASSIGNED_STORE" type="xs:string" minOccurs="0"/>
+      <xs:element name="LOYALTY_STORE" type="xs:string" minOccurs="0"/>
+      <xs:element name="PREFERRED_STORE" type="xs:string" minOccurs="0"/>
+      <xs:element name="MKT_SEGMENTS" type="MarketSegmentsType" minOccurs="0"/>
+      <xs:element name="CUSTOMER_CROSS_REFERENCES" type="CrossReferencesOutType" minOccurs="0"/>
+      <xs:element name="POSTAL_CONTACTS" type="ContactGroupOutType" minOccurs="0"/>
+      <xs:element name="EMAIL_CONTACTS"  type="ContactGroupOutType" minOccurs="0"/>
+      <xs:element name="PHONE_CONTACTS"  type="ContactGroupOutType" minOccurs="0"/>
+      <xs:element name="POS_SEGMENT" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="RESPONSE">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE_DATE" type="DateTimeLoose" minOccurs="0"/>
+        <xs:element name="CUSTOMER" type="CustomerOutType" minOccurs="0"/>
+        <xs:element name="RESPONSE_CODE" type="ResponseCodeType"/>
+      </xs:sequence>
+      <xs:attribute name="ResponseId" type="xs:string" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
