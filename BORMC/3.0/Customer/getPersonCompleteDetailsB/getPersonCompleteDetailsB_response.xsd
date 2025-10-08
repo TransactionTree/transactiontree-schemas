@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:annotation><xs:documentation>Response schema (skeleton) for getPersonCompleteDetailsB.</xs:documentation></xs:annotation>
+  <xs:element name="RESPONSE">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0"/>
+        <xs:element name="CUSTOMER" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0"/>
+              <xs:element name="FIRST_NAME" type="xs:string" minOccurs="0"/>
+              <xs:element name="LAST_NAME" type="xs:string" minOccurs="0"/>
+              <xs:element name="GENDER" type="xs:string" minOccurs="0"/>
+              <xs:element name="BIRTHDAY" type="xs:string" minOccurs="0"/>
+              <xs:element name="EMAIL_ID" type="xs:string" minOccurs="0"/>
+              <xs:element name="PHONE_NUMBER" type="xs:string" minOccurs="0"/>
+              <xs:element name="ASSIGNED_STORE" type="xs:string" minOccurs="0"/>
+              <xs:element name="LOYALTY_STORE" type="xs:string" minOccurs="0"/>
+              <xs:element name="LOYALTY_ID" type="xs:string" minOccurs="0"/>
+              <xs:element name="LOYALTY_ENNABLED" type="xs:string" minOccurs="0"/>
+              <xs:element name="EV_BALANCE" type="xs:string" minOccurs="0"/>
+              <xs:element name="POS_SEGMENT" type="xs:string" minOccurs="0"/>
+              <xs:element name="MKT_SEGMENT" type="xs:string" minOccurs="0"/>
+              <xs:element name="ADDRESS1" type="xs:string" minOccurs="0"/>
+              <xs:element name="ADDRESS2" type="xs:string" minOccurs="0"/>
+              <xs:element name="CITY" type="xs:string" minOccurs="0"/>
+              <xs:element name="STATE" type="xs:string" minOccurs="0"/>
+              <xs:element name="ZIP" type="xs:string" minOccurs="0"/>
+              <xs:element name="ZIPCODE" type="xs:string" minOccurs="0"/>
+              <xs:element name="COUNTRY" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="RESPONSE_CODE" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
