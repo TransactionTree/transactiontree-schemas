@@ -114,6 +114,11 @@
 									<xs:documentation>Message is only to be sent via SMS</xs:documentation>
 								</xs:annotation>
 							</xs:enumeration>
+							<xs:enumeration value="PRINT_SMS">
+								<xs:annotation>
+									<xs:documentation>Message is to be sent via SMS and printed.</xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
 							<xs:enumeration value="EMAIL_SMS">
 								<xs:annotation>
 									<xs:documentation>Message is to be sent via SMS and Email, but not printed</xs:documentation>
@@ -1600,6 +1605,11 @@
 																		<xs:enumeration value="Exchange">
 																			<xs:annotation>
 																				<xs:documentation>The item is being exchanged.</xs:documentation>
+																			</xs:annotation>
+																		</xs:enumeration>
+																		<xs:enumeration value="Void">
+																			<xs:annotation>
+																				<xs:documentation>The item is voided.</xs:documentation>
 																			</xs:annotation>
 																		</xs:enumeration>
 																	</xs:restriction>
