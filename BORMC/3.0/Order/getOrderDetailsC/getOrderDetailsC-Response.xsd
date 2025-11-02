@@ -1,0 +1,879 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>Annotated schema for getOrderDetailsC RESPONSE.</xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="EmptyString">
+		<xs:annotation>
+			<xs:documentation>Represents an intentionally empty value.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Money">
+		<xs:annotation>
+			<xs:documentation>Monetary/quantity decimal that also accepts empty string.</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="xs:decimal EmptyString"/>
+	</xs:simpleType>
+	<xs:simpleType name="ResponseCode">
+		<xs:annotation>
+			<xs:documentation>Response codes from the service.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="E101">
+				<xs:annotation>
+					<xs:documentation>XML Input is empty</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="E102">
+				<xs:annotation>
+					<xs:documentation>XML SAX Exception</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="E103">
+				<xs:annotation>
+					<xs:documentation>XML Parse Conf Exception</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="E104">
+				<xs:annotation>
+					<xs:documentation>XML IOException</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="E111">
+				<xs:annotation>
+					<xs:documentation>Person Not Found</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="E122">
+				<xs:annotation>
+					<xs:documentation>From Date / Thru Date Parse Exception</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="E124">
+				<xs:annotation>
+					<xs:documentation>Order Status exceeds 30 Characters</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="E126">
+				<xs:annotation>
+					<xs:documentation>No order found</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="E127">
+				<xs:annotation>
+					<xs:documentation>Invalid or Store tag is blank</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="E129">
+				<xs:annotation>
+					<xs:documentation>No order found</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="E899">
+				<xs:annotation>
+					<xs:documentation>accessTokenKey is not valid</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="TaxType">
+		<xs:annotation>
+			<xs:documentation>Tax line; fields are order-insensitive and optional.</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="TAX_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax classification (e.g., StateOrProvince).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_AMOUNT" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax amount.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_PERCENTAGE" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Rate as decimal (or empty).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_DESCRIPTION" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax description (e.g., GST/PST).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_AUTHORITY" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Jurisdiction (e.g., FED).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_RULE_CODE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Rule code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAXABLE_AMOUNT" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Taxable base.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_VOIDED" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Voided flag (Y/N).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_VOIDED_LINE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Voiding line ref.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_START_DATE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Start date string.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_DETAIL_NUMBER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax detail id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_DETAIL_NUMBER_VOIDED" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Voided detail id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_NUMBER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_VALUE_EXEMPT" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Exempt value.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_AMOUNT_EXEMPT" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Exempted amount.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_AMOUNT_TAXABLE" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Taxable amount part.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_LINE_VOIDED" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax line voided flag.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_LINE_VOIDING_LINE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Voiding line ref.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="CrossReferenceType">
+		<xs:annotation>
+			<xs:documentation>Customer cross-reference entry.</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>System/type key (LO...Y_ID, POS_ID, ATG_CUST_ID, PRETAIL_ID, etc.).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Value in that system.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="AttributeType">
+		<xs:annotation>
+			<xs:documentation>Generic attribute triplet.</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="ATTRIBUTE_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Key/type name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ATTRIBUTE_DESCRIPTION" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Human description.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ATTRIBUTE_DATA" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Value.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="DiscountType">
+		<xs:annotation>
+			<xs:documentation>A single discount applied to an item.</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="DISCOUNT_PERCENT" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Percent as decimal (or empty).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DISCOUNT_AMOUNT" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Absolute discount amount.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DISCOUNT_DESCRIPTION" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Description.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DISCOUNT_CODE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Code id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DISCOUNT_CODETYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Code type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DISCOUNT_METHOD" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Method.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DISCOUNT_RATE" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Rate.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PRINT_LINE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Printed description line.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AMOUNT_DISCOUNTABLE" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Eligible amount.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DISCOUNT_PROMO_CODE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Promo code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DISCOUNT_VOIDED" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Voided flag (Y/N).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DISCOUNT_VOIDED_LINE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Voiding line ref.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="BarCodeType">
+		<xs:annotation>
+			<xs:documentation>Barcode block.</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="BarCodeFlag" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Boolean-like string true/false.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BarCodeType" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Symbology.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BarCodeValue" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Encoded value.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="TenderItemType">
+		<xs:annotation>
+			<xs:documentation>Payment/tender line at header level.</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="TENDER_ITEM_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tender label.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_ITEM_VALUE" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Amount.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_CARD_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Card brand.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AUTHORIZATION_CODE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Auth code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_ITEM_ACCOUNT" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Masked account.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_AMOUNT_FOREIGN" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Foreign amount.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_MEDIA_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Media type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_VOIDED" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Voided flag.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_VOIDING_LINE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Voiding line.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_CHEQUE_NUMBER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Cheque number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_REFERENCE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Reference code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_SHORTTOKEN" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Short token.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_LONGTOKEN" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Long token.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TENDER_TOKEN" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Token.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="OrderItemType">
+		<xs:annotation>
+			<xs:documentation>Order line item with pricing, taxes, attributes, discounts.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ORDER_ITEM_SEQ" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Line sequence.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SKU" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>SKU/UPC.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DESCRIPTION" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Description.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PRICE" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Line price.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ORGINAL_PRICE" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Original price.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ORIGINAL_TRANS_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Original transaction id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ORIGINAL_ORDER_LINE_SEQ" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Original line seq.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ORIGINAL_TRANSACTION_DATE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Original date string.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ORIGINAL_STORE_TAX_AREA" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Original tax area.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ORIGINAL_STORE_NUMBER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Original store no.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ORIGINAL_REGISTER_NUMBER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Original register.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DEPARTMENT_CODE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Department.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RETURN_AMOUNT" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Return amount.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RETURNED_DATE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Returned date.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="QUANTITY_RETURNED" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Qty returned.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="QUANTITY_ORDERED" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Qty ordered.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="QUANTITY_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Unit (EA etc.).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="DETAIL_NUMBER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Detail no.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PARENT_NUMBER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Parent detail no.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SKU_OWNER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>SKU owner.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SKU_OWNER_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Owner type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SKU_ITEM_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Item subtype.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LEVEL_5_COMPANY_CODE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Hierarchy.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LEVEL_5_LEVEL_5_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Hierarchy.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LEVEL_5_PRODUCT_GROUP_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Hierarchy.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LEVEL_5_STRUCTURE_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Hierarchy.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ORDER_ITEM_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Item type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LINE_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Line type.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IMAGE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Image ref.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="RETURNED_STATUS" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Return status.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PRICE_OVERRIDE" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Override amount or empty.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ITEM_VOID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Item voided flag.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ITEM_VOID_LINE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Voiding line ref.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ITEM_LEVEL" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Level.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ITEM_AUTO_SOLD" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Auto-sold flag.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PRICE_RULE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Price rule id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ITEM_TAX" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Item-level taxes.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TAX" type="TaxType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ITEM_ATTRIBUTES" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Item-level attributes.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ATTRIBUTE" type="AttributeType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ITEM_DISCOUNT" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Item-level discount list.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DISCOUNT" type="DiscountType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OrderHeaderType">
+		<xs:annotation>
+			<xs:documentation>Header block for a single order within a TRANSACTION.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ORDER_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Order identifier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FIRST_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Customer first name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LAST_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Customer last name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="COMPANY_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Company name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Customer identifier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ORDER_DATE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Order date/time string.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Aggregate tax at header.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SHIPMENT_METHOD" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Shipment/carrier method.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PROMOTION_ADJUSTMENT" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Header-level promotion/shipping adjustment.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SUB_TOTAL" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Header subtotal.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TOTAL_AMOUNT" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Header total amount.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="STORE_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Store identifier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="REGISTER_NUMBER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Register number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TERMINAL_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Terminal identifier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CASH_REGISTER_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Cash register id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TRANSACTION_NUMBER" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>External transaction reference.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TRANSACTION_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Transaction type string (e.g., SaleTransaction).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ASSOCIATE_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Associate/cashier id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ASSOCIATE_FIRST_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Associate first name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ASSOCIATE_LAST_NAME" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Associate last name.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TOTAL_TAX_AMOUNT" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Total of taxes at header.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CUSTOMER_CROSS_REFERENCES" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Zero or more cross-reference entries for the customer.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="CROSS_REFERENCE" type="CrossReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PRIMARY_FAX" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Primary fax number.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="POSTAL_CONTACTS" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Postal contacts container.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_EXEMPT" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax exempt flag.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TAX_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Tax identifier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TRANSACTION_HISTORY" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Transaction history flag.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IS_SEND_TRANSACTION" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Send-sale flag.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="IS_EMPLOYEE_TRANSACTION" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Employee transaction flag.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="STORE_TAX_AREA" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Store tax area code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CASH_BACK_AMOUNT" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Cash back amount (maybe empty).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BALANCE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Balance (maybe empty).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="CHANGE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Change (maybe empty).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="WORKDAY_ID" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Workday id.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="REGISTER_TYPE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Register type (POS etc.).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BAR_CODE" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Barcode block for receipt.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="BarCodeFlag" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Indicator true/false.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="BarCodeType" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Symbology name.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="BarCodeValue" type="xs:string" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Encoded value.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ORDER_ITEMS" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Zero or more ORDER_ITEM entries.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ORDER_ITEM" type="OrderItemType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TENDER_ITEMS" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Zero or more TENDER_ITEM entries.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TENDER_ITEM" type="TenderItemType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TOTAL_TAXES" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Header-level aggregate taxes.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TAXES" type="TaxType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TransactionType">
+		<xs:annotation>
+			<xs:documentation>TRANSACTION groups one or more ORDER_HEADER blocks.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ORDER_HEADER" type="OrderHeaderType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="RESPONSE">
+		<xs:annotation>
+			<xs:documentation>Top-level element for the getOrderDetailsC service response.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Response timestamp (string; e.g., 2025-11-02 10:42:41.942).</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="RESPONSE_CODE" type="ResponseCode" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Present on error/special states; see ResponseCode.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="TRANSACTION" type="TransactionType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>One TRANSACTION per call; contains ORDER_HEADER records.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="ResponseId" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>Opaque correlation id.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
