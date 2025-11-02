@@ -28,14 +28,22 @@
 						<xs:documentation>ID value for SYSTEM_REFERENCE. Example: ATG customer number or loyalty ID.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="FROM_DATE" type="xs:dateTime" minOccurs="1">
+				<xs:element name="FROM_DATE" type="xs:date" minOccurs="1">
 					<xs:annotation>
-						<xs:documentation>Lower bound (inclusive) for order date filtering. ISO 8601 dateTime. Example: 2025-10-01T00:00:00Z.</xs:documentation>
+						<xs:documentation>
+            Lower bound (inclusive) for order date filtering. 
+            Format: YYYY-MM-DD (ISO 8601 date). Example: 2025-10-01. 
+            If only a single known transaction exists, FROM_DATE and THRU_DATE should be the same.
+        </xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="THRU_DATE" type="xs:dateTime" minOccurs="1">
+				<xs:element name="THRU_DATE" type="xs:date" minOccurs="1">
 					<xs:annotation>
-						<xs:documentation>Upper bound (inclusive) for order date filtering. ISO 8601 dateTime. Example: 2025-10-31T23:59:59Z.</xs:documentation>
+						<xs:documentation>
+            Upper bound (inclusive) for order date filtering. 
+            Format: YYYY-MM-DD (ISO 8601 date). Example: 2025-10-31. 
+            If only a single known transaction exists, FROM_DATE and THRU_DATE should be the same.
+        </xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="RECORD_LIMIT" type="xs:int" minOccurs="0">
