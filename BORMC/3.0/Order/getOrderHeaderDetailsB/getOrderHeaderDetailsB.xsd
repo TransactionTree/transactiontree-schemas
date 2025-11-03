@@ -14,7 +14,7 @@
             <xs:documentation>Customer identifier to scope order search (placing/bill-to).</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="REQUEST_DATE" type="xs:dateTime" minOccurs="0">
+        <xs:element name="REQUEST_DATE" type="xs:dateTime" minOccurs="1">
           <xs:annotation>
             <xs:documentation>Caller timestamp for auditing; not required for filtering (ISO-8601).</xs:documentation>
           </xs:annotation>
@@ -44,7 +44,7 @@
             <xs:documentation>Maximum number of headers to return; defaults to 25 when omitted/invalid.</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="STORE_ID" type="xs:string" minOccurs="0">
+        <xs:element name="STORE_ID" type="xs:string" minOccurs="1">
           <xs:annotation>
             <xs:documentation>Store identifier to restrict results.</xs:documentation>
           </xs:annotation>
