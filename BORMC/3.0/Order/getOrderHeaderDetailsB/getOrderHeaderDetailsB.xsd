@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>REQUEST schema for getOrderHeaderDetailsB. This XML is carried in the form field 'XmlInput'.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="REQUEST">
+    <xs:annotation>
+      <xs:documentation>Payload filters understood by the service; all are optional.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Customer identifier to scope order search (placing/bill-to).</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="REQUEST_DATE" type="xs:dateTime" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Caller timestamp for auditing; not required for filtering (ISO-8601).</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>External type (ATG_CUST_ID, PRETAIL_ID, LOYALTY_ID, WINDSS_ID). Data-driven from PartyIdentification/CrossReference.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Value for SYSTEM_REFERENCE (e.g., loyalty number).</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="FROM_DATE" type="xs:dateTime" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Inclusive lower bound for order date/time (ISO-8601).</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="THRU_DATE" type="xs:dateTime" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Inclusive upper bound for order date/time (ISO-8601).</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="RECORD_LIMIT" type="xs:int" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Maximum number of headers to return; defaults to 25 when omitted/invalid.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="STORE_ID" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Store identifier to restrict results.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="REGISTER_NUMBER" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Register/till number to restrict results.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="PRODUCTS" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Container for product filters. Include one PRODUCT_ID per product/SKU to restrict results.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PRODUCT_ID" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation>Product or SKU identifier to filter by. Repeat the element to filter by multiple products.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
