@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2026 (x64) (https://www.altova.com) by Jason Shapiro (Private) -->
 <xs:schema xmlns="https://www.transactiontree.com/framework/schema/vrg/3.2.2/TTDR3.2.2.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.transactiontree.com/framework/schema/vrg/3.2.2/TTDR3.2.2.xsd" elementFormDefault="qualified" attributeFormDefault="qualified" version="3.2.2" xml:lang="en">
 	<xs:include schemaLocation="TTDRsimpleTypes-3.2.2.xsd"/>
 	<!-- TransactionTree Digital Receipt version Current Version 3.2.2 03/16/2021 UPDATED 2025-09-08 -->
@@ -18,7 +19,7 @@
 						<xs:appinfo>This element helps in identifying and managing messages from different applications within the TransactionTree system.</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="TransactionHistory" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:element name="TransactionHistory" type="xs:string" default="N" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation>Historical transaction indicatore (Y,N). Y when transaction was not generated in real time.  Added 9/27/2024</xs:documentation>
 						<xs:appinfo>This element helps in identifying historical transaction being processed by the TransactionTree system.</xs:appinfo>
@@ -412,6 +413,16 @@
 									<xs:documentation>Sale transaction</xs:documentation>
 								</xs:annotation>
 							</xs:enumeration>
+							<xs:enumeration value="PostVoidSale">
+								<xs:annotation>
+									<xs:documentation>A sale that has been voided in full on the same day of the orginal transaction. Added on 11/11/2025.</xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
+							<xs:enumeration value="PostVoidReturn">
+								<xs:annotation>
+									<xs:documentation>A return that has been voided in full on the same day of the orginal transaction. Added on 11/11/2025.</xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
@@ -451,7 +462,7 @@
 					<xs:complexType>
 						<xs:sequence>
 							<!-- 1 to 9 digit numeric store number determined by retailer to identify origin store -->
-							<xs:element name="StoreNumber">
+							<xs:element name="StoreNumber" minOccurs="1">
 								<xs:annotation>
 									<xs:documentation>Unique location identifier from the sending application where the data is being generated. This identifier must be between 1 and 9 alphanumeric characters.</xs:documentation>
 								</xs:annotation>
@@ -506,13 +517,12 @@
 									</xs:restriction>
 								</xs:simpleType>
 							</xs:element>
-							<xs:element name="RegisterType" minOccurs="1">
+							<xs:element name="RegisterType" minOccurs="1" default="POS">
 								<xs:annotation>
 									<xs:documentation>The RegisterType element represents different types of registers that can be used in a retail or transaction-based system. Predefined values are provided for common register types, but custom values are also allowed for extensibility.</xs:documentation>
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:union>
-										<!-- Predefined enumerated values -->
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
 												<xs:enumeration value="POS">
@@ -647,10 +657,11 @@
 												</xs:enumeration>
 											</xs:restriction>
 										</xs:simpleType>
-										<!-- Allow any string as a fallback -->
 										<xs:simpleType>
 											<xs:restriction base="xs:string"/>
 										</xs:simpleType>
+										<!-- Predefined enumerated values -->
+										<!-- Allow any string as a fallback -->
 									</xs:union>
 								</xs:simpleType>
 							</xs:element>
@@ -867,7 +878,7 @@
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
-										<xs:element name="FirstName" type="xs:string" minOccurs="0" default="FName">
+										<xs:element name="FirstName" type="xs:string" default="FName" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>Simple string that contains the first name of the customer. Default="FName" if not supplied.</xs:documentation>
 											</xs:annotation>
@@ -877,7 +888,7 @@
 												<xs:documentation>Simple string that contains the middle name of the customer. This element is optional and can be up to 255 characters in length.</xs:documentation>
 											</xs:annotation>
 										</xs:element>
-										<xs:element name="LastName" type="xs:string" minOccurs="0" default="LName">
+										<xs:element name="LastName" type="xs:string" default="LName" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>Simple string that contains the last name of the customer. Default="LName" if not supplied.</xs:documentation>
 											</xs:annotation>
@@ -1345,13 +1356,147 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="LayawayData" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Contains layaway and special order information including payment schedules. This element is optional and applies to transactions involving installment payments or deferred fulfillment. Mapped to /POS/TRADE/ORDER</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="LayawayStatus" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Layaway order status. Mapped to /POS/TRADE/ORDER/Status. Valid values:
+- NCMP: Not Completed (Open/In progress)
+- SHIP: Shipped (Completed - layaway picked up by customer)
+- WOFF: Write Off (Delinquent layaway written off without customer present. Cancel fee collected and credit note created for payments above $10 cancel fee. Next step: waiting for customer to come in to cancel and provide credit)
+- CNCL: Cancelled (with customer present)
+- PEND: Pending (POS bug - consider completed. Layaway was actually completed but in bad state due to payment bug)
+- PSHP: Partially Shipped (POS bug - consider completed. Layaway was actually completed but in bad state due to item status bug)
+- COMP: Completed</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayDescription" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>LYWY mapped to /POS/TRADE/ORDER/Desc</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayActionCode" type="xs:integer" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>1 - Create, 8 modify/payment, 10 write-off, mapped to /POS/TRADE/ORDER/ActionCode</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayBalanceAdjustAllocatedTax" type="xs:decimal" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>mapped to /POS/TRADE/ORDER/BalanceAdjustAllocatedTax</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayIsPayment" type="xs:boolean" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>If a payment then true, mapped to /POS/TRADE/ORDER/IsPayment</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayBalanceAdjust" type="xs:decimal" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>mapped to /POS/TRADE/ORDER/BalanceAdjust</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayNumber" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Unique order or layaway identifier. Example: 0200301000240, mapped to /POS/TRADE/ORDER/NumStr</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayType" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>LYWY and mapped to /POS/TRADE/ORDER/Type</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayTypeName" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Layaway type name. Common values: Layaway, SPCL (Special Order), HOLD (Hold), etc. mapped to /POS/TRADE/ORDER/TypeName</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayOrigAmount" type="xs:decimal" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Total Layaway amount in cents /POS/TRADE/ORDER/OrigAmt</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayStatusDate" type="xs:dateTime" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Date the order or layaway was originally placed /POS/TRADE/ORDER/StatusDate</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayOrigTax" type="xs:decimal" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Total Layaway amount in cents /POS/TRADE/ORDER/OrigTax</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayPlacedDate" type="xs:dateTime" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Date the order or layaway was originally placed, mapped to /POS/TRADE/ORDER/PlacedDate</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayBalanceDue" type="xs:decimal" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Remaining balance due in cents, mapped to /POS/TRADE/ORDER/BalanceDue</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="LayawayFinalAmount" type="xs:decimal" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Final amount, mapped to /POS/TRADE/ORDER/FinalAmt. Only appears on final payment and pickup.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ScheduledPayments" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Contains a list of scheduled payment installments for the order or layaway.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ScheduledPayment" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Individual scheduled payment installment with payment number, date, and amount. /POS/TRADE/ORDER/ORDER_SCHED_PMTS</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ScheduledPaymentNumber" minOccurs="1">
+														<xs:annotation>
+															<xs:documentation>Sequential payment number (1, 2, 3, etc.) indicating the installment sequence. mapped to /POS/TRADE/ORDER/ORDER_SCHED_PMTS/SeqNum</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:integer">
+																<xs:minInclusive value="1"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="ScheduledPaymentDate" type="xs:dateTime" minOccurs="1">
+														<xs:annotation>
+															<xs:documentation>Scheduled payment due date in ISO 8601 format (YYYY-MM-DD). Example: 2025-11-19, mapped to /POS/TRADE/ORDER/ORDER_SCHED_PMTS/SchedDate</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="ScheduledPaymentAmount" minOccurs="1">
+														<xs:annotation>
+															<xs:documentation>Scheduled payment amount in cents, mapped to /POS/TRADE/ORDER/ORDER_SCHED_PMTS/Amt</xs:documentation>
+														</xs:annotation>
+														<xs:simpleType>
+															<xs:restriction base="xs:decimal">
+																<xs:minInclusive value="0"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="TransactionData" minOccurs="1">
 					<xs:annotation>
 						<xs:documentation>Detailed transaction data.</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="TransactionSettings" minOccurs="0" maxOccurs="1">
+							<xs:element name="TransactionSettings" minOccurs="1" maxOccurs="1">
 								<xs:annotation>
 									<xs:documentation>The TransactionSettings element contains various settings and parameters related to the transaction. This element is optional and includes the following sub-elements:</xs:documentation>
 								</xs:annotation>
@@ -1362,7 +1507,7 @@
 												<xs:documentation>Specifies the currency type for the transaction. The default value is "USD" (U.S. Dollar).</xs:documentation>
 											</xs:annotation>
 										</xs:element>
-										<xs:element name="OutputLanguage" type="LanguageCode" default="eng" minOccurs="0">
+										<xs:element name="OutputLanguage" type="LanguageCode" default="eng" minOccurs="1">
 											<xs:annotation>
 												<xs:documentation>Specifies the language code for the transaction output. The default value is "eng" (English).</xs:documentation>
 											</xs:annotation>
@@ -1520,7 +1665,17 @@
 													</xs:element>
 													<xs:element name="QuantitySold" type="xs:integer" minOccurs="1">
 														<xs:annotation>
-															<xs:documentation>The number of units sold. This is a required element and should be an integer value. The value should be positive if it represents a purchase and negative if it represents a return.</xs:documentation>
+															<xs:documentation>The number of units sold, represented as an integer by multiplying the actual quantity by 100.
+
+IMPORTANT - Integer Representation:
+- Actual quantity 1.00 = 100 (integer)
+- Actual quantity 1.50 = 150 (integer)
+- Actual quantity 100.00 = 10000 (integer)
+- Actual quantity 0.25 = 25 (integer)
+
+This format allows for precise representation of fractional quantities (up to 2 decimal places) while using integer storage.
+
+This is a required element. The value should be positive if it represents a purchase and negative if it represents a return.</xs:documentation>
 														</xs:annotation>
 													</xs:element>
 												</xs:all>
