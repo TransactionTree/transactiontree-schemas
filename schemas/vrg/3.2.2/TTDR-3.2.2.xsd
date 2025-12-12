@@ -2,7 +2,7 @@
 <!-- edited with XMLSpy v2026 (x64) (https://www.altova.com) by Jason Shapiro (Private) -->
 <xs:schema xmlns="https://www.transactiontree.com/framework/schema/vrg/3.2.2/TTDR3.2.2.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.transactiontree.com/framework/schema/vrg/3.2.2/TTDR3.2.2.xsd" elementFormDefault="qualified" attributeFormDefault="qualified" version="3.2.2" xml:lang="en">
 	<xs:include schemaLocation="TTDRsimpleTypes-3.2.2.xsd"/>
-	<!-- TransactionTree Digital Receipt version Current Version 3.2.2 03/16/2021 UPDATED 2025-09-08 -->
+	<!-- TransactionTree Digital Receipt version Current Version 3.2.2 03/16/2021 UPDATED 2025-12-12 -->
 	<!-- Copyright 2025, TransactionTree, Inc. -->
 	<xs:element name="Transaction">
 		<xs:complexType>
@@ -2864,6 +2864,11 @@ This is a required element. The value should be positive if it represents a purc
 													<xs:enumeration value="MailCheck">
 														<xs:annotation>
 															<xs:documentation>Normally used on refund when amount to refund is greater than the store is allowed to give. Example: HO REFUND.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="PennyRounding">
+														<xs:annotation>
+															<xs:documentation>Added for penny rounding on 12/12/2025.</xs:documentation>
 														</xs:annotation>
 													</xs:enumeration>
 												</xs:restriction>
