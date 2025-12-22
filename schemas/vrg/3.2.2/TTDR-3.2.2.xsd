@@ -1507,7 +1507,7 @@
 												<xs:documentation>Specifies the currency type for the transaction. The default value is "USD" (U.S. Dollar).</xs:documentation>
 											</xs:annotation>
 										</xs:element>
-										<xs:element name="OutputLanguage" type="LanguageCode" default="eng" minOccurs="1">
+										<xs:element name="OutputLanguage" type="LanguageCode" default="eng" minOccurs="0">
 											<xs:annotation>
 												<xs:documentation>Specifies the language code for the transaction output. The default value is "eng" (English).</xs:documentation>
 											</xs:annotation>
