@@ -1,0 +1,20 @@
+# XMLSpy / Altova artifacts
+Untitled*.xml
+Untitled*.xsd
+*.bak
+*~
+*.xpr            # XMLSpy project files
+*.xprx
+*.spp            # SchemaAgent project files
+
+# Editor / OS
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Generated / scratch
+/tmp/
+*.tmp
