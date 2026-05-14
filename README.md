@@ -9,7 +9,7 @@ Two product families are published here:
 
 | Family | Path | What it describes |
 |---|---|---|
-| **BORMC** (Business Office Receipt Management Center) — loyalty + order API | `bormc/3.0/` | Form-encoded POST endpoints under `/loyalty-app/control/*` that exchange XML inside the `XmlInput` form field. |
+| **C360** (formerly BORMC — Business Office Receipt Management Center) — loyalty + order API | `c360/3.0/` | Form-encoded POST endpoints under `/loyalty-app/control/*` that exchange XML inside the `XmlInput` form field. |
 | **VRG / TTDR** (TransactionTree Digital Receipt — VRG ingest) | `vrg/3.2.2/` | The Digital Receipt envelope POSTed to `vrgs.io` (prod) and `receiptx.com` (dev/test) for retailer receipt ingest. |
 
 These schemas are documentation-grade — the runtime services validate input
@@ -25,8 +25,8 @@ rejection.
 
 ```
 .
-├── bormc/
-│   └── 3.0/                              # BORMC API version 3.0
+├── c360/
+│   └── 3.0/                              # C360 API version 3.0
 │       ├── Customer/
 │       │   ├── findCustomersB/
 │       │   │   ├── findCustomersB-request.xsd
@@ -61,9 +61,9 @@ rejection.
 **Conventions:**
 
 - Top-level directory is the **product / API family** in lowercase
-  (`bormc`, `vrg`).
+  (`c360`, `vrg`).
 - Second level is the **major version** of that family (`3.0`, `3.2.2`).
-- Inside `bormc/3.0/`, the next level is the **resource group** in
+- Inside `c360/3.0/`, the next level is the **resource group** in
   PascalCase (`Customer`, `Order`); this mirrors how the service code is
   organized.
 - Each endpoint gets its own folder named exactly after the endpoint
@@ -75,16 +75,23 @@ rejection.
 
 ---
 
-## BORMC 3.0 endpoint index
+## C360 3.0 endpoint index
 
-All BORMC endpoints take their XML payload as form field `XmlInput` on a
+> **Naming note:** C360 is the current product name for what was previously
+> called **BORMC** (Business Office Receipt Management Center). The two
+> names refer to the same loyalty / order / customer API. Endpoint URLs,
+> namespaces, and request shapes are unchanged by the rename — only the
+> product/family name has flipped. Internal references and older
+> documentation may still use "BORMC"; treat them as synonymous.
+
+All C360 endpoints take their XML payload as form field `XmlInput` on a
 POST to `/loyalty-app/control/{endpoint}`. Required headers vary by tenant
 but typically include `X-tenant-Key` and an `Authorization` token.
 
 ### Customer
 
 #### `findCustomersB` — search for customers
-- **Files:** `bormc/3.0/Customer/findCustomersB/findCustomersB-request.xsd`, `findCustomersB-response.xsd`, `examples/request-sample.xml`
+- **Files:** `c360/3.0/Customer/findCustomersB/findCustomersB-request.xsd`, `findCustomersB-response.xsd`, `examples/request-sample.xml`
 - **Request namespace:** `https://www.transactiontree.com/schema/loyalty/findCustomersB/1.0`
 - **Response namespace:** `https://www.transactiontree.com/schema/loyalty/findCustomersB/response/1.0`
 - **Behavior:** at least one filter must be supplied inside `CRITERIA`
@@ -95,7 +102,7 @@ but typically include `X-tenant-Key` and an `Authorization` token.
   short-circuit to an exact match. `RECORDS_LIMIT` caps the result window.
 
 #### `getPersonCompleteDetailsB` — fetch a single customer's full profile
-- **Files:** `bormc/3.0/Customer/getPersonCompleteDetailsB/getPersonCompleteDetailsB-request.xsd`, `getPersonCompleteDetailsB-response.xsd`, `getPersonCompleteDetailsB-openapi.json`
+- **Files:** `c360/3.0/Customer/getPersonCompleteDetailsB/getPersonCompleteDetailsB-request.xsd`, `getPersonCompleteDetailsB-response.xsd`, `getPersonCompleteDetailsB-openapi.json`
 - **No `targetNamespace`** (schema-version `1.0`).
 - **Behavior:** accepts either a `CRITERIA` search (typical) or a
   `CUSTOMER` anchor. Empty filters trigger `E101` / `E105`. Email format,
@@ -107,7 +114,7 @@ but typically include `X-tenant-Key` and an `Authorization` token.
   table.
 
 #### `updateCustomerB` — create or update a customer record
-- **Files:** `bormc/3.0/Customer/updateCustomerB/updateCustomerB-request.xsd`, `updateCustomerB-response.xsd`, `examples/request-sample.xml`
+- **Files:** `c360/3.0/Customer/updateCustomerB/updateCustomerB-request.xsd`, `updateCustomerB-response.xsd`, `examples/request-sample.xml`
 - **Request namespace:** `https://www.transactiontree.com/schema/loyalty/updateCustomerB/1.0`
 - **Behavior:** a single `CUSTOMER` with optional identity, store/loyalty,
   cross-references, and contact collections (postal, email, phone).
@@ -119,14 +126,14 @@ but typically include `X-tenant-Key` and an `Authorization` token.
 ### Order
 
 #### `getOrderDetailsC` — full order detail (lines, payments, tender, etc.)
-- **Files:** `bormc/3.0/Order/getOrderDetailsC/getOrderDetailsC-request.xsd`, `getOrderDetailsC-response.xsd`
+- **Files:** `c360/3.0/Order/getOrderDetailsC/getOrderDetailsC-request.xsd`, `getOrderDetailsC-response.xsd`
 - **No `targetNamespace`.**
 - **Behavior:** keyed by `ORDER_ID` (required); `CUSTOMER_ID` scopes the
   search to a bill-to / placing customer. `FROM_DATE` / `THRU_DATE` are
   `xs:date`. Response includes the `LayawayData` block when applicable.
 
 #### `getOrderHeaderDetailsB` — order header summary
-- **Files:** `bormc/3.0/Order/getOrderHeaderDetailsB/getOrderHeaderDetailsB-request.xsd`, `getOrderHeaderDetailsB-response.xsd`
+- **Files:** `c360/3.0/Order/getOrderHeaderDetailsB/getOrderHeaderDetailsB-request.xsd`, `getOrderHeaderDetailsB-response.xsd`
 - **No `targetNamespace`.**
 - **Behavior:** filter-driven header lookup; all request filters are
   optional. Monetary fields in the response may be empty strings (the
@@ -173,9 +180,9 @@ round trip.
 ### Using `xmllint` (libxml2; macOS / Linux / WSL)
 
 ```bash
-# BORMC request payload
+# C360 request payload
 xmllint --noout \
-        --schema bormc/3.0/Customer/findCustomersB/findCustomersB-request.xsd \
+        --schema c360/3.0/Customer/findCustomersB/findCustomersB-request.xsd \
         my-findCustomersB-request.xml
 
 # TTDR receipt envelope
@@ -217,20 +224,20 @@ entry.
 
 | Family | Current major | Notes |
 |---|---|---|
-| BORMC | `3.0` | Endpoints carry their own `1.0` request/response namespaces where namespaced; newer endpoints (`getPersonComplete*`, `getOrder*`) use no `targetNamespace`. |
+| C360 (fka BORMC) | `3.0` | Endpoints carry their own `1.0` request/response namespaces where namespaced; newer endpoints (`getPersonComplete*`, `getOrder*`) use no `targetNamespace`. |
 | TTDR / VRG | `3.2.2` | Last full revision shipped 2025-12-12. Schema attribute remains `3.2.2`; intra-version edits are tracked in CHANGELOG. |
 
-A future major version (e.g. `bormc/3.1/`, `vrg/3.3/`) will live in a new
+A future major version (e.g. `c360/3.1/`, `vrg/3.3/`) will live in a new
 sibling directory rather than overwriting `3.0/` or `3.2.2/`.
 
 ---
 
 ## Conventions and gotchas
 
-- **Form field, not raw body.** BORMC endpoints take the XML inside a
+- **Form field, not raw body.** C360 endpoints take the XML inside a
   form field named `XmlInput` on an `application/x-www-form-urlencoded`
   POST. The XML itself must be URL-encoded.
-- **Headers carry tenancy.** `X-tenant-Key` is required on BORMC calls;
+- **Headers carry tenancy.** `X-tenant-Key` is required on C360 calls;
   the access-token header may also be required depending on tenant
   configuration. Missing or invalid tenant → `RESPONSE_CODE` `E888`.
   Auth failure → `E899`.
@@ -241,7 +248,7 @@ sibling directory rather than overwriting `3.0/` or `3.2.2/`.
 - **Some monetary fields permit empty strings.** Older response schemas
   define an `EmptyString` simpleType used in unions for fields like
   `TOTAL_TAX` — this matches what live services actually return.
-- **Namespace inconsistency is intentional (for now).** Older BORMC
+- **Namespace inconsistency is intentional (for now).** Older C360
   endpoints (`findCustomersB`, `updateCustomerB`) declare a
   `targetNamespace`; newer ones do not. New schemas added to this repo
   should follow the **no-namespace** convention unless there's a
@@ -275,11 +282,11 @@ accepted on a case-by-case basis — open an issue first.
 
 **For a new endpoint:**
 
-1. Create `bormc/{version}/{ResourceGroup}/{endpointName}/`.
+1. Create `c360/{version}/{ResourceGroup}/{endpointName}/`.
 2. Drop in `{endpointName}-request.xsd`, `{endpointName}-response.xsd`,
    and (optionally) `{endpointName}-openapi.json`.
 3. Add a sample under `{endpointName}/examples/request-sample.xml`.
-4. Add an entry under "BORMC endpoint index" in this README.
+4. Add an entry under "C360 3.0 endpoint index" in this README.
 
 ---
 
