@@ -78,12 +78,16 @@
           <xs:annotation><xs:documentation>Customer identifier (if single-hit flows echo it).</xs:documentation></xs:annotation>
         </xs:element>
 
-        <!-- Optional: room for tenant-specific result blocks (customer lists, counts, etc.) -->
-        <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax">
+        <!-- Optional: room for tenant-specific result blocks (customer lists, counts, etc.).
+             Restricted to elements in OTHER namespaces so the optional STORE_ID/CUSTOMER_ID
+             echoes above don't ambiguate against xs:any (UPA). Tenant extensions must use
+             their own namespace. -->
+        <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax">
           <xs:annotation>
             <xs:documentation>
               Tenant/brand-specific result payload (e.g., CUSTOMERS/CUSTOMER list, total count, paging tokens).
               Left open intentionally to avoid over-constraining varied response renderings.
+              Elements must use a namespace other than the response targetNamespace.
             </xs:documentation>
           </xs:annotation>
         </xs:any>
