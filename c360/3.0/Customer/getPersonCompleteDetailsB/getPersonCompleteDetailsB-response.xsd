@@ -1,8 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- getPersonCompleteDetailsB — Response Schema
+     Envelope returned by /loyalty-app/control/getPersonCompleteDetailsB.
+     Paired with getPersonCompleteDetailsB-request.xsd and getPersonCompleteDetailsB-openapi.json. -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            elementFormDefault="qualified"
            version="1.0">
   <xs:simpleType name="ResponseCodeType">
+    <xs:annotation>
+      <xs:documentation>
+        Response codes observed in this family of endpoints:
+         • S100/S102/S103/S104 — success variants
+         • E101 — missing/empty input
+         • E102/E103/E104 — malformed / parse / IO
+         • E105 — no effective filters / required context missing
+         • E106/E107 — invalid state/country association
+         • E127 — invalid store id / not found
+         • E133 — duplicate/conflict
+         • E166 — invalid Canadian ZIP format
+         • E201 — invalid date format
+         • E205 — address/postal validation failed
+         • E222 — invalid email format (when email present)
+         • E888 — tenant missing/invalid
+         • E899 — access token invalid / authorization failure
+        Exact meanings may be tenant-specific; see service code for details.
+      </xs:documentation>
+    </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:enumeration value="S100"/><xs:enumeration value="S102"/><xs:enumeration value="S103"/><xs:enumeration value="S104"/>
       <xs:enumeration value="E101"/><xs:enumeration value="E102"/><xs:enumeration value="E103"/><xs:enumeration value="E104"/>

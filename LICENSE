@@ -2,9 +2,9 @@ Copyright (c) 2021-2026 TransactionTree, Inc. All rights reserved.
 
 These XML Schema Definitions and accompanying documentation (the "Schemas")
 describe interfaces and payload formats used by TransactionTree's commercial
-services, including the BORMC (Business Office Receipt Management Center)
-loyalty API and the TransactionTree Digital Receipt (TTDR / VRG) ingest
-pipeline.
+services, including the C360 (formerly BORMC — Business Office Receipt
+Management Center) loyalty API and the TransactionTree Digital Receipt
+(TTDR / VRG) ingest pipeline.
 
 The Schemas are published to assist customers, partners, and integrators
 implementing client-side code against TransactionTree services under an
