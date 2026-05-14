@@ -1,0 +1,24 @@
+Copyright (c) 2021-2026 TransactionTree, Inc. All rights reserved.
+
+These XML Schema Definitions and accompanying documentation (the "Schemas")
+describe interfaces and payload formats used by TransactionTree's commercial
+services, including the BORMC (Business Office Receipt Management Center)
+loyalty API and the TransactionTree Digital Receipt (TTDR / VRG) ingest
+pipeline.
+
+The Schemas are published to assist customers, partners, and integrators
+implementing client-side code against TransactionTree services under an
+applicable subscription, SOW, or integration agreement. Permission is hereby
+granted to such parties to:
+
+  - read, copy, and reference the Schemas for the purpose of generating
+    or validating XML payloads exchanged with TransactionTree services;
+  - redistribute the Schemas verbatim alongside such integrations, provided
+    this notice is preserved.
+
+All other rights are reserved. The Schemas are provided "AS IS", without
+warranty of any kind, express or implied. No license is granted to operate
+a service compatible with the TransactionTree APIs, to re-publish modified
+versions of the Schemas, or to use any TransactionTree trademark.
+
+For licensing or integration inquiries, contact: support@transactiontree.com
