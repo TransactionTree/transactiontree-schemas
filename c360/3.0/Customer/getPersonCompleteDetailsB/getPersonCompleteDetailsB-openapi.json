@@ -63,7 +63,8 @@
           }
         },
         "x-schemas": {
-          "response": "getPersonCompleteDetailsB_response.v3.1.xsd"
+          "request": "getPersonCompleteDetailsB-request.xsd",
+          "response": "getPersonCompleteDetailsB-response.xsd"
         }
       }
     }
