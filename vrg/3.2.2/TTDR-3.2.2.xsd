@@ -423,6 +423,16 @@
 									<xs:documentation>A return that has been voided in full on the same day of the orginal transaction. Added on 11/11/2025.</xs:documentation>
 								</xs:annotation>
 							</xs:enumeration>
+							<xs:enumeration value="PettyCashOut">
+								<xs:annotation>
+									<xs:documentation>Petty cash disbursement (cash paid out of the drawer for non-sale purposes such as supplies, refunds without an originating sale, or till adjustments). Not a customer sale and should not be aggregated as revenue.</xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
+							<xs:enumeration value="PettyCashIn">
+								<xs:annotation>
+									<xs:documentation>Petty cash receipt (cash added to the drawer from a non-sale source such as a till loan, reimbursement, or cash pickup reversal). Not a customer sale and should not be aggregated as revenue.</xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
