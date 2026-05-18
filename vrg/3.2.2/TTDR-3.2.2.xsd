@@ -443,9 +443,9 @@
 									<xs:documentation>A transaction that has been suspended (parked/held) at the register and may be resumed or cancelled later. Not a completed customer sale and should not be aggregated as revenue.</xs:documentation>
 								</xs:annotation>
 							</xs:enumeration>
-							<xs:enumeration value="TenderExchange">
+							<xs:enumeration value="GiftCardCashOut">
 								<xs:annotation>
-									<xs:documentation>Tender exchange transaction where one form of tender is exchanged for another (e.g., a gift card redeemed for cash). Not a customer sale and should not be aggregated as revenue.</xs:documentation>
+									<xs:documentation>Gift card redeemed for cash — the customer surrenders a gift card and receives its remaining balance in cash. Not a customer sale and should not be aggregated as revenue.</xs:documentation>
 								</xs:annotation>
 							</xs:enumeration>
 						</xs:restriction>
