@@ -433,6 +433,16 @@
 									<xs:documentation>Petty cash receipt (cash added to the drawer from a non-sale source such as a till loan, reimbursement, or cash pickup reversal). Not a customer sale and should not be aggregated as revenue.</xs:documentation>
 								</xs:annotation>
 							</xs:enumeration>
+							<xs:enumeration value="EmployeeLayAway">
+								<xs:annotation>
+									<xs:documentation>Layaway transaction where the person making the purchase is an employee.</xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
+							<xs:enumeration value="SuspendedTransaction">
+								<xs:annotation>
+									<xs:documentation>A transaction that has been suspended (parked/held) at the register and may be resumed or cancelled later. Not a completed customer sale and should not be aggregated as revenue.</xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
