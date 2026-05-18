@@ -448,6 +448,11 @@
 									<xs:documentation>Gift card redeemed for cash — the customer surrenders a gift card and receives its remaining balance in cash. Not a customer sale and should not be aggregated as revenue.</xs:documentation>
 								</xs:annotation>
 							</xs:enumeration>
+							<xs:enumeration value="GiftCardTransfer">
+								<xs:annotation>
+									<xs:documentation>Transfer of the remaining balance from one gift card to another (e.g., consolidating cards or reissuing onto a replacement card). Not a customer sale and should not be aggregated as revenue.</xs:documentation>
+								</xs:annotation>
+							</xs:enumeration>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
