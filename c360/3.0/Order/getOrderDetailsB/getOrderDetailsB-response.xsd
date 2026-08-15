@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>RESPONSE schema for getOrderDetailsB (Customer360). Returned in the response body.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="RESPONSE">
+    <xs:annotation>
+      <xs:documentation>Response payload carrying the matched order header, its line items, and tender detail.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE_DATE" type="xs:dateTime">
+          <xs:annotation>
+            <xs:documentation>Server timestamp when this response was generated. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="TRANSACTION">
+          <xs:annotation>
+            <xs:documentation>The matched transaction/order.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ORDER_HEADER">
+                <xs:annotation>
+                  <xs:documentation>Header-level detail for the order, plus its items and tenders.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="ORDER_ID" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>The order/transaction identifier.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="FIRST_NAME" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Customer first name on the order.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="LAST_NAME" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Customer last name on the order.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="ORDER_DATE" type="xs:dateTime">
+                      <xs:annotation>
+                        <xs:documentation>Date and time the order took place. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="EMAIL_ID" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Customer email address on the order.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="TAX" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Order-level tax amount.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="SHIPMENT_METHOD" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Shipment/fulfillment method for the order.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="PROMOTION_ADJUSTMENT" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Total promotion/discount adjustment applied to the order.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="SUB_TOTAL" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Order subtotal before tax.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="TOTAL_AMOUNT" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Order grand total.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="STORE_ID" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Store where the order took place.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="CASH_REGISTER_ID" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Register/till on which the order was rung.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="TRANSACTION_NUMBER" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>POS transaction number for the order.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="TRANSACTION_TYPE" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Transaction type (e.g., Sale, Return, LayAway).</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="ASSOCIATE_ID" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Identifier of the associate/cashier who processed the order.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="ASSOCIATE_FIRST_NAME" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>First name of the associate/cashier.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="ASSOCIATE_LAST_NAME" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Last name of the associate/cashier.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="TOTAL_TAX_AMOUNT" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Total tax amount for the order.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="CUSTOMER_CROSS_REFERENCES">
+                      <xs:annotation>
+                        <xs:documentation>Container for the customer's external system cross references.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="CROSS_REFERENCE" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                              <xs:documentation>A single external-system cross reference for the customer.</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="SYSTEM_REFERENCE" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>Name of the external system (e.g., ATG_CUST_ID, LOYALTY_ID).</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                                <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>The cross-reference value for the named external system.</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="PRIMARY_PHONE" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Customer primary phone number.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="PRIMARY_FAX" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Customer primary fax number.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="POSTAL_CONTACTS" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Customer postal contact detail.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="ORDER_ITEMS">
+                      <xs:annotation>
+                        <xs:documentation>Container for the order's line items.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="ORDER_ITEM" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                              <xs:documentation>A single line item on the order.</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="ORDER_ITEM_SEQ" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>Line-item sequence number within the order.</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                                <xs:element name="SKU" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>SKU/product identifier for the line item.</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                                <xs:element name="DESCRIPTION" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>Item description.</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                                <xs:element name="PRICE" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>Unit price for the line item.</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                                <xs:element name="QUANTITY_ORDERED" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>Quantity ordered for the line item.</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="TENDER_ITEMS" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation>Container for the order's tender (payment) items.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="TENDER_ITEM" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                              <xs:documentation>A single tender (payment) applied to the order. Repeats when an order is paid with split tender across multiple payment types.</xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="TENDER_ITEM_NAME" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>Name/type of the tender (e.g., Cash, Visa, Gift Card).</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                                <xs:element name="TENDER_ITEM_VALUE" type="xs:string">
+                                  <xs:annotation>
+                                    <xs:documentation>Amount applied under this tender.</xs:documentation>
+                                  </xs:annotation>
+                                </xs:element>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="ResponseId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Response tracking identifier used by the log process to correlate this response for reporting and issue tracing.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
