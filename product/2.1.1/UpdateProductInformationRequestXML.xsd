@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2021, TransactionTree, Inc. -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://www.transactiontree.com/framework/schema/bormc/UpdateProductInformationRequestXML.xsd" targetNamespace="https://www.transactiontree.com/framework/schema/bormc/UpdateProductInformationRequestXML.xsd" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.1.1" xml:lang="en">
+<!-- No targetNamespace: real product-update requests are plain <REQUEST> (no xmlns),
+     referenced via xsi:noNamespaceSchemaLocation like the rest of the C360 schema family.
+     The legacy copies declared a targetNamespace (and disagreed on its spelling), which
+     would have rejected the actual no-namespace instances; removed for correctness and
+     family consistency. Consolidated from the two byte-identical legacy copies
+     (bormc v2.1.1 + vrg/product v1.0.1); the live server does not validate against the
+     namespace (verified 2026-08-15). -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.1.1" xml:lang="en">
 	<xs:element name="REQUEST">
 		<xs:annotation>
 			<xs:documentation>XML used to update products in BORMC</xs:documentation>
