@@ -1,0 +1,1730 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2021, TransactionTree, Inc. -->
+<!-- No targetNamespace: real product-update requests are plain <REQUEST> (no xmlns),
+     referenced via xsi:noNamespaceSchemaLocation like the rest of the C360 schema family.
+     The legacy copies declared a targetNamespace (and disagreed on its spelling), which
+     would have rejected the actual no-namespace instances; removed for correctness and
+     family consistency. Consolidated from the two byte-identical legacy copies
+     (bormc v2.1.1 + vrg/product v1.0.1); the live server does not validate against the
+     namespace (verified 2026-08-15). -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.1.1" xml:lang="en">
+	<xs:element name="REQUEST">
+		<xs:annotation>
+			<xs:documentation>XML used to update products in BORMC</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+			<!-- TransactionTree Product Update version Current Version 2.1.1 02/25/2021 -->
+				<xs:element name="PRODUCTS">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PRODUCT" minOccurs="1" maxOccurs="20">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="PRODUCTID" minOccurs="1" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>PRODUCT IDENTIFIER (ALPHANUMERIC)</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PRODUCTNAME" minOccurs="1" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Name for Title Display</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="255"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="DESCRIPTION1" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Description of the Product  (english)</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="255"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="DESCRIPTION2" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Additional Descriptions of the Product (diff Locale) or Content type</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="255"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="DESCRIPTION3" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Additional Descriptions of the Product (diff Locale) or Content type</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="255"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="DESCRIPTION4" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Additional Descriptions of the Product (diff Locale) or Content type</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="255"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="DESCRIPTION5" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Additional Descriptions of the Product (diff Locale) or Content type</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="255"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="L2DESCRIPTION1" type="xs:string" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Long Description of the Product (english)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="L2DESCRIPTION2" type="xs:string" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Addl Long Description of the Product based on the Content Type in ERP or Different Locale</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="L2DESCRIPTION3" type="xs:string" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Addl Long Description of the Product based on the Content Type in ERP or Different Locale</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="L2DESCRIPTION4" type="xs:string" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Addl Long Description of the Product based on the Content Type in ERP or Different Locale</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="L2DESCRIPTION5" type="xs:string" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Addl Long Description of the Product based on the Content Type in ERP or Different Locale</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="PRODUCTTYPE" minOccurs="1" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="FINISHED_GOOD">
+														<xs:annotation>
+															<xs:documentation>Products that have completed the manufacturing process but have not yet been sold or distributed to the end user.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="SERVICE">
+														<xs:annotation>
+															<xs:documentation>A system supplying a public need such as transport, communications, or utilities such as electricity and water. Also, perform routine maintenance or repair work on an item.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DIGITAL_GOOD">
+														<xs:annotation>
+															<xs:documentation>Any product transferred electronically to the purchaser, other than prewritten computer software. Digital goods include versions of products historically produced and transferred as articles of tangible personal property that are now produced and transferred electronically as digital files.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="RAW_MATERIAL">
+														<xs:annotation>
+															<xs:documentation>Also known as a feedstock, unprocessed material, or primary commodity, is a basic material that is used to produce goods, finished products, energy, or intermediate materials that are feedstock for future finished products.</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="DEFAULTSHIPMENT" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="FLT_RATE_ENV">
+														<xs:annotation>
+															<xs:documentation>Flate Rate Envelope</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FLT_RATE_PDD_ENV">
+														<xs:annotation>
+															<xs:documentation>Flat-Rate padded envelope</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FX10KGBOX">
+														<xs:annotation>
+															<xs:documentation>FedEx 10KG Box</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FX25KGBOX">
+														<xs:annotation>
+															<xs:documentation>FedEx 25KG Box</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FXBOX_LRG">
+														<xs:annotation>
+															<xs:documentation>FedEx Box (Large)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FXBOX_MED">
+														<xs:annotation>
+															<xs:documentation>FedEx Box (Medium)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FXBOX_SM">
+														<xs:annotation>
+															<xs:documentation>FedEx Box (Small)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FXENV">
+														<xs:annotation>
+															<xs:documentation>FedEx Envelope</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FXENV_LGL">
+														<xs:annotation>
+															<xs:documentation>FedEx Envelope (Legal)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FXPAK_LRG">
+														<xs:annotation>
+															<xs:documentation>FedEx Pak (Large)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FXPAK_SM">
+														<xs:annotation>
+															<xs:documentation>FedEx Pak (Small)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="FXTUBE">
+														<xs:annotation>
+															<xs:documentation>FedEx Tube</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LETTER">
+														<xs:annotation>
+															<xs:documentation>Letter</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LRG_ENV_FLAT">
+														<xs:annotation>
+															<xs:documentation>Large Envelope Flat</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LRG_FLT_RATE_BOX">
+														<xs:annotation>
+															<xs:documentation>Large Flat Rate Box</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="MDM_FLT_RATE_BOX">
+														<xs:annotation>
+															<xs:documentation>Medium Flate Rate Box</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="PACKAGE">
+														<xs:annotation>
+															<xs:documentation>Package</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="PAK_RECT">
+														<xs:annotation>
+															<xs:documentation>Package (Rectangular)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="PRIORITY_MAIL">
+														<xs:annotation>
+															<xs:documentation>Priority Mail</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="SML_FLT_RATE_BOX">
+														<xs:annotation>
+															<xs:documentation>Small Flat Rate Box</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="UPS10KGBOX">
+														<xs:annotation>
+															<xs:documentation>UPS 10KG Box</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="UPS25KGBOX">
+														<xs:annotation>
+															<xs:documentation>UPS 25KG Box</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="UPS_ENVLTR">
+														<xs:annotation>
+															<xs:documentation>UPS Envelope (Letter)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="UPS_TUBE">
+														<xs:annotation>
+															<xs:documentation>UPS Tube</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="UPS_XP_BXL">
+														<xs:annotation>
+															<xs:documentation>UPS Express Box (Large)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="UPS_XP_BXM">
+														<xs:annotation>
+															<xs:documentation>UPS Express Box (Medium)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="UPS_XP_BXS">
+														<xs:annotation>
+															<xs:documentation>UPS Express Box (Small)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="UPS_XP_PAK">
+														<xs:annotation>
+															<xs:documentation>UPS Express Pak</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="YOUR_PACKAGING">
+														<xs:annotation>
+															<xs:documentation>Your Packaging</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="SMALLIMAGEURL" type="xs:string" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Absolute or Relative URL path of the Images (if any folder and same name of the Image with different resolution)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="MEDIUMIMAGEURL" type="xs:string" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Absolute or Relative URL path of the Images (if any folder and same name of the Image with different resolution)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="LARGEIMAGEURL" type="xs:string" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Absolute or Relative URL path of the Images (if any folder and same name of the Image with different resolution)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="DETAILIMAGEURL" type="xs:string" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Absolute or Relative URL path of the Images (if any folder and same name of the Image with different resolution)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="REQUIREINVENTORY" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="Y">
+														<xs:annotation>
+															<xs:documentation>Product requires inventory</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="N">
+														<xs:annotation>
+															<xs:documentation>Product does not require inventory</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="RETURNABLE" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="Y">
+														<xs:annotation>
+															<xs:documentation>Product can be returned</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="N">
+														<xs:annotation>
+															<xs:documentation>Product can not be returned</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="TAXABLE" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="Y">
+														<xs:annotation>
+															<xs:documentation>Product is taxable</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="N">
+														<xs:annotation>
+															<xs:documentation>Product is not taxable</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="CHARGESHIPPING" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="Y">
+														<xs:annotation>
+															<xs:documentation>Charge Shipping for this product</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="N">
+														<xs:annotation>
+															<xs:documentation>Do not charge Shipping for this product</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="WEIGHT" type="xs:decimal" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Weight of the Product based on Unit of Measure (UOM)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="HEIGHT" type="xs:decimal" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Height of the Product based on Unit of Measure (UOM)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="LENGTH" type="xs:decimal" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Length of the Product based on Unit of Measure (UOM)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="WIDTH" type="xs:decimal" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Width of the Product based on Unit of Measure (UOM)</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="UNITQTY" type="xs:integer" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Quanity in inventory</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="QTYUOMID" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="AREA_A">
+														<xs:annotation>
+															<xs:documentation>Area: Are (a)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="AREA_cm2">
+														<xs:annotation>
+															<xs:documentation>Area: Square Centimeter (cm2)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="AREA_ft2">
+														<xs:annotation>
+															<xs:documentation>Area: Square Foot (ft2)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="AREA_ha">
+														<xs:annotation>
+															<xs:documentation>Area: Hectare (ha)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="AREA_in2">
+														<xs:annotation>
+															<xs:documentation>Area: Square Inch (in2)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="AREA_km2">
+														<xs:annotation>
+															<xs:documentation>Area: Square Kilometer (km2)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="AREA_m2">
+														<xs:annotation>
+															<xs:documentation>Area: Square Meter (m2)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="AREA_mi2">
+														<xs:annotation>
+															<xs:documentation>Area: Square Mile (mi2)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="AREA_mm2">
+														<xs:annotation>
+															<xs:documentation>Area: Square Millimeter (mm2)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="AREA_rd2">
+														<xs:annotation>
+															<xs:documentation>Area: Square Rod (rd2)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="AREA_yd2">
+														<xs:annotation>
+															<xs:documentation>Area: Square Yard (yd2)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATASPD_bps">
+														<xs:annotation>
+															<xs:documentation>Data Speed: Bit-per-second of Data (bps)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATASPD_Gbps">
+														<xs:annotation>
+															<xs:documentation>Data Speed: Gigabit-per-second of Data (Gbps)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATASPD_Kbps">
+														<xs:annotation>
+															<xs:documentation>Data Speed: Kilobit-per-second of Data (Kbps)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATASPD_Mbps">
+														<xs:annotation>
+															<xs:documentation>Data Speed: Megabit-per-second of Data (Mbps)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATASPD_Tbps">
+														<xs:annotation>
+															<xs:documentation>Data Speed: Terabit-per-second of Data (Tbps)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATA_b">
+														<xs:annotation>
+															<xs:documentation>Data Size: Byte of Data (B)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATA_Gb">
+														<xs:annotation>
+															<xs:documentation>Data Size: Gigabyte of Data (GB)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATA_Kb">
+														<xs:annotation>
+															<xs:documentation>Data Size: Kilobyte of Data (KB)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATA_Mb">
+														<xs:annotation>
+															<xs:documentation>Data Size: Megabyte of Data (MB)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATA_PB">
+														<xs:annotation>
+															<xs:documentation>Data Size: Petabyte of Data (PB)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="DATA_Tb">
+														<xs:annotation>
+															<xs:documentation>Data Size: Terabyte of Data (TB)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="EN_Btu">
+														<xs:annotation>
+															<xs:documentation>Energy: British Thermal Unit (Btu)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="EN_cal15">
+														<xs:annotation>
+															<xs:documentation>Energy: Calorie (@15.5c) (cal15)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="EN_HP">
+														<xs:annotation>
+															<xs:documentation>Energy: Horsepower (mechanical) (HP)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="EN_J">
+														<xs:annotation>
+															<xs:documentation>Energy: Joule (absolute) (J)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="EN_Kw">
+														<xs:annotation>
+															<xs:documentation>Energy: Kilowatt (Kw)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="EN_w">
+														<xs:annotation>
+															<xs:documentation>Energy: Watt (w)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_A">
+														<xs:annotation>
+															<xs:documentation>Length: Angstrom (A)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_cb">
+														<xs:annotation>
+															<xs:documentation>Length: Cable (cb)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_chG">
+														<xs:annotation>
+															<xs:documentation>Length: Chain (Gunter's/surveyor's) (chG)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_chR">
+														<xs:annotation>
+															<xs:documentation>Length: Chain (Ramden's/engineer's) (chR)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_cm">
+														<xs:annotation>
+															<xs:documentation>Length: Centimeter (cm)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_dam">
+														<xs:annotation>
+															<xs:documentation>Length: Dekameter (dam)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_dm">
+														<xs:annotation>
+															<xs:documentation>Length: Decimeter (dm)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_fm">
+														<xs:annotation>
+															<xs:documentation>Length: Fathom (fm)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_ft">
+														<xs:annotation>
+															<xs:documentation>Length: Foot (ft)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_fur">
+														<xs:annotation>
+															<xs:documentation>Length: Furlong (fur)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_hand">
+														<xs:annotation>
+															<xs:documentation>Length: Hand (horse's height) (hand)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_in">
+														<xs:annotation>
+															<xs:documentation>Length: Inch (in)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_km">
+														<xs:annotation>
+															<xs:documentation>Length: Kilometer (km)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_league">
+														<xs:annotation>
+															<xs:documentation>Length: League (league)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_lnG">
+														<xs:annotation>
+															<xs:documentation>Length: Link (Gunter's) (lnG)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_lnR">
+														<xs:annotation>
+															<xs:documentation>Length: Link (Ramden's) (lnR)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_m">
+														<xs:annotation>
+															<xs:documentation>Length: Meter (m)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mi">
+														<xs:annotation>
+															<xs:documentation>Length: Mile (statute/land) (mi)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mil">
+														<xs:annotation>
+															<xs:documentation>Length: Mil (Milli-inch) (mil)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mm">
+														<xs:annotation>
+															<xs:documentation>Length: Millimeter (mm)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_nmi">
+														<xs:annotation>
+															<xs:documentation>Length: Mile (nautical/sea) (nmi)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_pica">
+														<xs:annotation>
+															<xs:documentation>Length: Pica (type size) (pica)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_point">
+														<xs:annotation>
+															<xs:documentation>Length: Point (type size) (point)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_rd">
+														<xs:annotation>
+															<xs:documentation>Length: Rod (rd)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_u">
+														<xs:annotation>
+															<xs:documentation>Length: Micrometer (Micron) (u)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_yd">
+														<xs:annotation>
+															<xs:documentation>Length: Yard (yd)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="OTH_A">
+														<xs:annotation>
+															<xs:documentation>Other: Amphere - Electric current (A)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="OTH_cd">
+														<xs:annotation>
+															<xs:documentation>Other: Candela - Luminosity (intensity of light) (cd)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="OTH_ea">
+														<xs:annotation>
+															<xs:documentation>Other: Each (ea)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="OTH_mol">
+														<xs:annotation>
+															<xs:documentation>Other: Mole - Substance (molecule) (mol)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="OTH_pp">
+														<xs:annotation>
+															<xs:documentation>Other: Per Person (pp)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TEMP_C">
+														<xs:annotation>
+															<xs:documentation>Temperature: Degrees Celsius (C)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TEMP_F">
+														<xs:annotation>
+															<xs:documentation>Temperature: Degrees Fahrenheit (F)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TEMP_K">
+														<xs:annotation>
+															<xs:documentation>Temperature: Kelvin (K)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_century">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Centuries (century)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_day">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Days (day)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_decade">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Decades (decade)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_hr">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Hours (hr)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_millenium">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Millenia (millenium)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_min">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Minutes (min)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_mon">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Months (mon)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_ms">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Milli-Seconds (ms)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_s">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Seconds (s)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_score">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Scores (score)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_wk">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Weeks (wk)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="TF_yr">
+														<xs:annotation>
+															<xs:documentation>Time/Frequency: Time in Years (yr)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VDRY_cm3">
+														<xs:annotation>
+															<xs:documentation>Dry Volume: Cubic centimeter (cm3)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VDRY_ft3">
+														<xs:annotation>
+															<xs:documentation>Dry Volume: Cubic foot (ft3)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VDRY_in3">
+														<xs:annotation>
+															<xs:documentation>Dry Volume: Cubic inch (in3)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VDRY_m3">
+														<xs:annotation>
+															<xs:documentation>Dry Volume: Cubic meter (m3)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VDRY_mm3">
+														<xs:annotation>
+															<xs:documentation>Dry Volume: Cubic millimeter (mm3)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VDRY_ST">
+														<xs:annotation>
+															<xs:documentation>Dry Volume: Stere (cubic meter) (ST)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VDRY_yd3">
+														<xs:annotation>
+															<xs:documentation>Dry Volume: Cubic yard (yd3)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_bbl">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Barrel (US) (bbl)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_cup">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Cup (cup)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_dr">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Dram (US) (dr)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_galUK">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Gallon (UK) (gal)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_galUS">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Gallon (US) (gal)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_gi">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Gill (1/4 UK pint) (gi)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_L">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Liter (L)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_ml">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Milliliter (ml)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_ozUK">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Ounce, fluid (UK) (fl. oz (UK))</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_ozUS">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Ounce, fluid (US) (fl. oz (US))</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_ptUK">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Pint (UK) (pt (UK))</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_ptUS">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Pint (US) (pt (US))</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_qt">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Quart (qt)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_Tbs">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Tablespoon (Tbs)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="VLIQ_tsp">
+														<xs:annotation>
+															<xs:documentation>Liquid Volume: Teaspoon (tsp)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_dr_avdp">
+														<xs:annotation>
+															<xs:documentation>Weight: Dram (avdp) (dr avdp)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_dwt">
+														<xs:annotation>
+															<xs:documentation>Weight: Pennyweight (dwt)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_g">
+														<xs:annotation>
+															<xs:documentation>Weight: Gram (g)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_gr">
+														<xs:annotation>
+															<xs:documentation>Weight: Grain (gr)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_kg">
+														<xs:annotation>
+															<xs:documentation>Weight: Kilogram (kg)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_lb">
+														<xs:annotation>
+															<xs:documentation>Weight: Pound (avdp) (lb)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_lt">
+														<xs:annotation>
+															<xs:documentation>Weight: Ton (long or British) (lt)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_mg">
+														<xs:annotation>
+															<xs:documentation>Weight: Milligram (mg)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_mt">
+														<xs:annotation>
+															<xs:documentation>Weight: Ton (metric) (mt)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_oz">
+														<xs:annotation>
+															<xs:documentation>Weight: Ounce (avdp) (oz)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_oz_tr">
+														<xs:annotation>
+															<xs:documentation>Weight: Ounce (troy) (oz tr)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_sh_t">
+														<xs:annotation>
+															<xs:documentation>Weight: Ton (short) (sh t)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_st">
+														<xs:annotation>
+															<xs:documentation>Weight: Stone (st)</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="WGHUOMID" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="WT_dr_avdp">
+														<xs:annotation>
+															<xs:documentation>Dram (avdp) [dr avdp]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_gr">
+														<xs:annotation>
+															<xs:documentation>Grain [gr]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_g">
+														<xs:annotation>
+															<xs:documentation>Gram [g]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_kg">
+														<xs:annotation>
+															<xs:documentation>Kilogram [kg]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_mg">
+														<xs:annotation>
+															<xs:documentation>Milligram [mg]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_oz">
+														<xs:annotation>
+															<xs:documentation>Ounce (avdp) [oz]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_oz_tr">
+														<xs:annotation>
+															<xs:documentation>Ounce (troy) [oz tr]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_dwt">
+														<xs:annotation>
+															<xs:documentation>Pennyweight [dwt]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_lb">
+														<xs:annotation>
+															<xs:documentation>Pound (avdp) [lb]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_st">
+														<xs:annotation>
+															<xs:documentation>Stone [st]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_lt">
+														<xs:annotation>
+															<xs:documentation>Ton (long or British) [lt]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_mt">
+														<xs:annotation>
+															<xs:documentation>Ton (metric) [mt]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="WT_sh_t">
+														<xs:annotation>
+															<xs:documentation>Ton (short) [sh t]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="HEIGHTUOMID" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="LEN_A">
+														<xs:annotation>
+															<xs:documentation>Angstrom [A]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_cb">
+														<xs:annotation>
+															<xs:documentation>Cable [cb]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_cm">
+														<xs:annotation>
+															<xs:documentation>Centimeter [cm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_chG">
+														<xs:annotation>
+															<xs:documentation>Chain (Gunter's/surveyor's) [chG]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_chR">
+														<xs:annotation>
+															<xs:documentation>Chain (Ramden's/engineer's) [chR]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_dm">
+														<xs:annotation>
+															<xs:documentation>Decimeter [dm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_dam">
+														<xs:annotation>
+															<xs:documentation>Dekameter [dam]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_fm">
+														<xs:annotation>
+															<xs:documentation>Fathom [fm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_ft">
+														<xs:annotation>
+															<xs:documentation>Foot [ft]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_fur">
+														<xs:annotation>
+															<xs:documentation>Furlong [fur]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_hand">
+														<xs:annotation>
+															<xs:documentation>Hand (horse's height) [hand]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_in">
+														<xs:annotation>
+															<xs:documentation>Inch [in]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_km">
+														<xs:annotation>
+															<xs:documentation>Kilometer [km]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_league">
+														<xs:annotation>
+															<xs:documentation>League [league]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_lnG">
+														<xs:annotation>
+															<xs:documentation>Link (Gunter's) [lnG]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_lnR">
+														<xs:annotation>
+															<xs:documentation>Link (Ramden's) [lnR]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_m">
+														<xs:annotation>
+															<xs:documentation>Meter [m]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_u">
+														<xs:annotation>
+															<xs:documentation>Micrometer (Micron) [u]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mil">
+														<xs:annotation>
+															<xs:documentation>Mil (Milli-inch) [mil]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_nmi">
+														<xs:annotation>
+															<xs:documentation>Mile (nautical/sea) [nmi]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mi">
+														<xs:annotation>
+															<xs:documentation>Mile (statute/land) [mi]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mm">
+														<xs:annotation>
+															<xs:documentation>Millimeter [mm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_pica">
+														<xs:annotation>
+															<xs:documentation>Pica (type size) [pica]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_point">
+														<xs:annotation>
+															<xs:documentation>Point (type size) [point]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_rd">
+														<xs:annotation>
+															<xs:documentation>Rod [rd]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_yd">
+														<xs:annotation>
+															<xs:documentation>Yard [yd]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="LENGTHUOMID" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="LEN_A">
+														<xs:annotation>
+															<xs:documentation>Angstrom [A]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_cb">
+														<xs:annotation>
+															<xs:documentation>Cable [cb]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_cm">
+														<xs:annotation>
+															<xs:documentation>Centimeter [cm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_chG">
+														<xs:annotation>
+															<xs:documentation>Chain (Gunter's/surveyor's) [chG]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_chR">
+														<xs:annotation>
+															<xs:documentation>Chain (Ramden's/engineer's) [chR]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_dm">
+														<xs:annotation>
+															<xs:documentation>Decimeter [dm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_dam">
+														<xs:annotation>
+															<xs:documentation>Dekameter [dam]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_fm">
+														<xs:annotation>
+															<xs:documentation>Fathom [fm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_ft">
+														<xs:annotation>
+															<xs:documentation>Foot [ft]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_fur">
+														<xs:annotation>
+															<xs:documentation>Furlong [fur]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_hand">
+														<xs:annotation>
+															<xs:documentation>Hand (horse's height) [hand]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_in">
+														<xs:annotation>
+															<xs:documentation>Inch [in]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_km">
+														<xs:annotation>
+															<xs:documentation>Kilometer [km]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_league">
+														<xs:annotation>
+															<xs:documentation>League [league]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_lnG">
+														<xs:annotation>
+															<xs:documentation>Link (Gunter's) [lnG]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_lnR">
+														<xs:annotation>
+															<xs:documentation>Link (Ramden's) [lnR]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_m">
+														<xs:annotation>
+															<xs:documentation>Meter [m]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_u">
+														<xs:annotation>
+															<xs:documentation>Micrometer (Micron) [u]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mil">
+														<xs:annotation>
+															<xs:documentation>Mil (Milli-inch) [mil]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_nmi">
+														<xs:annotation>
+															<xs:documentation>Mile (nautical/sea) [nmi]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mi">
+														<xs:annotation>
+															<xs:documentation>Mile (statute/land) [mi]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mm">
+														<xs:annotation>
+															<xs:documentation>Millimeter [mm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_pica">
+														<xs:annotation>
+															<xs:documentation>Pica (type size) [pica]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_point">
+														<xs:annotation>
+															<xs:documentation>Point (type size) [point]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_rd">
+														<xs:annotation>
+															<xs:documentation>Rod [rd]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_yd">
+														<xs:annotation>
+															<xs:documentation>Yard [yd]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="WIDTHUOMID" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="LEN_A">
+														<xs:annotation>
+															<xs:documentation>Angstrom [A]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_cb">
+														<xs:annotation>
+															<xs:documentation>Cable [cb]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_cm">
+														<xs:annotation>
+															<xs:documentation>Centimeter [cm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_chG">
+														<xs:annotation>
+															<xs:documentation>Chain (Gunter's/surveyor's) [chG]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_chR">
+														<xs:annotation>
+															<xs:documentation>Chain (Ramden's/engineer's) [chR]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_dm">
+														<xs:annotation>
+															<xs:documentation>Decimeter [dm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_dam">
+														<xs:annotation>
+															<xs:documentation>Dekameter [dam]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_fm">
+														<xs:annotation>
+															<xs:documentation>Fathom [fm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_ft">
+														<xs:annotation>
+															<xs:documentation>Foot [ft]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_fur">
+														<xs:annotation>
+															<xs:documentation>Furlong [fur]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_hand">
+														<xs:annotation>
+															<xs:documentation>Hand (horse's height) [hand]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_in">
+														<xs:annotation>
+															<xs:documentation>Inch [in]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_km">
+														<xs:annotation>
+															<xs:documentation>Kilometer [km]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_league">
+														<xs:annotation>
+															<xs:documentation>League [league]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_lnG">
+														<xs:annotation>
+															<xs:documentation>Link (Gunter's) [lnG]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_lnR">
+														<xs:annotation>
+															<xs:documentation>Link (Ramden's) [lnR]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_m">
+														<xs:annotation>
+															<xs:documentation>Meter [m]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_u">
+														<xs:annotation>
+															<xs:documentation>Micrometer (Micron) [u]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mil">
+														<xs:annotation>
+															<xs:documentation>Mil (Milli-inch) [mil]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_nmi">
+														<xs:annotation>
+															<xs:documentation>Mile (nautical/sea) [nmi]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mi">
+														<xs:annotation>
+															<xs:documentation>Mile (statute/land) [mi]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_mm">
+														<xs:annotation>
+															<xs:documentation>Millimeter [mm]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_pica">
+														<xs:annotation>
+															<xs:documentation>Pica (type size) [pica]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_point">
+														<xs:annotation>
+															<xs:documentation>Point (type size) [point]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_rd">
+														<xs:annotation>
+															<xs:documentation>Rod [rd]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="LEN_yd">
+														<xs:annotation>
+															<xs:documentation>Yard [yd]</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="DROPSHIP" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:NMTOKEN">
+													<xs:enumeration value="Y">
+														<xs:annotation>
+															<xs:documentation>Product is dropship</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+													<xs:enumeration value="N">
+														<xs:annotation>
+															<xs:documentation>Product is not dropship</xs:documentation>
+														</xs:annotation>
+													</xs:enumeration>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PRODUCTCATEGORYID1" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Category Hierarchy Level 1  - ID</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PRODUCTCATEGORYID2" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Category Hierarchy Level 2  - ID</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PRODUCTCATEGORYID3" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Category Hierarchy Level 3  - ID</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PRODUCTCATEGORYID4" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Category Hierarchy Level 4  - ID</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PRODUCTCATEGORYID5" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Category Hierarchy Level 5  - ID</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FEATURETYPEDESC1" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Description Eg: COLOR , SIZE</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FEATUREDESC1" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Value (RED,BLUE or XXL Sizes)  - must be name of the Value</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FEATURETYPEDESC2" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Description Eg: COLOR , SIZE</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FEATUREDESC2" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Value (RED,BLUE or XXL Sizes)  - must be name of the Value</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FEATURETYPEDESC3" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Description Eg: COLOR , SIZE</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FEATUREDESC3" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Value (RED,BLUE or XXL Sizes)  - must be name of the Value</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PRODUCTBRAND" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Brand Name</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FILTERDESC1" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Filters if Any Applicable</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FILTERDESC2" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Filters if Any Applicable</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FILTERDESC3" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Filters if Any Applicable</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FILTERDESC4" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Filters if Any Applicable</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FILTERDESC5" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Filters if Any Applicable</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="100"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="UPCA" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>The UPC-A barcode has 12 digits.</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:token">
+													<xs:pattern value="[0-9]{12}"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ID1" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Alternate ID or Merchant ID of the Product</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ID2" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Alternate ID or Merchant ID of the Product</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="FROMDATE" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Product Activation Date</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="THRUDATE" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Product Expiry or Discontinuation Date</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="ATTRIBUTE1" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Information or Additional Data Descriptors</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ATTRIBUTE2" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Information or Additional Data Descriptors</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ATTRIBUTE3" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Information or Additional Data Descriptors</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ATTRIBUTE4" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Information or Additional Data Descriptors</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ATTRIBUTE5" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:annotation>
+													<xs:documentation>Product Feature Information or Additional Data Descriptors</xs:documentation>
+												</xs:annotation>
+												<xs:restriction base="xs:string">
+													<xs:maxLength value="20"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="DEFAULTPRICE" type="xs:decimal" minOccurs="1" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>Default Price of the Product</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="LISTPRICE" type="xs:decimal" minOccurs="1" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>List Price of the Product</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
