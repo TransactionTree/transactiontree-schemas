@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>RESPONSE schema for couponAuthentication (Customer360). Returned in the response body.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="WEBSERVICE">
+    <xs:annotation>
+      <xs:documentation>Top-level wrapper for the couponAuthentication response envelope.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE">
+          <xs:annotation>
+            <xs:documentation>Response payload. Echoes the authenticated coupon and reports the authentication outcome.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="RESP_COUPON_DETAILS">
+                <xs:annotation>
+                  <xs:documentation>Coupon(s) that were evaluated for this request.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="RESP_COUPON_CODE" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                      <xs:annotation>
+                        <xs:documentation>Coupon code(s) evaluated. Repeats when a single request resolves to multiple coupon codes.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="RESP_COUPON_TYPE" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Coupon issuance model of the evaluated coupon (e.g., SERIALIZE or NON-SERIALIZE).</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <!-- NOTE: 'TRANSACTOIN' is a genuine misspelling in the LIVE service (CouponServices.java / GiftCouponServices.java, Spencer OFBiz) and is the ONLY spelling emitted — verified on sg/10.0.0.54 2026-08-15. Do NOT correct it; it is the real wire contract. -->
+              <xs:element name="RESP_TRANSACTOIN_DETAILS">
+                <xs:annotation>
+                  <xs:documentation>Authentication outcome and transaction context. Modeled as a repeating choice so any subset of these fields may be returned, in service-determined order.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="RESPONSE_CODE" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Service outcome code for the authentication request.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="RESP_STORE_ID" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Store identifier echoed from the request context.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="RESP_DATE" type="xs:dateTime">
+                      <xs:annotation>
+                        <xs:documentation>Server timestamp when this response was generated. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="ATG_PROMO_CODE" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>The ATG/commerce promotion code associated with the coupon.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="PROMOTION_TYPE_ID" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Identifier of the promotion type driving this coupon.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="RESP_CUSTOMER_ID" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Customer identifier associated with the coupon, when known.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="RESP_STATUS_CODE">
+                      <xs:annotation>
+                        <xs:documentation>Authentication status of the coupon.</xs:documentation>
+                      </xs:annotation>
+                      <xs:simpleType>
+                        <xs:restriction base="xs:NMTOKEN">
+                          <xs:enumeration value="COUPON_AVAILABLE">
+                            <xs:annotation>
+                              <xs:documentation>The coupon is valid and available to use.</xs:documentation>
+                            </xs:annotation>
+                          </xs:enumeration>
+                          <xs:enumeration value="COUPON_UNAVAILABLE">
+                            <xs:annotation>
+                              <xs:documentation>The coupon code is wrong or not valid.</xs:documentation>
+                            </xs:annotation>
+                          </xs:enumeration>
+                          <xs:enumeration value="COUPON_EXPIRED">
+                            <xs:annotation>
+                              <xs:documentation>This coupon has expired.</xs:documentation>
+                            </xs:annotation>
+                          </xs:enumeration>
+                          <xs:enumeration value="COUPON_REDEEMED">
+                            <xs:annotation>
+                              <xs:documentation>The coupon has been redeemed already.</xs:documentation>
+                            </xs:annotation>
+                          </xs:enumeration>
+                          <xs:enumeration value="COUPON_AUDITED">
+                            <xs:annotation>
+                              <xs:documentation>Order with matching redeemed coupon is in the system.</xs:documentation>
+                            </xs:annotation>
+                          </xs:enumeration>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="RESP_AUTH_CODE" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Authorization code returned when the coupon is authenticated for use.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>External system reference value associated with the coupon or customer.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:choice>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="ResponseId" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>All the Responses are tracked by the log process and reports can be generated based on the Responses. Each response is added with a response Id to reference any issues during the transmission and perform the same backwards.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

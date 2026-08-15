@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>RESPONSE schema for the gift-card / loyalty certificate search (published as customerCertificateSearchGC). REVERSE-ENGINEERED from the live implementation CouponServices.customerCertificateSearchB on Spencer OFBiz (sg / 10.0.0.54), verified 2026-08-15 — because the legacy published schema was stale. Corrections vs the legacy GCResponse: (1) date field is COUPON_REDEEMED_DATE (correctly spelled) — the live code here does NOT use the misspelled COUPON_REDEMED_DATE; (2) COUPON_SCANNED_DATE was removed (never emitted by this endpoint); (3) added the LOYALTY_COUPONS container plus COUPON_AUDITED_DATE and START_DATE, which the endpoint does emit. NOTE: no method literally named 'customerCertificateSearchGC' exists in the current code; customerCertificateSearchB is the only live method producing this LOYALTY_COUPONS/MARKETING_COUPONS structure — confirm the published-name mapping before relying on this. Returned in the response body.</xs:documentation>
+  </xs:annotation>
+
+  <!-- The service writes either an ISO-8601 dateTime or an empty string for every date field. -->
+  <xs:simpleType name="EmptyableDateTime">
+    <xs:union memberTypes="xs:dateTime">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+
+  <!-- Shared shape of a coupon row under LOYALTY_COUPONS and MARKETING_COUPONS. -->
+  <xs:complexType name="CertificateTransaction">
+    <xs:sequence>
+      <xs:element name="CUSTOMER_DESCRIPTION" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Coupon/campaign description (populated from the source DESCRIPTION field).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUPON_NUMBER" type="xs:string" minOccurs="0"/>
+      <xs:element name="COUPON_VALUE" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Coupon value, emitted as a string; may be blank.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUPON_STATUS" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>One of COUPON_AVAILABLE, COUPON_UNAVAILABLE, COUPON_EXPIRED, COUPON_REDEEMED, COUPON_AUDITED. Typed as string to avoid rejecting an unexpected server value.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUPON_EXPIRY_DATE" type="EmptyableDateTime" minOccurs="0"/>
+      <xs:element name="COUPON_REDEEMED_DATE" type="EmptyableDateTime" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Correctly spelled here. (The coupon-side customerCertificateSearch endpoint emits the misspelled COUPON_REDEMED_DATE; this endpoint does not.)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUPON_AUDITED_DATE" type="EmptyableDateTime" minOccurs="0"/>
+      <xs:element name="COUPON_ISSUE_DATE" type="EmptyableDateTime" minOccurs="0"/>
+      <xs:element name="START_DATE" type="EmptyableDateTime" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="RESPONSE">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE_DATE" type="xs:dateTime" minOccurs="0"/>
+        <xs:element name="RESPONSE_CODE" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>Status/error code (e.g. E101, E120, E127, E136, E137). Emitted on the error path in place of the data elements.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0"/>
+        <xs:element name="LOYALTY_ID" type="xs:string" minOccurs="0"/>
+        <xs:element name="LOYALTY_DATE" type="EmptyableDateTime" minOccurs="0"/>
+        <xs:element name="BALANCE_LOYALTY_POINTS" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Integer loyalty-point balance emitted as a string; may be empty.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="LOYALTY_COUPONS" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Loyalty (serialized) coupons for the customer.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="TRANSACTION" type="CertificateTransaction" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="MARKETING_COUPONS" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Marketing (non-serialized) coupons for the customer.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="TRANSACTION" type="CertificateTransaction" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="ResponseId" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

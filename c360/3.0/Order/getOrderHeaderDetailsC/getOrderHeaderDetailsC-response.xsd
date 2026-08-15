@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>RESPONSE schema for getOrderHeaderDetailsC (Customer360). Returned in the response body. This schema uses a ref-based (flat top-level element) style; the structure is preserved from the legacy contract.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="RESPONSE">
+    <xs:annotation>
+      <xs:documentation>Top-level response container carrying the response timestamp and the matched order header(s).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="RESPONSE_DATE"/>
+        <xs:element ref="TRANSACTION"/>
+      </xs:sequence>
+      <!-- NOTE (verbatim from legacy contract; not renamed — external integrators may depend on it): ResponseId was xs:integer use="required" in legacy; standardized to xs:string and optional to match every other operation. -->
+      <xs:attribute name="ResponseId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Response tracking identifier used by the log process to correlate this response for reporting and issue tracing.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RESPONSE_DATE" type="xs:dateTime">
+    <xs:annotation>
+      <xs:documentation>Server timestamp when this response was generated. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="TRANSACTION">
+    <xs:annotation>
+      <xs:documentation>Container for the matched order header(s).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ORDER_HEADER" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ORDER_HEADER">
+    <xs:annotation>
+      <xs:documentation>Header-level detail for a single order, including customer cross references and line items.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ORDER_ID"/>
+        <xs:element ref="FIRST_NAME"/>
+        <xs:element ref="LAST_NAME"/>
+        <xs:element ref="ORDER_DATE"/>
+        <xs:element ref="EMAIL_ID"/>
+        <xs:element ref="TAX"/>
+        <xs:element ref="SHIPMENT_METHOD"/>
+        <xs:element ref="PROMOTION_ADJUSTMENT"/>
+        <xs:element ref="SUB_TOTAL"/>
+        <xs:element ref="TOTAL_AMOUNT"/>
+        <xs:element ref="STORE_ID"/>
+        <xs:element ref="CASH_REGISTER_ID"/>
+        <xs:element ref="TRANSACTION_NUMBER"/>
+        <xs:element ref="TRANSACTION_TYPE"/>
+        <xs:element ref="ASSOCIATE_ID"/>
+        <xs:element ref="ASSOCIATE_FIRST_NAME"/>
+        <xs:element ref="ASSOCIATE_LAST_NAME"/>
+        <xs:element ref="TOTAL_TAX_AMOUNT"/>
+        <xs:element ref="CUSTOMER_CROSS_REFERENCES"/>
+        <xs:element ref="PRIMARY_PHONE"/>
+        <xs:element ref="PRIMARY_FAX"/>
+        <xs:element ref="ORDER_ITEMS"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ORDER_ID" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>The order/transaction identifier.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="FIRST_NAME" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Customer first name on the order.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="LAST_NAME" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Customer last name on the order.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="ORDER_DATE" type="xs:dateTime">
+    <xs:annotation>
+      <xs:documentation>Date and time the order took place. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="EMAIL_ID" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Customer email address on the order.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="TAX" type="xs:decimal">
+    <xs:annotation>
+      <xs:documentation>Order-level tax amount.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="SHIPMENT_METHOD" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Shipment/fulfillment method for the order.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PROMOTION_ADJUSTMENT" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Total promotion/discount adjustment applied to the order.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="SUB_TOTAL" type="xs:decimal">
+    <xs:annotation>
+      <xs:documentation>Order subtotal before tax.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="TOTAL_AMOUNT" type="xs:decimal">
+    <xs:annotation>
+      <xs:documentation>Order grand total.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="STORE_ID" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Store where the order took place.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="CASH_REGISTER_ID" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Register/till on which the order was rung.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="TRANSACTION_NUMBER" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>POS transaction number for the order.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="TRANSACTION_TYPE" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Transaction type (e.g., Sale, Return, LayAway).</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="ASSOCIATE_ID" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Identifier of the associate/cashier who processed the order.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="ASSOCIATE_FIRST_NAME" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>First name of the associate/cashier.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="ASSOCIATE_LAST_NAME" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>Last name of the associate/cashier.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="TOTAL_TAX_AMOUNT" type="xs:decimal">
+    <xs:annotation>
+      <xs:documentation>Total tax amount for the order.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="CUSTOMER_CROSS_REFERENCES">
+    <xs:annotation>
+      <xs:documentation>Container for the customer's external system cross references.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="CROSS_REFERENCE" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CROSS_REFERENCE">
+    <xs:annotation>
+      <xs:documentation>A single external-system cross reference for the customer.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="SYSTEM_REFERENCE"/>
+        <xs:element ref="SYSTEM_REFERENCE_ID"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SYSTEM_REFERENCE">
+    <xs:annotation>
+      <xs:documentation>Name of the external system for this cross reference.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="WINDSS_ID"/>
+        <xs:enumeration value="LOYALTY_ID"/>
+        <xs:enumeration value="ATG_CUST_ID"/>
+        <xs:enumeration value="AFFINITY_ID"/>
+        <xs:enumeration value="HARTEHANKS_ID"/>
+        <xs:enumeration value="HH_HOUSEHOLD_ID"/>
+        <xs:enumeration value="PRETAIL_ID"/>
+        <xs:enumeration value="RETAIL_PRO"/>
+        <xs:enumeration value="LISTRAK"/>
+        <xs:enumeration value="POS_ID"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="SYSTEM_REFERENCE_ID">
+    <xs:annotation>
+      <xs:documentation>The cross-reference value for the named external system (max 20 characters).</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="20"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="PRIMARY_PHONE">
+    <xs:annotation>
+      <xs:documentation>Customer primary phone number (max 10 characters).</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="10"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="PRIMARY_FAX">
+    <xs:annotation>
+      <xs:documentation>Customer primary fax number (max 10 characters).</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:maxLength value="10"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="ORDER_ITEMS">
+    <xs:annotation>
+      <xs:documentation>Container for the order's line items.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ORDER_ITEM" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>A single line item on the order. Modeled as a repeating choice so any subset of item fields may be returned, in service-determined order.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="ORDER_ITEM_SEQ" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Line-item sequence number within the order.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="SKU" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>SKU/product identifier for the line item.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="DESCRIPTION" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Item description.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="PRICE" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Unit price for the line item.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="QUANTITY_ORDERED" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Quantity ordered for the line item.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="DETAIL_NUMBER" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Detail/line number for the item.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="PARENT_NUMBER" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Parent line number, for items grouped under a parent.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="SKU_OWNER" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Owner of the SKU.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="SKU_OWNER_TYPE" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Type/classification of the SKU owner.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="SKU_ITEM_TYPE" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Item type of the SKU.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ORDER_ITEM_TYPE" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Order-item type classification.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="LEVEL5_COMPANYCODE" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Level-5 merchandise hierarchy company code.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="LEVEL5_ID" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Level-5 merchandise hierarchy identifier.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="LEVEL5_PRODUCTGROUPTYPE" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Level-5 product group type.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="LEVEL5_STRUCTURETYPE" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Level-5 structure type.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="LINE_TYPE" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Line type for the item.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="IMAGE" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>Image reference/URL for the item.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ITEM_TAX" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>Tax at the line item level.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="TAX" minOccurs="0" maxOccurs="unbounded">
+                      <xs:annotation>
+                        <xs:documentation>A single tax component applied to the line item.</xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:all>
+                          <xs:element name="TAX_TYPE" minOccurs="0">
+                            <xs:annotation>
+                              <xs:documentation>The kind of tax applied.</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                              <xs:restriction base="xs:NMTOKEN">
+                                <xs:enumeration value="StateOrProvince"/>
+                                <xs:enumeration value="ItemTax"/>
+                                <xs:enumeration value="GST"/>
+                                <xs:enumeration value="HST"/>
+                                <xs:enumeration value="SpecialTax"/>
+                                <xs:enumeration value="OtherTax"/>
+                              </xs:restriction>
+                            </xs:simpleType>
+                          </xs:element>
+                          <xs:element name="TAX_AMOUNT" type="xs:decimal" minOccurs="0">
+                            <xs:annotation>
+                              <xs:documentation>The tax amount for this component.</xs:documentation>
+                            </xs:annotation>
+                          </xs:element>
+                          <xs:element name="TAX_DESCRIPTION" type="xs:string" minOccurs="0">
+                            <xs:annotation>
+                              <xs:documentation>Human-readable description of the tax component.</xs:documentation>
+                            </xs:annotation>
+                          </xs:element>
+                        </xs:all>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>REQUEST schema for couponAuthentication (Customer360). This XML is carried in the form field 'XmlInput'.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="WEBSERVICE">
+    <xs:annotation>
+      <xs:documentation>Top-level wrapper for the couponAuthentication request envelope.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="REQUEST">
+          <xs:annotation>
+            <xs:documentation>Request payload. Carries the coupon being authenticated and the transaction context in which it is presented.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="REQ_COUPON_DETAILS">
+                <xs:annotation>
+                  <xs:documentation>Identifies the coupon to authenticate.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="REQ_COUPON_CODE" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>The coupon code presented for authentication (as scanned or keyed at the POS).</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="REQ_COUPON_TYPE">
+                      <xs:annotation>
+                        <xs:documentation>Coupon issuance model. Determines whether usage limits and per-code tracking apply.</xs:documentation>
+                      </xs:annotation>
+                      <xs:simpleType>
+                        <xs:restriction base="xs:NMTOKEN">
+                          <xs:enumeration value="SERIALIZE">
+                            <xs:annotation>
+                              <xs:documentation>Serialized coupons allow merchandisers to create large numbers of coupons with usage limits and randomly generated coupon codes in order to closely target and monitor coupon use.</xs:documentation>
+                            </xs:annotation>
+                          </xs:enumeration>
+                          <xs:enumeration value="NON-SERIALIZE">
+                            <xs:annotation>
+                              <xs:documentation>Non-serialized coupons do not have usage limits.</xs:documentation>
+                            </xs:annotation>
+                          </xs:enumeration>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="REQ_TRANSACTION_DETAILS">
+                <xs:annotation>
+                  <xs:documentation>Transaction context in which the coupon is being authenticated.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="REQ_STORE_ID" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Unique location identifier from the sending application where the data is being generated.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="REQUEST_DATE" type="xs:dateTime">
+                      <xs:annotation>
+                        <xs:documentation>The date and time of this request. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="ResponseId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>All the Responses are tracked by the log process and reports can be generated based on the Responses. Each response is added with a response Id to reference any issues during the transmission and perform the same backwards.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
