@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>RESPONSE schema for couponPost (Customer360). Returned in the response body.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="WEBSERVICE">
+    <xs:annotation>
+      <xs:documentation>Top-level wrapper for the couponPost response envelope.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE">
+          <xs:annotation>
+            <xs:documentation>Response payload. Echoes the posted coupon and reports the post outcome.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="RESP_COUPON_DETAILS">
+                <xs:annotation>
+                  <xs:documentation>Coupon that was posted.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="RESP_COUPON_CODE" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>The coupon code that was posted.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <!-- NOTE (verbatim from legacy contract; not renamed — external integrators may depend on it): RESP_TRANSACTOIN_DETAILS -->
+              <xs:element name="RESP_TRANSACTOIN_DETAILS">
+                <xs:annotation>
+                  <xs:documentation>Outcome of the coupon post.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="RESP_STATUS_CODE" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Status of the posted coupon (e.g., COUPON_REDEEMED, COUPON_UNAVAILABLE).</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="RESPONSE_CODE" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>Service outcome code for the post request.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="ResponseId" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>Response tracking identifier used by the log process to correlate this response for reporting and issue tracing.</xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

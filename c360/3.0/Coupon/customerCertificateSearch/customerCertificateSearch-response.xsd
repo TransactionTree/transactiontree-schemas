@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>RESPONSE schema for customerCertificateSearch (Customer360). Returned in the response body.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="RESPONSE">
+    <xs:annotation>
+      <xs:documentation>Response payload carrying the customer's loyalty context and the matching coupon certificates.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE_DATE" type="xs:dateTime">
+          <xs:annotation>
+            <xs:documentation>Server timestamp when this response was generated. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="CUSTOMER_ID" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Customer identifier the results belong to.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="LOYALTY_ID" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The customer's loyalty program identifier.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="LOYALTY_DATE" type="xs:dateTime">
+          <xs:annotation>
+            <xs:documentation>Date and time the customer joined/enrolled in loyalty. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="BALANCE_LOYALTY_POINTS" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Current loyalty point balance for the customer.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="TRANSACTION" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>A coupon certificate held by the customer. Repeats once per certificate.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="COUPON_NUMBER" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The coupon/certificate number.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="COUPON_VALUE" type="xs:decimal">
+                <xs:annotation>
+                  <xs:documentation>The value of the coupon.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="COUPON_STATUS">
+                <xs:annotation>
+                  <xs:documentation>Current status of the coupon.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:NMTOKEN">
+                    <xs:enumeration value="COUPON_AVAILABLE">
+                      <xs:annotation>
+                        <xs:documentation>The coupon is valid and available to use.</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="COUPON_UNAVAILABLE">
+                      <xs:annotation>
+                        <xs:documentation>The coupon code is wrong or not valid.</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="COUPON_EXPIRED">
+                      <xs:annotation>
+                        <xs:documentation>This coupon has expired.</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="COUPON_REDEEMED">
+                      <xs:annotation>
+                        <xs:documentation>The coupon has been redeemed already.</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="COUPON_AUDITED">
+                      <xs:annotation>
+                        <xs:documentation>Order with matching redeemed coupon is in the system.</xs:documentation>
+                      </xs:annotation>
+                    </xs:enumeration>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="COUPON_ISSUE_DATE" type="xs:dateTime">
+                <xs:annotation>
+                  <xs:documentation>The date and time the coupon was issued. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="COUPON_EXPIRY_DATE" type="xs:dateTime">
+                <xs:annotation>
+                  <xs:documentation>The date and time the coupon expires. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="COUPON_SCANNED_DATE" type="xs:dateTime">
+                <xs:annotation>
+                  <xs:documentation>The date and time the coupon was scanned. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <!-- NOTE (verbatim from legacy contract; not renamed — external integrators may depend on it): COUPON_REDEMED_DATE -->
+              <xs:element name="COUPON_REDEMED_DATE" type="xs:dateTime">
+                <xs:annotation>
+                  <xs:documentation>The date and time the coupon was redeemed. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="ResponseId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Response tracking identifier used by the log process to correlate this response for reporting and issue tracing.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

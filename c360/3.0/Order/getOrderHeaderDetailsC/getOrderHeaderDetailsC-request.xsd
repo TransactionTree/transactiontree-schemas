@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>REQUEST schema for getOrderHeaderDetailsC (Customer360). This XML is carried in the form field 'XmlInput'.</xs:documentation>
+  </xs:annotation>
+  <xs:element name="REQUEST">
+    <xs:annotation>
+      <xs:documentation>Request used for endpoint getOrderHeaderDetailsC. Payload filters used to locate order headers.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Customer ID associated with the order. Used to scope the header search.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ORDER_ID" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Order ID associated with the search.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="REQUEST_DATE" type="xs:dateTime">
+          <xs:annotation>
+            <xs:documentation>The date and time of this request. Used for auditing; not required for filtering. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="TRANSACTION_TYPE" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Optional filter for transaction type. When set to "LayAway", only LayAway transactions are returned. If omitted, no transaction-type filtering is applied.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="SYSTEM_REFERENCE" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Identifies the external system requested; adds corresponding cross references to the response.</xs:documentation>
+          </xs:annotation>
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="WINDSS_ID"/>
+              <xs:enumeration value="LOYALTY_ID"/>
+              <xs:enumeration value="ATG_CUST_ID"/>
+              <xs:enumeration value="AFFINITY_ID"/>
+              <xs:enumeration value="HARTEHANKS_ID"/>
+              <xs:enumeration value="HH_HOUSEHOLD_ID"/>
+              <xs:enumeration value="PRETAIL_ID"/>
+              <xs:enumeration value="RETAIL_PRO"/>
+              <xs:enumeration value="LISTRAK"/>
+              <xs:enumeration value="POS_ID"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+        <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Value for SYSTEM_REFERENCE (e.g., the loyalty or ATG customer number).</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="FROM_DATE" type="xs:date" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>The order search start date (inclusive). Format YYYY-MM-DD. Example: 2025-11-01.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="THRU_DATE" type="xs:date" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>The order search end date (inclusive). Format YYYY-MM-DD. Example: 2025-11-01.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <!-- ORDER_STATUS removed: not honored as a request filter (aligned with getOrderDetailsC / getOrderHeaderDetailsB). -->
+        <xs:element name="STORE_ID" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The store id that the order took place from. Constrains the search.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="RECORD_LIMIT" type="xs:int" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Maximum number of records to return. Defaults to 25 when omitted or invalid.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <!-- Structural alignment: legacy single PRODUCT_ID replaced by the optional PRODUCTS container with a repeatable PRODUCT_ID, matching the getOrderDetailsC / getOrderHeaderDetailsB siblings. -->
+        <xs:element name="PRODUCTS" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Container for product filters. Include one or more PRODUCT_ID elements to restrict results to orders containing those SKUs/products.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="PRODUCT_ID" type="xs:string" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation>A product identifier to filter by (SKU or productId as stored). Repeat for multiple products.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
