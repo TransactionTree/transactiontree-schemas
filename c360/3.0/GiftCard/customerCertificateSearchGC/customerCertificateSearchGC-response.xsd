@@ -110,7 +110,7 @@
                         <xs:documentation>The date and time the coupon was scanned. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
-                    <!-- NOTE (verbatim from legacy contract; not renamed — external integrators may depend on it): COUPON_REDEMED_DATE -->
+                    <!-- NOTE: UNVERIFIED / possibly STALE. The live Gift Card service (GiftCouponServices.java, Spencer OFBiz) emits different date fields (REDEEM_DATE / TRANS_DATE) and no MARKETING_COUPONS, so this legacy GC schema may not match the current endpoint. 'REDEMED' preserved from the published XSD pending confirmation of the real GC output (checked 2026-08-15). -->
                     <xs:element name="COUPON_REDEMED_DATE" type="xs:dateTime">
                       <xs:annotation>
                         <xs:documentation>The date and time the coupon was redeemed. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>

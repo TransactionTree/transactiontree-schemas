@@ -29,7 +29,7 @@
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <!-- NOTE (verbatim from legacy contract; not renamed — external integrators may depend on it): RESP_TRANSACTOIN_DETAILS -->
+              <!-- NOTE: 'TRANSACTOIN' is a genuine misspelling in the LIVE service (CouponServices.java / GiftCouponServices.java, Spencer OFBiz) and is the ONLY spelling emitted — verified on sg/10.0.0.54 2026-08-15. Do NOT correct it; it is the real wire contract. -->
               <xs:element name="RESP_TRANSACTOIN_DETAILS">
                 <xs:annotation>
                   <xs:documentation>Outcome of the coupon post.</xs:documentation>
