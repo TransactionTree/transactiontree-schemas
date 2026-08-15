@@ -202,13 +202,13 @@
                         </xs:sequence>
                       </xs:complexType>
                     </xs:element>
-                    <xs:element name="TENDER_ITEMS">
+                    <xs:element name="TENDER_ITEMS" minOccurs="0">
                       <xs:annotation>
                         <xs:documentation>Container for the order's tender (payment) items.</xs:documentation>
                       </xs:annotation>
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="TENDER_ITEM" maxOccurs="unbounded">
+                          <xs:element name="TENDER_ITEM" minOccurs="0" maxOccurs="unbounded">
                             <xs:annotation>
                               <xs:documentation>A single tender (payment) applied to the order. Repeats when an order is paid with split tender across multiple payment types.</xs:documentation>
                             </xs:annotation>
