@@ -22,6 +22,18 @@
 		<xs:restriction base="xs:decimal">
 			<xs:totalDigits value="27"/>
 			<xs:fractionDigits value="9"/>
+			<xs:minExclusive value="-1000000000000000000"/>
+			<xs:maxExclusive value="1000000000000000000"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="CStoreNonBlankTokenType">
+		<xs:annotation>
+			<xs:documentation>Nonblank, whitespace-normalized identifier with a maximum length of 256 characters.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="256"/>
 		</xs:restriction>
 	</xs:simpleType>
 
@@ -244,7 +256,7 @@
 		<xs:annotation><xs:documentation>Privacy-minimized proof that an age policy was evaluated. Date of birth, document number, address, image, barcode payload, and raw credentials are prohibited.</xs:documentation></xs:annotation>
 		<xs:sequence>
 			<xs:element name="VerificationId" type="xs:string"/>
-			<xs:element name="LineReference" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="LineReference" type="CStoreNonBlankTokenType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation><xs:documentation>Value of the target DetailedTransactionData/LineReference covered by this decision.</xs:documentation></xs:annotation>
 			</xs:element>
 			<xs:element name="RegulatedCategory" type="CStoreCodeReferenceType" minOccurs="0"/>
@@ -267,7 +279,7 @@
 
 	<xs:complexType name="CStoreOfferLineAllocationType">
 		<xs:sequence>
-			<xs:element name="LineReference" type="xs:string"/>
+			<xs:element name="LineReference" type="CStoreNonBlankTokenType"/>
 			<xs:element name="Amount" type="CStoreExactMoneyType" minOccurs="0"/>
 			<xs:element name="Quantity" type="CStoreDecimalMeasureType" minOccurs="0"/>
 		</xs:sequence>
@@ -307,7 +319,7 @@
 			<xs:element name="Status" type="CStoreProcessingStatusType"/>
 			<xs:element name="HostReference" type="xs:string" minOccurs="0"/>
 			<xs:element name="ResponseCode" type="xs:string" minOccurs="0"/>
-			<xs:element name="LineReference" type="xs:string" minOccurs="0"/>
+			<xs:element name="LineReference" type="CStoreNonBlankTokenType" minOccurs="0"/>
 			<xs:element name="TenderReference" type="xs:string" minOccurs="0"/>
 			<xs:element name="OccurredAt" type="xs:dateTime"/>
 		</xs:sequence>

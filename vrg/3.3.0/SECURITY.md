@@ -57,6 +57,13 @@ such as ORAE.
 - Reject or quarantine a payload containing prohibited data; do not merely
   redact it after downstream distribution.
 
+TTDR 3.3.0 retains legacy receipt elements for structural continuity, including
+customer identity and payment fields that predate this profile. Their presence
+in the XSD is not permission to populate them with prohibited data. The
+repository validation gate rejects legacy `CardNumber`, `AccountNumber`,
+`DriverLicense`, `DLNo`, `Passport`, `PassportID`, and `Birthday` elements in
+3.3.0 examples.
+
 The included `validate.ps1` applies a conservative policy to repository
 examples. Production controls should add provider-specific token formats and
 organization DLP rules.

@@ -1597,7 +1597,7 @@
 								</xs:annotation>
 								<xs:complexType>
 									<xs:all>
-										<xs:element name="LineReference" type="xs:string" minOccurs="0" maxOccurs="1">
+										<xs:element name="LineReference" type="CStoreNonBlankTokenType" minOccurs="0" maxOccurs="1">
 											<xs:annotation>
 												<xs:documentation>Producer-stable identifier for this receipt line, unique within the transaction. It MUST be present when CStoreData references the line; AgeVerification and OfferRedemption LineReference values target this field rather than ProductId.</xs:documentation>
 											</xs:annotation>

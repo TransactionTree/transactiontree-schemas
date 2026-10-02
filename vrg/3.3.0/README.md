@@ -101,8 +101,10 @@ The script compiles both TTDR 3.3.0 and the frozen TTDR 3.2.2 release,
 validates every 3.3.0 example, verifies that the 3.3.0 shared legacy types are
 structurally unchanged from 3.2.2 apart from comments, applies the example
 security policy, and proves that the synthetic prohibited-data fixtures under
-`tests/security-invalid/` are rejected. It also proves that duplicate and
-dangling convenience-retail line references fail XSD identity constraints.
+`tests/security-invalid/` are rejected while valid opaque tokens under
+`tests/security-valid/` pass. It also proves that blank, duplicate, and
+dangling convenience-retail line references and over-wide exact decimals are
+rejected by the XSD.
 
 With `xmllint`:
 

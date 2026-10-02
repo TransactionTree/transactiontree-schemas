@@ -8,6 +8,7 @@ $schemaPath = Join-Path $releaseDir 'TTDR-3.3.0.xsd'
 $legacySchemaPath = Join-Path $repoRoot 'vrg\3.2.2\TTDR-3.2.2.xsd'
 $examplesDir = Join-Path $releaseDir 'examples'
 $invalidSecurityDir = Join-Path $releaseDir 'tests\security-invalid'
+$validSecurityDir = Join-Path $releaseDir 'tests\security-valid'
 $legacyExamplesDir = Join-Path $releaseDir 'tests\legacy'
 $namespace = 'https://www.transactiontree.com/framework/schema/vrg/3.3.0/TTDR3.3.0.xsd'
 $legacyNamespace = 'https://www.transactiontree.com/framework/schema/vrg/3.2.2/TTDR3.2.2.xsd'
@@ -55,7 +56,7 @@ function Test-XmlFile {
 }
 
 function Test-Luhn {
-    param([Parameter(Mandatory)] [string] $Digits)
+    param([AllowEmptyString()] [string] $Digits)
 
     if ($Digits -notmatch '^\d{13,19}$') { return $false }
     $sum = 0
@@ -81,12 +82,9 @@ function Test-SecurityPolicy {
         'CVV', 'CVC', 'CID', 'PIN', 'PINBlock', 'EMVCryptogram',
         'ApplicationCryptogram', 'ARQC', 'DateOfBirth', 'DOB',
         'GovernmentID', 'GovernmentId', 'DocumentNumber', 'IdentityDocument',
+        'DriverLicense', 'DLNo', 'Passport', 'PassportID', 'Birthday',
+        'CardNumber', 'AccountNumber', 'LoyaltyCardNumber',
         'RawCredential', 'Password', 'ClientSecret', 'PrivateKey'
-    )
-    $tokenNames = @(
-        'Token', 'EntitlementToken', 'InstrumentToken', 'FleetAccountToken',
-        'VehicleToken', 'DriverToken', 'VerifierToken', 'OperatorToken',
-        'ApproverToken', 'TokenValue'
     )
     $unsafeText = '(?i)(date[-_ ]?of[-_ ]?birth|\bdob\s*[:=]|government[-_ ]?id\s*[:=]|track\s*[12]?\s*[:=]|cvv\s*[:=]|cvc\s*[:=]|pin[-_ ]?block\s*[:=]|9f26\s*[:=]|\barqc\s*[:=])'
 
@@ -94,13 +92,19 @@ function Test-SecurityPolicy {
         if ($node.LocalName -in $prohibitedNames) {
             throw "Security policy failed for '$Path': prohibited element '$($node.LocalName)'."
         }
-        if ($node.InnerText -match $unsafeText) {
-            throw "Security policy failed for '$Path': prohibited sensitive-data marker in '$($node.LocalName)'."
-        }
-        if ($node.LocalName -in $tokenNames) {
-            $digits = $node.InnerText -replace '[^0-9]', ''
-            if (Test-Luhn -Digits $digits) {
-                throw "Security policy failed for '$Path': '$($node.LocalName)' appears to contain a PAN rather than a token."
+
+        # Scan leaf values only. Scanning InnerText on containers concatenates unrelated child
+        # values and can manufacture a false PAN candidate that never appeared in the payload.
+        if ($node.SelectNodes('./*').Count -eq 0) {
+            $text = $node.InnerText.Trim()
+            if ($text -match $unsafeText) {
+                throw "Security policy failed for '$Path': prohibited sensitive-data marker in '$($node.LocalName)'."
+            }
+            foreach ($candidate in [regex]::Matches($text, '(?<!\d)(?:\d[ -]?){12,18}\d(?!\d)')) {
+                $digits = $candidate.Value -replace '[^0-9]', ''
+                if (Test-Luhn -Digits $digits) {
+                    throw "Security policy failed for '$Path': '$($node.LocalName)' appears to contain a PAN."
+                }
             }
         }
         if ($node.LocalName -eq 'MaskedAccount' -and $node.InnerText -notmatch '^(?:\d{1,4}|[Xx*•-]+\d{1,4})$') {
@@ -166,6 +170,13 @@ foreach ($fixture in $invalidSecurityFixtures) {
     Write-Host "PASS rejected $($fixture.Name)"
 }
 
+$validSecurityFixtures = @(Get-ChildItem -LiteralPath $validSecurityDir -Filter '*.xml' | Sort-Object Name)
+if ($validSecurityFixtures.Count -eq 0) { throw 'No valid security fixtures were found.' }
+foreach ($fixture in $validSecurityFixtures) {
+    Test-SecurityPolicy -Path $fixture.FullName
+    Write-Host "PASS security-valid $($fixture.Name)"
+}
+
 $legacyExamples = @(Get-ChildItem -LiteralPath $legacyExamplesDir -Filter '*.xml' | Sort-Object Name)
 if ($legacyExamples.Count -eq 0) { throw 'No TTDR 3.2.2 compatibility examples were found.' }
 foreach ($legacyExample in $legacyExamples) {
@@ -199,6 +210,26 @@ try {
     $duplicate.Save($duplicatePath)
     Assert-SchemaRejected -Path $duplicatePath -Settings $settings -CaseName 'duplicate line reference'
     $semanticNegativeCount++
+
+    [xml] $blankReference = Get-Content -LiteralPath (Join-Path $examplesDir 'car-wash-entitlement-sample.xml') -Raw
+    $blankNs = [System.Xml.XmlNamespaceManager]::new($blankReference.NameTable)
+    $blankNs.AddNamespace('t', $namespace)
+    $blankNode = $blankReference.SelectSingleNode('//t:TransactionData/t:DetailedTransactionData/t:LineReference', $blankNs)
+    $blankNode.InnerText = '   '
+    $blankPath = Join-Path $semanticTemp 'blank-line-reference.xml'
+    $blankReference.Save($blankPath)
+    Assert-SchemaRejected -Path $blankPath -Settings $settings -CaseName 'blank line reference'
+    $semanticNegativeCount++
+
+    [xml] $oversizedDecimal = Get-Content -LiteralPath (Join-Path $examplesDir 'ev-mobile-sample.xml') -Raw
+    $decimalNs = [System.Xml.XmlNamespaceManager]::new($oversizedDecimal.NameTable)
+    $decimalNs.AddNamespace('t', $namespace)
+    $decimalNode = $oversizedDecimal.SelectSingleNode('//t:EVChargingSession/t:EnergyDelivered/t:Value', $decimalNs)
+    $decimalNode.InnerText = '1000000000000000000.000000001'
+    $decimalPath = Join-Path $semanticTemp 'oversized-decimal.xml'
+    $oversizedDecimal.Save($decimalPath)
+    Assert-SchemaRejected -Path $decimalPath -Settings $settings -CaseName 'more than 18 integer digits'
+    $semanticNegativeCount++
 }
 finally {
     Remove-Item -LiteralPath $semanticTemp -Recurse -Force
@@ -210,4 +241,4 @@ if ($legacyTypes -ne $currentTypes) {
     throw 'TTDRsimpleTypes-3.3.0.xsd differs structurally from the frozen 3.2.2 shared types.'
 }
 
-Write-Host "PASS $($examples.Count) examples; $($invalidSecurityFixtures.Count) security rejections; $semanticNegativeCount schema-semantic rejections; $($legacyExamples.Count) legacy example; schemas compiled; legacy shared types unchanged."
+Write-Host "PASS $($examples.Count) examples; $($invalidSecurityFixtures.Count) security rejections; $($validSecurityFixtures.Count) security-positive fixture; $semanticNegativeCount schema-semantic rejections; $($legacyExamples.Count) legacy example; schemas compiled; legacy shared types unchanged."

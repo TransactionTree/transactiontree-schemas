@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic policy-only positive fixture: opaque alphabetic tokens are valid. -->
+<TenderEvidence>
+  <InstrumentToken>OPAQUETOKENONLY</InstrumentToken>
+</TenderEvidence>
