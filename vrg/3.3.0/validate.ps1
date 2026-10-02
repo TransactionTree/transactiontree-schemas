@@ -136,9 +136,22 @@ function Assert-SchemaRejected {
 function Get-StructuralSchemaText {
     param([Parameter(Mandatory)] [string] $Path)
 
-    $text = Get-Content -LiteralPath $Path -Raw
-    $text = [regex]::Replace($text, '<!--.*?-->', '', [System.Text.RegularExpressions.RegexOptions]::Singleline)
-    return [regex]::Replace($text, '\s+', '')
+    $readerSettings = [System.Xml.XmlReaderSettings]::new()
+    $readerSettings.DtdProcessing = [System.Xml.DtdProcessing]::Prohibit
+    $readerSettings.XmlResolver = $null
+    $document = [System.Xml.XmlDocument]::new()
+    $document.PreserveWhitespace = $false
+    $reader = [System.Xml.XmlReader]::Create($Path, $readerSettings)
+    try {
+        $document.Load($reader)
+    }
+    finally {
+        $reader.Dispose()
+    }
+    foreach ($comment in @($document.SelectNodes('//comment()'))) {
+        $null = $comment.ParentNode.RemoveChild($comment)
+    }
+    return $document.OuterXml
 }
 
 Write-Host 'Compiling TTDR 3.3.0 and TTDR 3.2.2 schemas...'
@@ -229,6 +242,26 @@ try {
     $decimalPath = Join-Path $semanticTemp 'oversized-decimal.xml'
     $oversizedDecimal.Save($decimalPath)
     Assert-SchemaRejected -Path $decimalPath -Settings $settings -CaseName 'more than 18 integer digits'
+    $semanticNegativeCount++
+
+    [xml] $blankQualifier = Get-Content -LiteralPath $sourceExample -Raw
+    $qualifierNs = [System.Xml.XmlNamespaceManager]::new($blankQualifier.NameTable)
+    $qualifierNs.AddNamespace('t', $namespace)
+    $qualifierNode = $blankQualifier.SelectSingleNode('//t:AgeVerification/t:RegulatedCategory/t:SchemeVersion', $qualifierNs)
+    $qualifierNode.InnerText = '   '
+    $qualifierPath = Join-Path $semanticTemp 'blank-code-scheme-version.xml'
+    $blankQualifier.Save($qualifierPath)
+    Assert-SchemaRejected -Path $qualifierPath -Settings $settings -CaseName 'blank code scheme version'
+    $semanticNegativeCount++
+
+    [xml] $danglingAudit = Get-Content -LiteralPath $sourceExample -Raw
+    $auditNs = [System.Xml.XmlNamespaceManager]::new($danglingAudit.NameTable)
+    $auditNs.AddNamespace('t', $namespace)
+    $auditNode = $danglingAudit.SelectSingleNode('//t:AuditEvidence/t:LineReference', $auditNs)
+    $auditNode.InnerText = 'missing-audit-line-reference'
+    $auditPath = Join-Path $semanticTemp 'dangling-audit-line-reference.xml'
+    $danglingAudit.Save($auditPath)
+    Assert-SchemaRejected -Path $auditPath -Settings $settings -CaseName 'dangling audit line reference'
     $semanticNegativeCount++
 }
 finally {

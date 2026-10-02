@@ -51,9 +51,9 @@
 			<xs:documentation>A code qualified by its governing scheme and exact scheme version. This allows Conexxus and retailer code lists to evolve independently of TTDR.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="Scheme" type="xs:string"/>
-			<xs:element name="SchemeVersion" type="xs:string"/>
-			<xs:element name="Code" type="xs:string"/>
+			<xs:element name="Scheme" type="CStoreNonBlankTokenType"/>
+			<xs:element name="SchemeVersion" type="CStoreNonBlankTokenType"/>
+			<xs:element name="Code" type="CStoreNonBlankTokenType"/>
 			<xs:element name="Description" type="xs:string" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
@@ -392,8 +392,19 @@
 			<xs:element name="RecordType" type="xs:string" minOccurs="0"/>
 			<xs:element name="SourceSystem" type="xs:string" minOccurs="0"/>
 			<xs:element name="SourceRecordId" type="xs:string" minOccurs="0"/>
-			<xs:element name="SubjectType" type="xs:string" minOccurs="0"/>
-			<xs:element name="SubjectId" type="xs:string" minOccurs="0"/>
+			<xs:choice minOccurs="0">
+				<xs:element name="LineReference" type="CStoreNonBlankTokenType">
+					<xs:annotation><xs:documentation>Receipt-line audit subject. The value must resolve to DetailedTransactionData/LineReference.</xs:documentation></xs:annotation>
+				</xs:element>
+				<xs:sequence>
+					<xs:element name="SubjectType" type="CStoreNonBlankTokenType">
+						<xs:annotation><xs:documentation>Non-line audit subject classification. Use LineReference instead for a receipt-line subject.</xs:documentation></xs:annotation>
+					</xs:element>
+					<xs:element name="SubjectId" type="CStoreNonBlankTokenType">
+						<xs:annotation><xs:documentation>Identifier paired with SubjectType for a non-line subject; this generic identifier is not schema-resolved.</xs:documentation></xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:choice>
 			<xs:element name="Outcome" type="xs:string" minOccurs="0"/>
 			<xs:element name="ReasonCode" type="xs:string" minOccurs="0"/>
 			<xs:element name="OperatorToken" type="xs:string" minOccurs="0"/>

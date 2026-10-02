@@ -3644,5 +3644,9 @@ This is a required element. The value should be positive if it represents a purc
 			<xs:selector xpath="tns:CStoreData/tns:StoredValueActivity/tns:LineReference"/>
 			<xs:field xpath="."/>
 		</xs:keyref>
+		<xs:keyref name="CStoreAuditLineReference" refer="tns:CStoreLineReferenceUnique">
+			<xs:selector xpath="tns:CStoreData/tns:AuditEvidence/tns:LineReference"/>
+			<xs:field xpath="."/>
+		</xs:keyref>
 	</xs:element>
 </xs:schema>

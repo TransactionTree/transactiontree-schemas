@@ -32,7 +32,7 @@
       <Description>Legacy TTDR Item</Description>
       <Quantity>
         <QuantitySoldType>EA</QuantitySoldType>
-        <QuantitySold>1</QuantitySold>
+        <QuantitySold>100</QuantitySold>
       </Quantity>
       <Price>
         <DollarAmount>299</DollarAmount>

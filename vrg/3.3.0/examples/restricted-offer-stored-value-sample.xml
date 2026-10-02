@@ -33,7 +33,7 @@
       <Description>Age-Restricted Product</Description>
       <Quantity>
         <QuantitySoldType>EA</QuantitySoldType>
-        <QuantitySold>1</QuantitySold>
+        <QuantitySold>100</QuantitySold>
       </Quantity>
       <Price>
         <DollarAmount>1299</DollarAmount>
@@ -153,8 +153,7 @@
       <RecordType>AGE_VERIFICATION</RecordType>
       <SourceSystem>POS</SourceSystem>
       <SourceRecordId>age-verification-31045</SourceRecordId>
-      <SubjectType>RECEIPT_LINE</SubjectType>
-      <SubjectId>line-restricted-1</SubjectId>
+      <LineReference>line-restricted-1</LineReference>
       <Outcome>PASS</Outcome>
       <OperatorToken>operator-token-2041</OperatorToken>
     </AuditEvidence>

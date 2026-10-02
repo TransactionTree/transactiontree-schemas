@@ -55,7 +55,7 @@
       <Description>Ultimate Car Wash</Description>
       <Quantity>
         <QuantitySoldType>EA</QuantitySoldType>
-        <QuantitySold>1</QuantitySold>
+        <QuantitySold>100</QuantitySold>
       </Quantity>
       <Price>
         <DollarAmount>1499</DollarAmount>
