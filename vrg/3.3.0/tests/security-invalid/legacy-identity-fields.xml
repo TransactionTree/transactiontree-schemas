@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic policy-only fixture. Values are intentionally fake. -->
+<Customer>
+  <DriverLicense>
+    <DLNo>TEST-ONLY-DL</DLNo>
+  </DriverLicense>
+  <Passport>
+    <PassportID>TEST-ONLY-PASSPORT</PassportID>
+  </Passport>
+  <Birthday>2000-01-01</Birthday>
+</Customer>

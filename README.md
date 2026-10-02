@@ -10,7 +10,7 @@ Two product families are published here:
 | Family | Path | What it describes |
 |---|---|---|
 | **C360** (formerly BORMC — Business Office Receipt Management Center) — loyalty + order API | `c360/3.0/` | Form-encoded POST endpoints under `/loyalty-app/control/*` that exchange XML inside the `XmlInput` form field. |
-| **VRG / TTDR** (TransactionTree Digital Receipt — VRG ingest) | `vrg/3.2.2/` | The Digital Receipt envelope POSTed to `vrgs.io` (prod) and `receiptx.com` (dev/test) for retailer receipt ingest. |
+| **VRG / TTDR** (TransactionTree Digital Receipt — VRG ingest) | `vrg/3.2.2/`, `vrg/3.3.0/` | Versioned Digital Receipt envelopes POSTed to `vrgs.io` (prod) and `receiptx.com` (dev/test) for retailer receipt ingest. |
 
 These schemas are documentation-grade — the runtime services validate input
 in code rather than against the XSDs, so the schemas describe both the
@@ -50,9 +50,17 @@ rejection.
 │               ├── getOrderHeaderDetailsB-request.xsd
 │               └── getOrderHeaderDetailsB-response.xsd
 ├── vrg/
-│   └── 3.2.2/                            # TTDR / VRG schema version 3.2.2
-│       ├── TTDR-3.2.2.xsd                # the receipt envelope (includes TTDRsimpleTypes-3.2.2.xsd)
-│       └── TTDRsimpleTypes-3.2.2.xsd     # shared simple types and enumerations
+│   ├── 3.2.2/                            # frozen, supported TTDR release
+│   │   ├── TTDR-3.2.2.xsd
+│   │   └── TTDRsimpleTypes-3.2.2.xsd
+│   └── 3.3.0/                            # convenience-retail sibling release
+│       ├── TTDR-3.3.0.xsd
+│       ├── TTDRsimpleTypes-3.3.0.xsd
+│       ├── TTDR-CStoreProfile-1.0.xsd
+│       ├── README.md
+│       ├── MIGRATION.md
+│       ├── SECURITY.md
+│       └── examples/
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md
@@ -62,7 +70,8 @@ rejection.
 
 - Top-level directory is the **product / API family** in lowercase
   (`c360`, `vrg`).
-- Second level is the **major version** of that family (`3.0`, `3.2.2`).
+- Second level is the **published schema version** of that family (`3.0`,
+  `3.2.2`, `3.3.0`).
 - Inside `c360/3.0/`, the next level is the **resource group** in
   PascalCase (`Customer`, `Order`); this mirrors how the service code is
   organized.
@@ -141,7 +150,7 @@ but typically include `X-tenant-Key` and an `Authorization` token.
 
 ---
 
-## VRG / TTDR 3.2.2
+## VRG / TTDR 3.3.0 and 3.2.2
 
 The **TransactionTree Digital Receipt (TTDR)** schema describes the
 receipt envelope retailers POST to TransactionTree's ingest endpoint:
@@ -151,10 +160,18 @@ receipt envelope retailers POST to TransactionTree's ingest endpoint:
 | Production | `https://{merchant}.vrgs.io/` | `/VRG/file/loginupload` |
 | DevTest    | `https://receiptx.com/`      | `/VRG/file/loginupload` |
 
-`TTDR-3.2.2.xsd` is the top-level envelope and includes
-`TTDRsimpleTypes-3.2.2.xsd` (shared enumerations and constrained types).
-Both files must be served / supplied together; the `xs:include` uses a
-relative path inside `vrg/3.2.2/`.
+TTDR 3.3.0 is the current convenience-retail-capable sibling release. It adds
+optional outcome projections for fuel, EV charging, car wash and other
+service entitlements, age verification, offers, stored value, mobile payment,
+fleet evidence, provenance, and audit evidence. See
+[`vrg/3.3.0/README.md`](vrg/3.3.0/README.md).
+
+TTDR 3.2.2 remains supported and is not deprecated. Its files and namespace
+are unchanged. Producers must continue to emit 3.2.2 for consumers that have
+not negotiated 3.3.0.
+
+Each release's XSD files must be served or supplied together because the
+top-level envelope uses relative `xs:include` paths.
 
 Notable additions in the current 3.2.2 cut (versus the older 2025-09-08
 revision that previously lived in `general/`):
@@ -185,9 +202,9 @@ xmllint --noout \
         --schema c360/3.0/Customer/findCustomersB/findCustomersB-request.xsd \
         my-findCustomersB-request.xml
 
-# TTDR receipt envelope
+# TTDR 3.3.0 receipt envelope
 xmllint --noout \
-        --schema vrg/3.2.2/TTDR-3.2.2.xsd \
+        --schema vrg/3.3.0/TTDR-3.3.0.xsd \
         my-receipt.xml
 ```
 
@@ -200,7 +217,7 @@ pip install xmlschema
 ```python
 import xmlschema
 
-schema = xmlschema.XMLSchema("vrg/3.2.2/TTDR-3.2.2.xsd")
+schema = xmlschema.XMLSchema("vrg/3.3.0/TTDR-3.3.0.xsd")
 schema.validate("my-receipt.xml")           # raises XMLSchemaException on failure
 print(schema.is_valid("my-receipt.xml"))    # bool variant
 ```
@@ -225,10 +242,10 @@ entry.
 | Family | Current major | Notes |
 |---|---|---|
 | C360 (fka BORMC) | `3.0` | Endpoints carry their own `1.0` request/response namespaces where namespaced; newer endpoints (`getPersonComplete*`, `getOrder*`) use no `targetNamespace`. |
-| TTDR / VRG | `3.2.2` | Last full revision shipped 2025-12-12. Schema attribute remains `3.2.2`; intra-version edits are tracked in CHANGELOG. |
+| TTDR / VRG | `3.3.0` | Convenience-retail sibling release. TTDR 3.2.2 remains supported and is not deprecated. |
 
-A future major version (e.g. `c360/3.1/`, `vrg/3.3/`) will live in a new
-sibling directory rather than overwriting `3.0/` or `3.2.2/`.
+A future version will live in a new sibling directory rather than overwriting
+an existing published schema.
 
 ---
 
