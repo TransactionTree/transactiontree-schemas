@@ -263,6 +263,36 @@ try {
     $danglingAudit.Save($auditPath)
     Assert-SchemaRejected -Path $auditPath -Settings $settings -CaseName 'dangling audit line reference'
     $semanticNegativeCount++
+
+    [xml] $blankUnit = Get-Content -LiteralPath (Join-Path $examplesDir 'ev-mobile-sample.xml') -Raw
+    $unitNs = [System.Xml.XmlNamespaceManager]::new($blankUnit.NameTable)
+    $unitNs.AddNamespace('t', $namespace)
+    $unitNode = $blankUnit.SelectSingleNode('//t:EVChargingSession/t:EnergyDelivered/t:UnitCode', $unitNs)
+    $unitNode.InnerText = '   '
+    $unitPath = Join-Path $semanticTemp 'blank-unit-code.xml'
+    $blankUnit.Save($unitPath)
+    Assert-SchemaRejected -Path $unitPath -Settings $settings -CaseName 'blank unit code'
+    $semanticNegativeCount++
+
+    [xml] $blankSourceVersion = Get-Content -LiteralPath $sourceExample -Raw
+    $sourceNs = [System.Xml.XmlNamespaceManager]::new($blankSourceVersion.NameTable)
+    $sourceNs.AddNamespace('t', $namespace)
+    $sourceVersionNode = $blankSourceVersion.SelectSingleNode('//t:SourceProvenance/t:Version', $sourceNs)
+    $sourceVersionNode.InnerText = '   '
+    $sourceVersionPath = Join-Path $semanticTemp 'blank-source-version.xml'
+    $blankSourceVersion.Save($sourceVersionPath)
+    Assert-SchemaRejected -Path $sourceVersionPath -Settings $settings -CaseName 'blank source version'
+    $semanticNegativeCount++
+
+    [xml] $incompleteMapping = Get-Content -LiteralPath $sourceExample -Raw
+    $mappingNs = [System.Xml.XmlNamespaceManager]::new($incompleteMapping.NameTable)
+    $mappingNs.AddNamespace('t', $namespace)
+    $mappingVersionNode = $incompleteMapping.SelectSingleNode('//t:SourceProvenance/t:MappingProfileVersion', $mappingNs)
+    $null = $mappingVersionNode.ParentNode.RemoveChild($mappingVersionNode)
+    $mappingPath = Join-Path $semanticTemp 'incomplete-mapping-profile.xml'
+    $incompleteMapping.Save($mappingPath)
+    Assert-SchemaRejected -Path $mappingPath -Settings $settings -CaseName 'incomplete mapping profile pair'
+    $semanticNegativeCount++
 }
 finally {
     Remove-Item -LiteralPath $semanticTemp -Recurse -Force

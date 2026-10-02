@@ -103,8 +103,9 @@ structurally unchanged from 3.2.2 apart from comments, applies the example
 security policy, and proves that the synthetic prohibited-data fixtures under
 `tests/security-invalid/` are rejected while valid opaque tokens under
 `tests/security-valid/` pass. It also proves that blank, duplicate, and
-dangling convenience-retail line references, blank code qualifiers, and
-over-wide exact decimals are rejected by the XSD. Audit evidence uses its
+dangling convenience-retail line references, blank code or unit qualifiers,
+incomplete provenance mappings, and over-wide exact decimals are rejected by
+the XSD. Audit evidence uses its
 dedicated `LineReference` for receipt-line subjects; generic `SubjectType` and
 `SubjectId` pairs are reserved for non-line subjects.
 

@@ -64,8 +64,8 @@
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="Value" type="CStoreExactDecimalType"/>
-			<xs:element name="UnitCode" type="xs:string"/>
-			<xs:element name="UnitScheme" type="xs:string" minOccurs="0"/>
+			<xs:element name="UnitCode" type="CStoreNonBlankTokenType"/>
+			<xs:element name="UnitScheme" type="CStoreNonBlankTokenType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 
@@ -137,7 +137,7 @@
 			<xs:documentation>Version-pinned provenance for the source contract and mapping profile from which the TTDR projection was produced.</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="Standard" type="xs:string"/>
+			<xs:element name="Standard" type="CStoreNonBlankTokenType"/>
 			<xs:element name="Representation">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
@@ -150,11 +150,13 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="Version" type="xs:string"/>
+			<xs:element name="Version" type="CStoreNonBlankTokenType"/>
 			<xs:element name="MessageType" type="xs:string" minOccurs="0"/>
 			<xs:element name="SourceRecordId" type="xs:string" minOccurs="0"/>
-			<xs:element name="MappingProfile" type="xs:string" minOccurs="0"/>
-			<xs:element name="MappingProfileVersion" type="xs:string" minOccurs="0"/>
+			<xs:sequence minOccurs="0">
+				<xs:element name="MappingProfile" type="CStoreNonBlankTokenType"/>
+				<xs:element name="MappingProfileVersion" type="CStoreNonBlankTokenType"/>
+			</xs:sequence>
 			<xs:element name="CapturedAt" type="xs:dateTime" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
