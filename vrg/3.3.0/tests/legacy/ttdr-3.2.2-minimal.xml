@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transaction xmlns="https://www.transactiontree.com/framework/schema/vrg/3.2.2/TTDR3.2.2.xsd"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://www.transactiontree.com/framework/schema/vrg/3.2.2/TTDR3.2.2.xsd ../../../3.2.2/TTDR-3.2.2.xsd">
+  <TTDRVersion>TTDRV322</TTDRVersion>
+  <MerchantNumber>123456</MerchantNumber>
+  <TransactionDateTime>
+    <TransactionDate>2026-10-02</TransactionDate>
+    <TransactionTime>12:00:00Z</TransactionTime>
+  </TransactionDateTime>
+  <EntryType>PRINT</EntryType>
+  <TransId>legacy-322-001</TransId>
+  <TransactionType>SaleTransaction</TransactionType>
+  <TransactionLocation>
+    <StoreNumber>104</StoreNumber>
+    <RegisterNumber>1</RegisterNumber>
+    <RegisterType>POS</RegisterType>
+  </TransactionLocation>
+  <TransactionAssociate>
+    <ClerkIDType>OperatorID</ClerkIDType>
+    <ClerkId>2041</ClerkId>
+  </TransactionAssociate>
+  <TransactionData>
+    <TransactionSettings>
+      <CurrencyType>USD</CurrencyType>
+      <TotalAmount>299</TotalAmount>
+      <ItemsSold>1</ItemsSold>
+    </TransactionSettings>
+    <DetailedTransactionData>
+      <ProductIDType>SKU</ProductIDType>
+      <ProductId>LEGACY-SKU-01</ProductId>
+      <Description>Legacy TTDR Item</Description>
+      <Quantity>
+        <QuantitySoldType>EA</QuantitySoldType>
+        <QuantitySold>100</QuantitySold>
+      </Quantity>
+      <Price>
+        <DollarAmount>299</DollarAmount>
+        <ExtDollarAmount>299</ExtDollarAmount>
+      </Price>
+    </DetailedTransactionData>
+    <TotalsTransactionData>
+      <Totals>
+        <SubTotalAmount>299</SubTotalAmount>
+        <DiscountTotal>0</DiscountTotal>
+        <TotalAmount>299</TotalAmount>
+      </Totals>
+    </TotalsTransactionData>
+  </TransactionData>
+</Transaction>

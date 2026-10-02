@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TTDR Convenience-Retail Profile 1.0
+
+  This chameleon schema is included by TTDR-3.3.0.xsd and therefore adopts the TTDR 3.3.0
+  target namespace. It is a receipt/audit projection, not a POS, EPS, FDC, dispenser, charger,
+  car-wash-controller, or identity-verification control protocol.
+
+  SECURITY: never populate these types with PAN, track data, CVV/CVC, PIN/PIN blocks, raw EMV
+  cryptograms, date of birth, government-document identifiers/images, or reusable plaintext
+  redemption/fleet credentials. Use tokens, masked values, normalized outcomes, and evidence refs.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0" xml:lang="en">
+	<xs:annotation>
+		<xs:documentation>Optional convenience-retail outcome types for TTDR 3.3.0. All attachment points in the parent schema are optional. TTDR 3.2.2 remains unchanged and supported in parallel.</xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="CStoreExactDecimalType">
+		<xs:annotation>
+			<xs:documentation>Exact signed decimal with up to 18 integer and 9 fractional digits. Consumers must preserve decimal semantics and must not use binary floating point for audit calculations.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:totalDigits value="27"/>
+			<xs:fractionDigits value="9"/>
+			<xs:minExclusive value="-1000000000000000000"/>
+			<xs:maxExclusive value="1000000000000000000"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="CStoreNonBlankTokenType">
+		<xs:annotation>
+			<xs:documentation>Nonblank, whitespace-normalized identifier with a maximum length of 256 characters.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="256"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="CStoreCurrencyCodeType">
+		<xs:annotation>
+			<xs:documentation>Three-letter ISO 4217 currency code.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z]{3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="CStoreCodeReferenceType">
+		<xs:annotation>
+			<xs:documentation>A code qualified by its governing scheme and exact scheme version. This allows Conexxus and retailer code lists to evolve independently of TTDR.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Scheme" type="CStoreNonBlankTokenType"/>
+			<xs:element name="SchemeVersion" type="CStoreNonBlankTokenType"/>
+			<xs:element name="Code" type="CStoreNonBlankTokenType"/>
+			<xs:element name="Description" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreDecimalMeasureType">
+		<xs:annotation>
+			<xs:documentation>Exact measured quantity for fuel volume, energy, meters, tariff quantities, and fleet limits.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Value" type="CStoreExactDecimalType"/>
+			<xs:element name="UnitCode" type="CStoreNonBlankTokenType"/>
+			<xs:element name="UnitScheme" type="CStoreNonBlankTokenType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreExactMoneyType">
+		<xs:annotation>
+			<xs:documentation>Exact decimal monetary value. This supplements legacy TTDR integer-cent fields where a fuel or energy unit price requires additional precision.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CurrencyCode" type="CStoreCurrencyCodeType"/>
+			<xs:element name="Value" type="CStoreExactDecimalType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="CStoreProcessingStatusType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PENDING"/>
+			<xs:enumeration value="APPROVED"/>
+			<xs:enumeration value="PARTIALLY_APPROVED"/>
+			<xs:enumeration value="DECLINED"/>
+			<xs:enumeration value="CANCELLED"/>
+			<xs:enumeration value="ERROR"/>
+			<xs:enumeration value="REVERSED"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="CStoreProcessingResultType">
+		<xs:annotation>
+			<xs:documentation>Normalized final processing outcome. It records reconciliation facts rather than the complete payment, mobile, offer, or host protocol message.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Status" type="CStoreProcessingStatusType"/>
+			<xs:element name="Provider" type="xs:string" minOccurs="0"/>
+			<xs:element name="ProviderReference" type="xs:string" minOccurs="0">
+				<xs:annotation><xs:documentation>Opaque safe provider correlation reference; never cardholder or identity data.</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="ResponseCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="ReasonCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="RequestedAmount" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="ApprovedAmount" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="OccurredAt" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="Offline" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="StandIn" type="xs:boolean" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreEvidenceReferenceType">
+		<xs:annotation>
+			<xs:documentation>Privacy-minimized reference to evidence retained by an authorized system. The underlying credential or document is intentionally excluded.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="Token" type="CStoreNonBlankTokenType"/>
+				<xs:element name="SHA256">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:pattern value="[A-Fa-f0-9]{64}"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="Issuer" type="xs:string" minOccurs="0"/>
+			<xs:element name="IssuedAt" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="ExpiresAt" type="xs:dateTime" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreSourceProvenanceType">
+		<xs:annotation>
+			<xs:documentation>Version-pinned provenance for the source contract and mapping profile from which the TTDR projection was produced.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Standard" type="CStoreNonBlankTokenType"/>
+			<xs:element name="Representation">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="API_JSON"/>
+						<xs:enumeration value="XML_XSD"/>
+						<xs:enumeration value="JSON_SCHEMA"/>
+						<xs:enumeration value="DELIMITED"/>
+						<xs:enumeration value="PROPRIETARY"/>
+						<xs:enumeration value="OTHER"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Version" type="CStoreNonBlankTokenType"/>
+			<xs:element name="MessageType" type="xs:string" minOccurs="0"/>
+			<xs:element name="SourceRecordId" type="xs:string" minOccurs="0"/>
+			<xs:sequence minOccurs="0">
+				<xs:element name="MappingProfile" type="CStoreNonBlankTokenType"/>
+				<xs:element name="MappingProfileVersion" type="CStoreNonBlankTokenType"/>
+			</xs:sequence>
+			<xs:element name="CapturedAt" type="xs:dateTime" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreFuelSaleType">
+		<xs:annotation>
+			<xs:documentation>Final auditable outcome of a motor-fuel delivery. Device commands and live dispenser/FDC state are outside TTDR.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FuelingSessionId" type="xs:string"/>
+			<xs:element name="FuelingPointId" type="xs:string" minOccurs="0"/>
+			<xs:element name="DispenserId" type="xs:string" minOccurs="0"/>
+			<xs:element name="HoseId" type="xs:string" minOccurs="0"/>
+			<xs:element name="Grade" type="CStoreCodeReferenceType" minOccurs="0"/>
+			<xs:element name="PaymentProduct" type="CStoreCodeReferenceType" minOccurs="0"/>
+			<xs:element name="DeliveredVolume" type="CStoreDecimalMeasureType"/>
+			<xs:element name="MeterStart" type="CStoreDecimalMeasureType" minOccurs="0"/>
+			<xs:element name="MeterEnd" type="CStoreDecimalMeasureType" minOccurs="0"/>
+			<xs:element name="UnitPrice" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="PrepayAmount" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="StartedAt" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="EndedAt" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="ServiceLevel" minOccurs="0">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="SELF_SERVICE"/><xs:enumeration value="FULL_SERVICE"/><xs:enumeration value="OTHER"/></xs:restriction></xs:simpleType>
+			</xs:element>
+			<xs:element name="CompletionStatus">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="COMPLETED"/><xs:enumeration value="PARTIALLY_COMPLETED"/><xs:enumeration value="CANCELLED"/><xs:enumeration value="VOIDED"/><xs:enumeration value="ERROR"/></xs:restriction></xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreChargingPriceComponentType">
+		<xs:annotation><xs:documentation>One priced component of an EV charging session.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="Type">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="ENERGY"/><xs:enumeration value="TIME"/><xs:enumeration value="IDLE"/><xs:enumeration value="SESSION"/><xs:enumeration value="PARKING"/><xs:enumeration value="OTHER"/></xs:restriction></xs:simpleType>
+			</xs:element>
+			<xs:element name="Quantity" type="CStoreDecimalMeasureType" minOccurs="0"/>
+			<xs:element name="Rate" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="Amount" type="CStoreExactMoneyType"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreEVChargingSessionType">
+		<xs:annotation><xs:documentation>Final receipt facts for an EV charging session. Charger control and continuous telemetry are outside TTDR.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="SessionId" type="xs:string"/>
+			<xs:element name="ChargePointId" type="xs:string" minOccurs="0"/>
+			<xs:element name="EVSEId" type="xs:string" minOccurs="0"/>
+			<xs:element name="ConnectorId" type="xs:string" minOccurs="0"/>
+			<xs:element name="EnergyDelivered" type="CStoreDecimalMeasureType"/>
+			<xs:element name="MeterStart" type="CStoreDecimalMeasureType" minOccurs="0"/>
+			<xs:element name="MeterEnd" type="CStoreDecimalMeasureType" minOccurs="0"/>
+			<xs:element name="StartedAt" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="EndedAt" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="DurationSeconds" type="xs:nonNegativeInteger" minOccurs="0"/>
+			<xs:element name="Tariff" type="CStoreCodeReferenceType" minOccurs="0"/>
+			<xs:element name="PricingComponent" type="CStoreChargingPriceComponentType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="CompletionStatus">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="COMPLETED"/><xs:enumeration value="PARTIALLY_COMPLETED"/><xs:enumeration value="CANCELLED"/><xs:enumeration value="ERROR"/></xs:restriction></xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreServiceEntitlementType">
+		<xs:annotation><xs:documentation>Receipt-visible lifecycle outcome for a service entitlement such as a car-wash purchase or redemption.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="EntitlementId" type="xs:string"/>
+			<xs:element name="EntitlementToken" type="xs:string" minOccurs="0">
+				<xs:annotation><xs:documentation>Tokenized or hashed redemption credential; never a reusable plaintext customer code.</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="ServiceType">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="CAR_WASH"/><xs:enumeration value="VACUUM"/><xs:enumeration value="AIR"/><xs:enumeration value="OTHER"/></xs:restriction></xs:simpleType>
+			</xs:element>
+			<xs:element name="Program" type="CStoreCodeReferenceType" minOccurs="0"/>
+			<xs:element name="Status">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="ISSUED"/><xs:enumeration value="ACTIVE"/><xs:enumeration value="REDEEMED"/><xs:enumeration value="EXPIRED"/><xs:enumeration value="CANCELLED"/><xs:enumeration value="VOIDED"/><xs:enumeration value="ERROR"/></xs:restriction></xs:simpleType>
+			</xs:element>
+			<xs:element name="IssuedAt" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="ExpiresAt" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="RedeemedAt" type="xs:dateTime" minOccurs="0"/>
+			<xs:element name="IssuingSiteId" type="xs:string" minOccurs="0"/>
+			<xs:element name="RedeemingSiteId" type="xs:string" minOccurs="0"/>
+			<xs:element name="HostReference" type="xs:string" minOccurs="0"/>
+			<xs:element name="Amount" type="CStoreExactMoneyType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreLineProfileType">
+		<xs:annotation><xs:documentation>Exactly one convenience-retail outcome attached to a DetailedTransactionData line.</xs:documentation></xs:annotation>
+		<xs:choice>
+			<xs:element name="FuelSale" type="CStoreFuelSaleType"/>
+			<xs:element name="EVChargingSession" type="CStoreEVChargingSessionType"/>
+			<xs:element name="ServiceEntitlement" type="CStoreServiceEntitlementType"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreAgeVerificationType">
+		<xs:annotation><xs:documentation>Privacy-minimized proof that an age policy was evaluated. Date of birth, document number, address, image, barcode payload, and raw credentials are prohibited.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="VerificationId" type="xs:string"/>
+			<xs:element name="LineReference" type="CStoreNonBlankTokenType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation><xs:documentation>Value of the target DetailedTransactionData/LineReference covered by this decision.</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="RegulatedCategory" type="CStoreCodeReferenceType" minOccurs="0"/>
+			<xs:element name="RequiredAge" type="xs:nonNegativeInteger" minOccurs="0"/>
+			<xs:element name="ThresholdMet" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="Result">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="PASS"/><xs:enumeration value="FAIL"/><xs:enumeration value="NOT_PERFORMED"/><xs:enumeration value="ERROR"/><xs:enumeration value="OVERRIDDEN"/></xs:restriction></xs:simpleType>
+			</xs:element>
+			<xs:element name="Method">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="MANUAL_VISUAL"/><xs:enumeration value="ID_SCAN"/><xs:enumeration value="DIGITAL_CREDENTIAL"/><xs:enumeration value="THIRD_PARTY_TOKEN"/><xs:enumeration value="OVERRIDE"/><xs:enumeration value="OTHER"/></xs:restriction></xs:simpleType>
+			</xs:element>
+			<xs:element name="Provider" type="xs:string" minOccurs="0"/>
+			<xs:element name="PolicyVersion" type="xs:string" minOccurs="0"/>
+			<xs:element name="PerformedAt" type="xs:dateTime"/>
+			<xs:element name="VerifierToken" type="xs:string" minOccurs="0"/>
+			<xs:element name="Evidence" type="CStoreEvidenceReferenceType" minOccurs="0"/>
+			<xs:element name="OverrideReasonCode" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreOfferLineAllocationType">
+		<xs:sequence>
+			<xs:element name="LineReference" type="CStoreNonBlankTokenType"/>
+			<xs:element name="Amount" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="Quantity" type="CStoreDecimalMeasureType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreOfferRedemptionType">
+		<xs:annotation><xs:documentation>Receipt-visible digital, loyalty, manufacturer, or store offer result.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="OfferId" type="xs:string"/>
+			<xs:element name="RedemptionId" type="xs:string" minOccurs="0"/>
+			<xs:element name="ProgramId" type="xs:string" minOccurs="0"/>
+			<xs:element name="Status">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="APPLIED"/><xs:enumeration value="REJECTED"/><xs:enumeration value="REVERSED"/><xs:enumeration value="ERROR"/></xs:restriction></xs:simpleType>
+			</xs:element>
+			<xs:element name="EntryMethod" type="xs:string" minOccurs="0"/>
+			<xs:element name="AppliedAmount" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="PointsApplied" type="CStoreExactDecimalType" minOccurs="0"/>
+			<xs:element name="LineAllocation" type="CStoreOfferLineAllocationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="HostReference" type="xs:string" minOccurs="0"/>
+			<xs:element name="ResponseCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="ReasonCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="AppliedAt" type="xs:dateTime" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreStoredValueActivityType">
+		<xs:annotation><xs:documentation>Tokenized gift-card or stored-value lifecycle outcome.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="Activity">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="ISSUE"/><xs:enumeration value="ACTIVATE"/><xs:enumeration value="RELOAD"/><xs:enumeration value="REDEEM"/><xs:enumeration value="REFUND"/><xs:enumeration value="CASH_OUT"/><xs:enumeration value="TRANSFER"/><xs:enumeration value="VOID"/><xs:enumeration value="BALANCE_INQUIRY"/></xs:restriction></xs:simpleType>
+			</xs:element>
+			<xs:element name="InstrumentToken" type="xs:string"/>
+			<xs:element name="DestinationInstrumentToken" type="xs:string" minOccurs="0"/>
+			<xs:element name="Amount" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="BalanceBefore" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="BalanceAfter" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="Status" type="CStoreProcessingStatusType"/>
+			<xs:element name="HostReference" type="xs:string" minOccurs="0"/>
+			<xs:element name="ResponseCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="LineReference" type="CStoreNonBlankTokenType" minOccurs="0"/>
+			<xs:element name="TenderReference" type="xs:string" minOccurs="0"/>
+			<xs:element name="OccurredAt" type="xs:dateTime"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreFleetPromptEvidenceType">
+		<xs:annotation><xs:documentation>Typed, privacy-minimized fleet prompt response. Free text and raw driver credentials are intentionally excluded.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="Prompt" type="CStoreCodeReferenceType"/>
+			<xs:choice>
+				<xs:element name="BooleanValue" type="xs:boolean"/>
+				<xs:element name="IntegerValue" type="xs:integer"/>
+				<xs:element name="DecimalValue" type="CStoreExactDecimalType"/>
+				<xs:element name="TokenValue" type="xs:string"/>
+				<xs:element name="CodeValue" type="CStoreCodeReferenceType"/>
+			</xs:choice>
+			<xs:element name="CompletedAt" type="xs:dateTime" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreFleetEvidenceType">
+		<xs:annotation><xs:documentation>Safe fleet authorization result, product restrictions, and typed prompt evidence.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="FleetAccountToken" type="xs:string" minOccurs="0"/>
+			<xs:element name="VehicleToken" type="xs:string" minOccurs="0"/>
+			<xs:element name="DriverToken" type="xs:string" minOccurs="0"/>
+			<xs:element name="AuthorizationStatus" type="CStoreProcessingStatusType"/>
+			<xs:element name="AuthorizationReference" type="xs:string" minOccurs="0"/>
+			<xs:element name="ProductRestriction" type="CStoreCodeReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="PromptEvidence" type="CStoreFleetPromptEvidenceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="ApprovedAmount" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="ApprovedQuantity" type="CStoreDecimalMeasureType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreMobilePaymentContextType">
+		<xs:annotation><xs:documentation>Receipt-level context for a mobile-payment interaction, not a mobile-payment control envelope.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="Scenario">
+				<xs:simpleType><xs:restriction base="xs:string"><xs:enumeration value="INSIDE"/><xs:enumeration value="FUEL_PREPAY"/><xs:enumeration value="PAY_AT_PUMP"/><xs:enumeration value="CAR_WASH"/><xs:enumeration value="EV_CHARGING"/><xs:enumeration value="OTHER"/></xs:restriction></xs:simpleType>
+			</xs:element>
+			<xs:element name="Channel" type="xs:string" minOccurs="0"/>
+			<xs:element name="ApplicationReference" type="xs:string" minOccurs="0"/>
+			<xs:element name="InteractionReference" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreTenderEvidenceType">
+		<xs:annotation><xs:documentation>Safe processing, mobile, and fleet evidence associated with an existing TTDR tender. TenderReference should match the legacy TenderReference when available.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="TenderReference" type="xs:string"/>
+			<xs:element name="InstrumentToken" type="xs:string" minOccurs="0">
+				<xs:annotation><xs:documentation>Opaque payment/stored-value instrument token; never a plaintext account or card number.</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="MaskedAccount" type="xs:string" minOccurs="0">
+				<xs:annotation><xs:documentation>Display-safe masked value, normally no more than the final four digits.</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="ProcessingResult" type="CStoreProcessingResultType" minOccurs="0"/>
+			<xs:element name="MobilePayment" type="CStoreMobilePaymentContextType" minOccurs="0"/>
+			<xs:element name="Fleet" type="CStoreFleetEvidenceType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreAuditEvidenceType">
+		<xs:annotation><xs:documentation>Structured receipt-visible POS or back-office audit fact. Full journal and movement feeds belong in an audit-event contract such as ORAE, not TTDR.</xs:documentation></xs:annotation>
+		<xs:sequence>
+			<xs:element name="Code" type="xs:string"/>
+			<xs:element name="Severity" type="xs:string" minOccurs="0"/>
+			<xs:element name="Message" type="xs:string" minOccurs="0"/>
+			<xs:element name="RecordType" type="xs:string" minOccurs="0"/>
+			<xs:element name="SourceSystem" type="xs:string" minOccurs="0"/>
+			<xs:element name="SourceRecordId" type="xs:string" minOccurs="0"/>
+			<xs:choice minOccurs="0">
+				<xs:element name="LineReference" type="CStoreNonBlankTokenType">
+					<xs:annotation><xs:documentation>Receipt-line audit subject. The value must resolve to DetailedTransactionData/LineReference.</xs:documentation></xs:annotation>
+				</xs:element>
+				<xs:sequence>
+					<xs:element name="SubjectType" type="CStoreNonBlankTokenType">
+						<xs:annotation><xs:documentation>Non-line audit subject classification. Use LineReference instead for a receipt-line subject.</xs:documentation></xs:annotation>
+					</xs:element>
+					<xs:element name="SubjectId" type="CStoreNonBlankTokenType">
+						<xs:annotation><xs:documentation>Identifier paired with SubjectType for a non-line subject; this generic identifier is not schema-resolved.</xs:documentation></xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:choice>
+			<xs:element name="Outcome" type="xs:string" minOccurs="0"/>
+			<xs:element name="ReasonCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="OperatorToken" type="xs:string" minOccurs="0"/>
+			<xs:element name="ApproverToken" type="xs:string" minOccurs="0"/>
+			<xs:element name="Amount" type="CStoreExactMoneyType" minOccurs="0"/>
+			<xs:element name="Quantity" type="CStoreDecimalMeasureType" minOccurs="0"/>
+			<xs:element name="RelatedEventId" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CStoreProfileType">
+		<xs:annotation>
+			<xs:documentation>Transaction-level convenience-retail receipt projection. Element order is fixed by this sequence: SourceProvenance, AgeVerification, OfferRedemption, StoredValueActivity, ServiceEntitlement, TenderEvidence, AuditEvidence.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SourceProvenance" type="CStoreSourceProvenanceType" minOccurs="0"/>
+			<xs:element name="AgeVerification" type="CStoreAgeVerificationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="OfferRedemption" type="CStoreOfferRedemptionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="StoredValueActivity" type="CStoreStoredValueActivityType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="ServiceEntitlement" type="CStoreServiceEntitlementType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="TenderEvidence" type="CStoreTenderEvidenceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="AuditEvidence" type="CStoreAuditEvidenceType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

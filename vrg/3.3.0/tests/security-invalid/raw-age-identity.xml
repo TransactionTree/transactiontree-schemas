@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic negative fixture. Values are intentionally fake. -->
+<Evidence>
+  <Token>DOB=2000-01-01;government-id=TEST-ONLY-123</Token>
+</Evidence>
