@@ -6,8 +6,33 @@ file; this file captures the human-readable history.
 
 The format loosely follows [Keep a Changelog](https://keepachangelog.com/),
 and the repository follows [Semantic Versioning](https://semver.org/) at the
-**per-schema** level (C360 3.0, VRG / TTDR 3.2.2). The repo itself is not
+**per-schema** level (C360 3.0, VRG / TTDR 3.3.0). The repo itself is not
 versioned.
+
+## TTDR / VRG 3.3.0 — 2026-10-02
+
+### Added
+- Published TTDR 3.3.0 as a sibling of the unchanged TTDR 3.2.2 release with
+  a new namespace and fixed `TTDRVersion` value `TTDRV330`.
+- Added optional `CStoreLineProfile` line outcomes for motor fuel, EV
+  charging, and service entitlements such as car wash.
+- Added optional transaction-level `CStoreData` for source provenance,
+  privacy-minimized age verification, offers, stored value, service
+  entitlements, normalized tender results, mobile-payment context, fleet
+  evidence, and audit evidence.
+- Added exact decimal quantity and money types for fuel and EV values that
+  cannot be represented faithfully by legacy integer fields.
+- Added four validating examples, migration and security guidance, and a
+  PowerShell validation gate.
+
+### Compatibility and security
+- TTDR 3.2.2 remains supported and is not deprecated. Producers must emit the
+  namespace and fixed version value negotiated with each consumer.
+- The new profile is an outcome projection, not a device, payment, stored
+  value, identity, or forecourt control protocol.
+- PAN, track/CVV/PIN data, raw EMV cryptograms, date of birth,
+  government-ID data, credentials, and reusable plaintext tokens are
+  prohibited.
 
 ## [Unreleased] — 2026-05-14
 
