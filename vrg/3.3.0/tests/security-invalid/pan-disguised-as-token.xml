@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic negative fixture using a standard test number, never a real account. -->
+<TenderEvidence>
+  <InstrumentToken>4111111111111111</InstrumentToken>
+</TenderEvidence>
