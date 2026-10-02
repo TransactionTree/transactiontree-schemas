@@ -86,7 +86,7 @@ function Test-SecurityPolicy {
         'CardNumber', 'AccountNumber', 'LoyaltyCardNumber',
         'RawCredential', 'Password', 'ClientSecret', 'PrivateKey'
     )
-    $unsafeText = '(?i)(date[-_ ]?of[-_ ]?birth|\bdob\s*[:=]|government[-_ ]?id\s*[:=]|track\s*[12]?\s*[:=]|cvv\s*[:=]|cvc\s*[:=]|pin[-_ ]?block\s*[:=]|9f26\s*[:=]|\barqc\s*[:=])'
+    $unsafeText = '(?i)(date[-_ ]?of[-_ ]?birth|\bdob\s*[:=]|government[-_ ]?id\s*[:=]|track\s*[12]?\s*[:=]|cvv\s*[:=]|cvc\s*[:=]|\bpin\s*[:=]|pin[-_ ]?block\s*[:=]|9f26\s*[:=]|\barqc\s*[:=])'
 
     foreach ($node in $document.SelectNodes('//*')) {
         if ($node.LocalName -in $prohibitedNames) {
@@ -100,10 +100,17 @@ function Test-SecurityPolicy {
             if ($text -match $unsafeText) {
                 throw "Security policy failed for '$Path': prohibited sensitive-data marker in '$($node.LocalName)'."
             }
-            foreach ($candidate in [regex]::Matches($text, '(?<!\d)(?:\d[ -]?){12,18}\d(?!\d)')) {
-                $digits = $candidate.Value -replace '[^0-9]', ''
-                if (Test-Luhn -Digits $digits) {
-                    throw "Security policy failed for '$Path': '$($node.LocalName)' appears to contain a PAN."
+            # Check each exact PAN length separately. A single greedy 13-19 digit match can join
+            # a valid PAN to an adjacent numeric token and then miss it when the combined value
+            # fails Luhn (for example, "4111...1111 1").
+            $seenCandidates = [System.Collections.Generic.HashSet[string]]::new()
+            foreach ($digitCount in 13..19) {
+                $pattern = '(?<!\d)(?:\d[ -]?){' + ($digitCount - 1) + '}\d(?!\d)'
+                foreach ($candidate in [regex]::Matches($text, $pattern)) {
+                    $digits = $candidate.Value -replace '[^0-9]', ''
+                    if ($seenCandidates.Add($digits) -and (Test-Luhn -Digits $digits)) {
+                        throw "Security policy failed for '$Path': '$($node.LocalName)' appears to contain a PAN."
+                    }
                 }
             }
         }
@@ -292,6 +299,18 @@ try {
     $mappingPath = Join-Path $semanticTemp 'incomplete-mapping-profile.xml'
     $incompleteMapping.Save($mappingPath)
     Assert-SchemaRejected -Path $mappingPath -Settings $settings -CaseName 'incomplete mapping profile pair'
+    $semanticNegativeCount++
+
+    [xml] $blankEvidenceToken = Get-Content -LiteralPath $sourceExample -Raw
+    $evidenceNs = [System.Xml.XmlNamespaceManager]::new($blankEvidenceToken.NameTable)
+    $evidenceNs.AddNamespace('t', $namespace)
+    $hashNode = $blankEvidenceToken.SelectSingleNode('//t:AgeVerification/t:Evidence/t:SHA256', $evidenceNs)
+    $tokenNode = $blankEvidenceToken.CreateElement('Token', $namespace)
+    $tokenNode.InnerText = '   '
+    $null = $hashNode.ParentNode.ReplaceChild($tokenNode, $hashNode)
+    $evidencePath = Join-Path $semanticTemp 'blank-evidence-token.xml'
+    $blankEvidenceToken.Save($evidencePath)
+    Assert-SchemaRejected -Path $evidencePath -Settings $settings -CaseName 'blank evidence token'
     $semanticNegativeCount++
 }
 finally {

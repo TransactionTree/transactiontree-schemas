@@ -117,7 +117,7 @@
 		</xs:annotation>
 		<xs:sequence>
 			<xs:choice>
-				<xs:element name="Token" type="xs:string"/>
+				<xs:element name="Token" type="CStoreNonBlankTokenType"/>
 				<xs:element name="SHA256">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">

@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic policy-only fixture. The PIN marker and value are intentionally fake. -->
+<RawTextReceipt>PIN=1234</RawTextReceipt>
