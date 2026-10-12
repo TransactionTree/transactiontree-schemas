@@ -74,7 +74,7 @@
             <xs:documentation>Maximum number of records to return. Defaults to 25 when omitted or invalid.</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <!-- Structural alignment: legacy single PRODUCT_ID replaced by the optional PRODUCTS container with a repeatable PRODUCT_ID, matching the getOrderDetailsC / getOrderHeaderDetailsB siblings. -->
+        <!-- Two accepted product-filter forms: the bare PRODUCT_ID above (what production callers send) and the PRODUCTS container below with repeatable PRODUCT_ID (matching the getOrderDetailsC / getOrderHeaderDetailsB siblings). -->
         <xs:element name="PRODUCT_ID" type="xs:string" minOccurs="0">
           <xs:annotation><xs:documentation>Bare product filter: production callers send PRODUCT_ID directly under REQUEST (observed from POS lookup services); the PRODUCTS wrapper form below is also accepted. The service treats the value as a catalog SKU.</xs:documentation></xs:annotation>
         </xs:element>
