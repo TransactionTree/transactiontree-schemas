@@ -108,11 +108,20 @@ column, and the lookups emit them back as first-class elements:
 | Toshiba-RBI-fed | `detailNumber`, `SKU_ITEM_TYPE`, `priceOverridden` |
 | Retail-Pro-fed (mapping in progress) | `detailNumber`, `ProductUPC`, `Size`, `ProductName`, `ProductShortDescription` |
 
-`detailNumber` is the universal spine; `priceOverridden` is near-universal. Apparel feeds
+`detailNumber` is the universal spine; `priceOverridden` appears in three of the five profiles. Apparel feeds
 carry merchandising facets (Color/Size/Style/Division) as attributes where hardgoods feeds
 use the level5 hierarchy codes. Note Aptos-family feeds deliver `ProductUPC` per line —
 systems ingesting those feeds have per-line barcode data; Flooid feeds carry `pluNumber`
 only on scanned lines.
+
+How the name travels: when the TTDR `AttributeType` enumeration has a member for the
+facet (`Color`, `Size`, `ProductUPC`, `ProductClass`, `ProductOrderNumber`), feeds send it
+as the AttributeType; otherwise `AttributeType=Other` with the name in
+`AttributeDescription` (an open string). **Contract-vs-reality note:** deployed feeds also
+send AttributeType values outside the published TTDR 3.2.2/3.3.0 enumerations (e.g.
+`detailNumber`, `priceOverridden` as types) — strictly invalid against the TTDR schema but
+accepted by the lenient production ingestion. Names listed in this table that are not enum
+members travel via the `Other`/`AttributeDescription` route or as out-of-contract types.
 
 Persistence differs by generation: the org.lms generation persists only the recognized
 names above (unrecognized names are dropped); the org.fio generation additionally stores
