@@ -98,6 +98,12 @@ column, and the lookups emit them back as first-class elements:
 | `pluNumber` | `PLU_NUMBER` |
 | `priceOverridden` | `PRICE_OVERRIDE` |
 
+Worked examples with every Flooid-fed attribute populated, in production element order:
+`getOrderHeaderDetailsC/examples/responses/success-flooid-fed-item-attributes.xml` and
+`getOrderDetailsC/examples/responses/success-flooid-fed-item-attributes.xml` (scanned line,
+keyed line with price override, and an attached child line). A child line carries
+`PARENT_NUMBER` = the parent's `DETAIL_NUMBER` and `ITEM_LEVEL` = `1`; top-level lines are `0`.
+
 ### Observed attribute vocabularies by POS family
 
 | POS family | ItemAttributes observed inbound |
