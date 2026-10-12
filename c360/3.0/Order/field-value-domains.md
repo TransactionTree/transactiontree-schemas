@@ -98,5 +98,31 @@ column, and the lookups emit them back as first-class elements:
 | `pluNumber` | `PLU_NUMBER` |
 | `priceOverridden` | `PRICE_OVERRIDE` |
 
-Unrecognized attribute names are not persisted by the current ingestion; the loyalty-app
-generation can additionally emit stored attributes via `ATTRIBUTE_TYPE`/`ATTRIBUTE_DESCRIPTION`/`ATTRIBUTE_DATA` blocks.
+### Observed attribute vocabularies by POS family
+
+| POS family | ItemAttributes observed inbound |
+|---|---|
+| Flooid-fed | `detailNumber`, `parentNumber`, `SKU_OWNER`, `SKU_OWNER_TYPE`, `SKU_ITEM_TYPE`, `LineType`, `Image`, `level5CompanyCode`, `level5Level5ID`, `level5ProductGroupType`, `level5StructureType`, `pluNumber`, `priceOverridden` |
+| Aptos-fed (apparel) | `detailNumber`, `priceOverridden`, `ProductUPC`, `ProductID`, `ProductStyle`, `Color`, `Size`, `ProductClass`, `ProductDivision`, `ProductDeptGroup`, `ProductOrderNumber` |
+| Aptos-fed (minimal profile) | `detailNumber`, `ImageURL` |
+| Toshiba-RBI-fed | `detailNumber`, `SKU_ITEM_TYPE`, `priceOverridden` |
+| Retail-Pro-fed (mapping in progress) | `detailNumber`, `ProductUPC`, `Size`, `ProductName`, `ProductShortDescription` |
+
+`detailNumber` is the universal spine; `priceOverridden` appears in three of the five profiles. Apparel feeds
+carry merchandising facets (Color/Size/Style/Division) as attributes where hardgoods feeds
+use the level5 hierarchy codes. Note Aptos-family feeds deliver `ProductUPC` per line —
+systems ingesting those feeds have per-line barcode data; Flooid feeds carry `pluNumber`
+only on scanned lines.
+
+How the name travels: when the TTDR `AttributeType` enumeration has a member for the
+facet (`Color`, `Size`, `ProductUPC`, `ProductClass`, `ProductOrderNumber`), feeds send it
+as the AttributeType; otherwise `AttributeType=Other` with the name in
+`AttributeDescription` (an open string). **Contract-vs-reality note:** deployed feeds also
+send AttributeType values outside the published TTDR 3.2.2/3.3.0 enumerations (e.g.
+`detailNumber`, `priceOverridden` as types) — strictly invalid against the TTDR schema but
+accepted by the lenient production ingestion. Names listed in this table that are not enum
+members travel via the `Other`/`AttributeDescription` route or as out-of-contract types.
+
+Persistence differs by generation: the older service generation persists only the recognized
+names above (unrecognized names are dropped); the loyalty-app generation additionally stores
+attributes generically (name/value) and can emit them via `ATTRIBUTE_TYPE`/`ATTRIBUTE_DESCRIPTION`/`ATTRIBUTE_DATA` blocks.
