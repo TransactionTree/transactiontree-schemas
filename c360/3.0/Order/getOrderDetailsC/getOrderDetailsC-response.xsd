@@ -545,7 +545,7 @@
 			</xs:element>
 			<xs:element name="PRICE_OVERRIDE" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Override amount or empty.</xs:documentation>
+					<xs:documentation>Price-override flag for the line: Y/N (Aptos-fed tenants) or true/false (Flooid-fed tenants). Not a monetary amount.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="ITEM_VOID" type="xs:string" minOccurs="0">
@@ -878,9 +878,9 @@
 		<xs:annotation>
 			<xs:documentation>TRANSACTION groups one or more ORDER_HEADER blocks.</xs:documentation>
 		</xs:annotation>
-		<xs:choice minOccurs="0" maxOccurs="unbounded">
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
 			<!-- New LayawayData element under /TRANSACTION/LayawayData -->
-			<xs:element name="LayawayData" minOccurs="0">
+			<xs:element name="LayawayData" minOccurs="1">
 				<xs:annotation>
 					<xs:documentation>Contains layaway and special order information including payment schedules. This element is optional and applies to transactions involving installment payments or deferred fulfillment. Mapped to /POS/TRADE/ORDER</xs:documentation>
 				</xs:annotation>
@@ -979,8 +979,8 @@
 											<xs:documentation>Individual scheduled payment installment with payment number, date, and amount. /POS/TRADE/ORDER/ORDER_SCHED_PMTS</xs:documentation>
 										</xs:annotation>
 										<xs:complexType>
-											<xs:choice minOccurs="0" maxOccurs="unbounded">
-												<xs:element name="ScheduledPaymentNumber" minOccurs="1">
+											<xs:all>
+												<xs:element name="ScheduledPaymentNumber">
 													<xs:annotation>
 														<xs:documentation>Sequential payment number (1, 2, 3, etc.) indicating the installment sequence. mapped to /POS/TRADE/ORDER/ORDER_SCHED_PMTS/SeqNum</xs:documentation>
 													</xs:annotation>
@@ -990,12 +990,12 @@
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:element>
-												<xs:element name="ScheduledPaymentDate" type="xs:string" minOccurs="1">
+												<xs:element name="ScheduledPaymentDate" type="xs:dateTime">
 													<xs:annotation>
 														<xs:documentation>Scheduled payment due date in ISO 8601 format (YYYY-MM-DD). Example: 2025-11-19, mapped to /POS/TRADE/ORDER/ORDER_SCHED_PMTS/SchedDate</xs:documentation>
 													</xs:annotation>
 												</xs:element>
-												<xs:element name="ScheduledPaymentAmount" minOccurs="1">
+												<xs:element name="ScheduledPaymentAmount">
 													<xs:annotation>
 														<xs:documentation>Scheduled payment amount in cents, mapped to /POS/TRADE/ORDER/ORDER_SCHED_PMTS/Amt</xs:documentation>
 													</xs:annotation>
@@ -1005,7 +1005,7 @@
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:element>
-											</xs:choice>
+											</xs:all>
 										</xs:complexType>
 									</xs:element>
 								</xs:choice>
@@ -1020,7 +1020,7 @@
 	</xs:complexType>
 	<xs:element name="WEBSERVICE">
 		<xs:annotation><xs:documentation>Wrapper used by gate-level failures (E888 unknown tenant, E899 access-token validation): those documents arrive as WEBSERVICE/RESPONSE. Service-level responses use the bare RESPONSE root; both roots are declared globally.</xs:documentation></xs:annotation>
-		<xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded"><xs:element ref="RESPONSE"/></xs:choice></xs:complexType>
+		<xs:complexType><xs:sequence><xs:element ref="RESPONSE"/></xs:sequence></xs:complexType>
 	</xs:element>
 	<xs:element name="RESPONSE">
 		<xs:annotation>

@@ -523,13 +523,13 @@
 		<xs:annotation>
 			<xs:documentation>Container for one or more ORDER_HEADER nodes.</xs:documentation>
 		</xs:annotation>
-		<xs:choice minOccurs="0" maxOccurs="unbounded">
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
 			<xs:element name="ORDER_HEADER" type="OrderHeaderType" minOccurs="1" maxOccurs="unbounded"/>
 		</xs:choice>
 	</xs:complexType>
 	<xs:element name="WEBSERVICE">
 		<xs:annotation><xs:documentation>Wrapper used by gate-level failures (E888 unknown tenant, E899 access-token validation): those documents arrive as WEBSERVICE/RESPONSE. Service-level responses use the bare RESPONSE root; both roots are declared globally.</xs:documentation></xs:annotation>
-		<xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded"><xs:element ref="RESPONSE"/></xs:choice></xs:complexType>
+		<xs:complexType><xs:sequence><xs:element ref="RESPONSE"/></xs:sequence></xs:complexType>
 	</xs:element>
 	<xs:element name="RESPONSE">
 		<xs:annotation>
