@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Kitchen-sink example: every element the service can emit across BOTH service
+     generations, populated with synthetic values. Real responses populate a subset;
+     loyalty-app-generation deployments emit the extra elements empty when unpopulated.
+     Item 1 = scanned sale line; item 2 = keyed line with stored attributes;
+     item 3 = returned line with original-transaction linkage. -->
+<RESPONSE ResponseId="100000050">
+    <RESPONSE_DATE>2026-10-12 15:10:00.000</RESPONSE_DATE>
+    <TRANSACTION>
+        <ORDER_HEADER>
+            <ORDER_ID>12345678</ORDER_ID>
+            <FIRST_NAME>JANE</FIRST_NAME>
+            <LAST_NAME>SAMPLE</LAST_NAME>
+            <COMPANY_NAME>SAMPLE COMPANY LLC</COMPANY_NAME>
+            <CUSTOMER_ID>1234567</CUSTOMER_ID>
+            <ORDER_DATE>2026-10-10 12:34:56.0</ORDER_DATE>
+            <EMAIL_ID>jane.sample@example.com</EMAIL_ID>
+            <TAX>3.90</TAX>
+            <SHIPMENT_METHOD>STANDARD</SHIPMENT_METHOD>
+            <PROMOTION_ADJUSTMENT>-5.00</PROMOTION_ADJUSTMENT>
+            <SUB_TOTAL>59.97</SUB_TOTAL>
+            <TOTAL_AMOUNT>58.87</TOTAL_AMOUNT>
+            <STORE_ID>001</STORE_ID>
+            <TERMINAL_ID>2</TERMINAL_ID>
+            <CASH_REGISTER_ID>2</CASH_REGISTER_ID>
+            <TRANSACTION_NUMBER>12345678</TRANSACTION_NUMBER>
+            <TRANSACTION_TYPE>SaleTransaction</TRANSACTION_TYPE>
+            <ASSOCIATE_ID>99999</ASSOCIATE_ID>
+            <ASSOCIATE_FIRST_NAME>ALEX</ASSOCIATE_FIRST_NAME>
+            <ASSOCIATE_LAST_NAME>CLERK</ASSOCIATE_LAST_NAME>
+            <TOTAL_TAX_AMOUNT>3.90</TOTAL_TAX_AMOUNT>
+            <CUSTOMER_CROSS_REFERENCES>
+                <CROSS_REFERENCE>
+                    <SYSTEM_REFERENCE>POS_ID</SYSTEM_REFERENCE>
+                    <SYSTEM_REFERENCE_ID>10000000000000001</SYSTEM_REFERENCE_ID>
+                </CROSS_REFERENCE>
+                <CROSS_REFERENCE>
+                    <SYSTEM_REFERENCE>LOYALTY_ID</SYSTEM_REFERENCE>
+                    <SYSTEM_REFERENCE_ID>LOY-000001</SYSTEM_REFERENCE_ID>
+                </CROSS_REFERENCE>
+            </CUSTOMER_CROSS_REFERENCES>
+            <PRIMARY_PHONE>5555551234</PRIMARY_PHONE>
+            <PRIMARY_FAX/>
+            <CONTACT>
+                <TO_NAME>JANE SAMPLE</TO_NAME>
+                <ADDRESS1>100 EXAMPLE STREET</ADDRESS1>
+                <ADDRESS2>UNIT 1</ADDRESS2>
+                <CITY>SPRINGFIELD</CITY>
+                <STATE>XX</STATE>
+                <ZIPCODE>00000</ZIPCODE>
+                <COUNTRY>USA</COUNTRY>
+                <CONTACT_MECH_ID>10001</CONTACT_MECH_ID>
+                <CONTACT_TYPE>BILLING</CONTACT_TYPE>
+            </CONTACT>
+            <CONTACT>
+                <TO_NAME>JANE SAMPLE</TO_NAME>
+                <ADDRESS1>100 EXAMPLE STREET</ADDRESS1>
+                <ADDRESS2/>
+                <CITY>SPRINGFIELD</CITY>
+                <STATE>XX</STATE>
+                <ZIPCODE>00000</ZIPCODE>
+                <COUNTRY>USA</COUNTRY>
+                <CONTACT_MECH_ID>10002</CONTACT_MECH_ID>
+                <CONTACT_TYPE>SHIPPING</CONTACT_TYPE>
+            </CONTACT>
+            <TAX_EXEMPT>N</TAX_EXEMPT>
+            <TAX_ID/>
+            <REGISTER_NUMBER>2</REGISTER_NUMBER>
+            <TRANSACTION_HISTORY>N</TRANSACTION_HISTORY>
+            <IS_SEND_TRANSACTION>N</IS_SEND_TRANSACTION>
+            <IS_EMPLOYEE_TRANSACTION>N</IS_EMPLOYEE_TRANSACTION>
+            <STORE_TAX_AREA>XX-AREA-1</STORE_TAX_AREA>
+            <CASH_BACK_AMOUNT>0.00</CASH_BACK_AMOUNT>
+            <BALANCE>0.00</BALANCE>
+            <CHANGE>1.13</CHANGE>
+            <WORKDAY_ID>20261010</WORKDAY_ID>
+            <REGISTER_TYPE>POS</REGISTER_TYPE>
+            <ORDER_ITEMS>
+                <ORDER_ITEM>
+                    <ORDER_ITEM_SEQ>00001</ORDER_ITEM_SEQ>
+                    <SKU>1234567</SKU>
+                    <DESCRIPTION>SAMPLE SCANNED PRODUCT</DESCRIPTION>
+                    <PRICE>19.99</PRICE>
+                    <ORGINAL_PRICE>24.99</ORGINAL_PRICE>
+                    <QUANTITY_ORDERED>1.00</QUANTITY_ORDERED>
+                    <QUANTITY_RETURNED>0</QUANTITY_RETURNED>
+                    <QUANTITY_TYPE>EA</QUANTITY_TYPE>
+                    <DETAIL_NUMBER>1</DETAIL_NUMBER>
+                    <PARENT_NUMBER/>
+                    <SKU_OWNER>ACME</SKU_OWNER>
+                    <SKU_OWNER_TYPE>1</SKU_OWNER_TYPE>
+                    <SKU_ITEM_TYPE>6</SKU_ITEM_TYPE>
+                    <LEVEL_5_COMPANY_CODE>ACME</LEVEL_5_COMPANY_CODE>
+                    <LEVEL_5_LEVEL_5_ID>A100B1C2D3</LEVEL_5_LEVEL_5_ID>
+                    <LEVEL_5_PRODUCT_GROUP_TYPE>3</LEVEL_5_PRODUCT_GROUP_TYPE>
+                    <LEVEL_5_STRUCTURE_TYPE>1</LEVEL_5_STRUCTURE_TYPE>
+                    <ORDER_ITEM_TYPE/>
+                    <LINE_TYPE>PLU_SALE</LINE_TYPE>
+                    <IMAGE>https://cdn.example.com/products/1234567.jpg</IMAGE>
+                    <RETURNED_STATUS/>
+                    <PLU_NUMBER>012345678905</PLU_NUMBER>
+                    <PRICE_OVERRIDE>true</PRICE_OVERRIDE>
+                    <PRICE_RULE>MKDN</PRICE_RULE>
+                    <ITEM_VOID/>
+                    <ITEM_VOID_LINE/>
+                    <ITEM_LEVEL>0</ITEM_LEVEL>
+                    <ITEM_AUTO_SOLD/>
+                    <ITEM_TAX>
+                        <TAX>
+                            <TAX_START_DATE>2026-01-01</TAX_START_DATE>
+                            <TAX_TYPE>GST</TAX_TYPE>
+                            <TAX_AMOUNT>1.00</TAX_AMOUNT>
+                            <TAX_PERCENTAGE>5.00</TAX_PERCENTAGE>
+                            <TAX_DESCRIPTION>FEDERAL TAX</TAX_DESCRIPTION>
+                            <TAX_AUTHORITY>XX</TAX_AUTHORITY>
+                            <TAX_RULE_CODE>G</TAX_RULE_CODE>
+                            <TAXABLE_AMOUNT>19.99</TAXABLE_AMOUNT>
+                            <TAX_VOIDED/>
+                            <TAX_VOIDED_LINE/>
+                        </TAX>
+                        <TAX>
+                            <TAX_TYPE>PST</TAX_TYPE>
+                            <TAX_AMOUNT>1.40</TAX_AMOUNT>
+                            <TAX_PERCENTAGE>7.00</TAX_PERCENTAGE>
+                            <TAX_DESCRIPTION>PROVINCIAL TAX</TAX_DESCRIPTION>
+                            <TAX_AUTHORITY>XX</TAX_AUTHORITY>
+                            <TAX_RULE_CODE>P</TAX_RULE_CODE>
+                            <TAXABLE_AMOUNT>19.99</TAXABLE_AMOUNT>
+                        </TAX>
+                    </ITEM_TAX>
+                </ORDER_ITEM>
+                <ORDER_ITEM>
+                    <ORDER_ITEM_SEQ>00002</ORDER_ITEM_SEQ>
+                    <SKU>2345678</SKU>
+                    <DESCRIPTION>SAMPLE KEYED PRODUCT WITH ATTRIBUTES</DESCRIPTION>
+                    <PRICE>29.99</PRICE>
+                    <QUANTITY_ORDERED>1.00</QUANTITY_ORDERED>
+                    <DETAIL_NUMBER>2</DETAIL_NUMBER>
+                    <PARENT_NUMBER/>
+                    <SKU_OWNER>ACME</SKU_OWNER>
+                    <SKU_OWNER_TYPE>1</SKU_OWNER_TYPE>
+                    <SKU_ITEM_TYPE>1</SKU_ITEM_TYPE>
+                    <DEPARTMENT_CODE>D042</DEPARTMENT_CODE>
+                    <LINE_TYPE>KNOWN_ITEM_SALE</LINE_TYPE>
+                    <PLU_NUMBER/>
+                    <PRICE_OVERRIDE>false</PRICE_OVERRIDE>
+                    <ITEM_LEVEL>0</ITEM_LEVEL>
+                    <ITEM_ATTRIBUTES>
+                        <ATTRIBUTE>
+                            <ATTRIBUTE_TYPE>Color</ATTRIBUTE_TYPE>
+                            <ATTRIBUTE_DESCRIPTION>Color</ATTRIBUTE_DESCRIPTION>
+                            <ATTRIBUTE_DATA>BLUE</ATTRIBUTE_DATA>
+                        </ATTRIBUTE>
+                        <ATTRIBUTE>
+                            <ATTRIBUTE_TYPE>Size</ATTRIBUTE_TYPE>
+                            <ATTRIBUTE_DESCRIPTION>Size</ATTRIBUTE_DESCRIPTION>
+                            <ATTRIBUTE_DATA>L</ATTRIBUTE_DATA>
+                        </ATTRIBUTE>
+                        <ATTRIBUTE>
+                            <ATTRIBUTE_TYPE>Other</ATTRIBUTE_TYPE>
+                            <ATTRIBUTE_DESCRIPTION>detailNumber</ATTRIBUTE_DESCRIPTION>
+                            <ATTRIBUTE_DATA>2</ATTRIBUTE_DATA>
+                        </ATTRIBUTE>
+                    </ITEM_ATTRIBUTES>
+                    <ITEM_TAX>
+                        <TAX>
+                            <TAX_TYPE>StateOrProvince</TAX_TYPE>
+                            <TAX_AMOUNT>1.50</TAX_AMOUNT>
+                            <TAX_PERCENTAGE>5.00</TAX_PERCENTAGE>
+                            <TAX_DESCRIPTION>STATE TAX</TAX_DESCRIPTION>
+                            <TAX_AUTHORITY>XX</TAX_AUTHORITY>
+                            <TAX_RULE_CODE>G</TAX_RULE_CODE>
+                            <TAXABLE_AMOUNT>29.99</TAXABLE_AMOUNT>
+                        </TAX>
+                    </ITEM_TAX>
+                </ORDER_ITEM>
+                <ORDER_ITEM>
+                    <ORDER_ITEM_SEQ>00003</ORDER_ITEM_SEQ>
+                    <SKU>3456789</SKU>
+                    <DESCRIPTION>SAMPLE RETURNED PRODUCT</DESCRIPTION>
+                    <PRICE>9.99</PRICE>
+                    <QUANTITY_ORDERED>1.00</QUANTITY_ORDERED>
+                    <QUANTITY_RETURNED>1</QUANTITY_RETURNED>
+                    <DETAIL_NUMBER>3</DETAIL_NUMBER>
+                    <PARENT_NUMBER/>
+                    <SKU_OWNER>ACME</SKU_OWNER>
+                    <SKU_OWNER_TYPE>1</SKU_OWNER_TYPE>
+                    <SKU_ITEM_TYPE>1</SKU_ITEM_TYPE>
+                    <LINE_TYPE>KNOWN_ITEM_SALE</LINE_TYPE>
+                    <RETURNED_STATUS>1</RETURNED_STATUS>
+                    <RETURNED_DATE>2026-10-11 09:00:00.0</RETURNED_DATE>
+                    <RETURN_AMOUNT>9.99</RETURN_AMOUNT>
+                    <ORIGINAL_ORDER_LINE_SEQ>00003</ORIGINAL_ORDER_LINE_SEQ>
+                    <ORIGINAL_REGISTER_NUMBER>2</ORIGINAL_REGISTER_NUMBER>
+                    <ORIGINAL_STORE_NUMBER>001</ORIGINAL_STORE_NUMBER>
+                    <ORIGINAL_STORE_TAX_AREA>XX-AREA-1</ORIGINAL_STORE_TAX_AREA>
+                    <ORIGINAL_TRANSACTION_DATE>2026-10-10 12:34:56.0</ORIGINAL_TRANSACTION_DATE>
+                    <ORIGINAL_TRANS_ID>12345678</ORIGINAL_TRANS_ID>
+                    <ITEM_VOID/>
+                    <ITEM_VOID_LINE/>
+                    <ITEM_LEVEL>0</ITEM_LEVEL>
+                </ORDER_ITEM>
+            </ORDER_ITEMS>
+        </ORDER_HEADER>
+    </TRANSACTION>
+</RESPONSE>

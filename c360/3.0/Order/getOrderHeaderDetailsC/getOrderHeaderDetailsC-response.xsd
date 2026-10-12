@@ -3,7 +3,10 @@
   <xs:annotation>
     <xs:documentation>
 RESPONSE schema for getOrderHeaderDetailsC (Customer360) -- rebuilt 2026-10-12 against
-verified production responses from a Flooid-fed tenant and the service source.
+verified production responses from Flooid-fed tenants on both service generations and the
+service sources. Loyalty-app-generation extras (TRANSACTION_HISTORY, WORKDAY_ID, BALANCE,
+CHANGE, ORIGINAL_* return linkage, ITEM_ATTRIBUTES, ...) are declared optional and arrive as
+empty elements when unpopulated.
 
 Replaces the earlier schema, which omitted the error envelope, 32 live elements
 (CONTACT block, CUSTOMER_ID, TERMINAL_ID, item flags, per-tax detail) and misspelled the
@@ -70,11 +73,12 @@ transaction type. Amounts are decimal-formatted strings; dates are
     <xs:annotation><xs:documentation>Outcome code; absent on success. See the catalog in the schema header.</xs:documentation></xs:annotation>
   </xs:element>
 
-  <xs:element name="RESPONSE_DATA" type="xs:string">
-    <xs:annotation><xs:documentation>Exception detail emitted by the loyalty-app service generation (sibling of RESPONSE_MESSAGE).</xs:documentation></xs:annotation>
-  </xs:element>
   <xs:element name="RESPONSE_MESSAGE" type="xs:string">
     <xs:annotation><xs:documentation>Human-readable detail, emitted with E999.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="RESPONSE_DATA" type="xs:string">
+    <xs:annotation><xs:documentation>Exception detail emitted by the loyalty-app service generation (sibling of RESPONSE_MESSAGE).</xs:documentation></xs:annotation>
   </xs:element>
 
   <xs:element name="TRANSACTION">
@@ -87,7 +91,7 @@ transaction type. Amounts are decimal-formatted strings; dates are
   <xs:element name="ORDER_HEADER">
     <xs:annotation><xs:documentation>One matched transaction: customer, cross-references, contacts and line items.</xs:documentation></xs:annotation>
     <xs:complexType>
-      <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element ref="ORDER_ID" minOccurs="0"/>
         <xs:element ref="FIRST_NAME" minOccurs="0"/>
         <xs:element ref="LAST_NAME" minOccurs="0"/>
@@ -116,8 +120,19 @@ transaction type. Amounts are decimal-formatted strings; dates are
         <xs:element ref="CONTACT" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="TAX_EXEMPT" minOccurs="0"/>
         <xs:element ref="TAX_ID" minOccurs="0"/>
+        <xs:element ref="REGISTER_NUMBER" minOccurs="0"/>
+        <xs:element ref="TRANSACTION_HISTORY" minOccurs="0"/>
+        <xs:element ref="IS_SEND_TRANSACTION" minOccurs="0"/>
+        <xs:element ref="IS_EMPLOYEE_TRANSACTION" minOccurs="0"/>
+        <xs:element ref="STORE_TAX_AREA" minOccurs="0"/>
+        <xs:element ref="CASH_BACK_AMOUNT" minOccurs="0"/>
+        <xs:element ref="BALANCE" minOccurs="0"/>
+        <xs:element ref="CHANGE" minOccurs="0"/>
+        <xs:element ref="WORKDAY_ID" minOccurs="0"/>
+        <xs:element ref="REGISTER_TYPE" minOccurs="0"/>
+
         <xs:element ref="ORDER_ITEMS" minOccurs="0"/>
-      </xs:sequence>
+      </xs:choice>
     </xs:complexType>
   </xs:element>
 
@@ -299,6 +314,21 @@ transaction type. Amounts are decimal-formatted strings; dates are
         <xs:element ref="ITEM_LEVEL" minOccurs="0"/>
         <xs:element ref="ITEM_AUTO_SOLD" minOccurs="0"/>
 
+        <xs:element ref="ORGINAL_PRICE" minOccurs="0"/>
+        <xs:element ref="QUANTITY_RETURNED" minOccurs="0"/>
+        <xs:element ref="QUANTITY_TYPE" minOccurs="0"/>
+        <xs:element ref="DEPARTMENT_CODE" minOccurs="0"/>
+        <xs:element ref="PRICE_RULE" minOccurs="0"/>
+        <xs:element ref="RETURNED_DATE" minOccurs="0"/>
+        <xs:element ref="RETURN_AMOUNT" minOccurs="0"/>
+        <xs:element ref="ORIGINAL_ORDER_LINE_SEQ" minOccurs="0"/>
+        <xs:element ref="ORIGINAL_REGISTER_NUMBER" minOccurs="0"/>
+        <xs:element ref="ORIGINAL_STORE_NUMBER" minOccurs="0"/>
+        <xs:element ref="ORIGINAL_STORE_TAX_AREA" minOccurs="0"/>
+        <xs:element ref="ORIGINAL_TRANSACTION_DATE" minOccurs="0"/>
+        <xs:element ref="ORIGINAL_TRANS_ID" minOccurs="0"/>
+
+        <xs:element ref="ITEM_ATTRIBUTES" minOccurs="0"/>
         <xs:element ref="ITEM_TAX" minOccurs="0"/>
       </xs:choice>
     </xs:complexType>
@@ -377,12 +407,107 @@ transaction type. Amounts are decimal-formatted strings; dates are
     <xs:annotation><xs:documentation>Auto-sold flag (linked/forced lines).</xs:documentation></xs:annotation>
   </xs:element>
 
+  <xs:element name="REGISTER_NUMBER" type="xs:string">
+    <xs:annotation><xs:documentation>Register number (loyalty-app generation; sibling of CASH_REGISTER_ID).</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="TRANSACTION_HISTORY" type="xs:string">
+    <xs:annotation><xs:documentation>Transaction-history flag (Y/N).</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="IS_SEND_TRANSACTION" type="xs:string">
+    <xs:annotation><xs:documentation>Send-transaction flag.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="IS_EMPLOYEE_TRANSACTION" type="xs:string">
+    <xs:annotation><xs:documentation>Employee-transaction flag.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="STORE_TAX_AREA" type="xs:string">
+    <xs:annotation><xs:documentation>Store tax area code.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="CASH_BACK_AMOUNT" type="xs:string">
+    <xs:annotation><xs:documentation>Cash-back amount on debit tenders.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="BALANCE" type="xs:string">
+    <xs:annotation><xs:documentation>Remaining balance (layaway/stored value).</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="CHANGE" type="xs:string">
+    <xs:annotation><xs:documentation>Change given on cash tenders.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="WORKDAY_ID" type="xs:string">
+    <xs:annotation><xs:documentation>Workday/business-day identifier.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="REGISTER_TYPE" type="xs:string">
+    <xs:annotation><xs:documentation>Register type code.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="ORGINAL_PRICE" type="xs:string">
+    <xs:annotation><xs:documentation>Original (pre-override/markdown) price; spelling is the live contract.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="QUANTITY_RETURNED" type="xs:string">
+    <xs:annotation><xs:documentation>Quantity returned against this line.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="QUANTITY_TYPE" type="xs:string">
+    <xs:annotation><xs:documentation>Quantity unit (EA etc.).</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="DEPARTMENT_CODE" type="xs:string">
+    <xs:annotation><xs:documentation>Merchandising department code (Aptos-fed tenants).</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="PRICE_RULE" type="xs:string">
+    <xs:annotation><xs:documentation>Price-rule code applied to the line.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="RETURNED_DATE" type="xs:string">
+    <xs:annotation><xs:documentation>Date the line was returned.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="RETURN_AMOUNT" type="xs:string">
+    <xs:annotation><xs:documentation>Amount refunded against the line.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="ORIGINAL_ORDER_LINE_SEQ" type="xs:string">
+    <xs:annotation><xs:documentation>Return linkage: original line sequence.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="ORIGINAL_REGISTER_NUMBER" type="xs:string">
+    <xs:annotation><xs:documentation>Return linkage: original register.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="ORIGINAL_STORE_NUMBER" type="xs:string">
+    <xs:annotation><xs:documentation>Return linkage: original store.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="ORIGINAL_STORE_TAX_AREA" type="xs:string">
+    <xs:annotation><xs:documentation>Return linkage: original store tax area.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="ORIGINAL_TRANSACTION_DATE" type="xs:string">
+    <xs:annotation><xs:documentation>Return linkage: original transaction date.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="ORIGINAL_TRANS_ID" type="xs:string">
+    <xs:annotation><xs:documentation>Return linkage: original transaction id.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="ITEM_ATTRIBUTES">
+    <xs:annotation><xs:documentation>Stored per-line attributes (loyalty-app generation): one ATTRIBUTE block per name/value pair. See field-value-domains.md for per-POS-family vocabularies.</xs:documentation></xs:annotation>
+    <xs:complexType><xs:sequence>
+      <xs:element name="ATTRIBUTE" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="ATTRIBUTE_TYPE" minOccurs="0"/>
+          <xs:element ref="ATTRIBUTE_DESCRIPTION" minOccurs="0"/>
+          <xs:element ref="ATTRIBUTE_DATA" minOccurs="0"/>
+
+        </xs:choice></xs:complexType>
+      </xs:element>
+    </xs:sequence></xs:complexType>
+  </xs:element>
+  <xs:element name="ATTRIBUTE_TYPE" type="xs:string">
+    <xs:annotation><xs:documentation>Attribute type (enum member or Other).</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="ATTRIBUTE_DESCRIPTION" type="xs:string">
+    <xs:annotation><xs:documentation>Attribute name when ATTRIBUTE_TYPE=Other.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="ATTRIBUTE_DATA" type="xs:string">
+    <xs:annotation><xs:documentation>Attribute value.</xs:documentation></xs:annotation>
+  </xs:element>
+
   <xs:element name="ITEM_TAX">
     <xs:annotation><xs:documentation>Per-line tax details. Its child element is named TAX -- the same name as the header-level amount -- so it is declared locally here with a complex structure.</xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
         <xs:element name="TAX" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType><xs:sequence>
+            <xs:element ref="TAX_START_DATE" minOccurs="0"/>
             <xs:element ref="TAX_TYPE" minOccurs="0"/>
             <xs:element ref="TAX_AMOUNT" minOccurs="0"/>
             <xs:element ref="TAX_PERCENTAGE" minOccurs="0"/>
@@ -397,6 +522,9 @@ transaction type. Amounts are decimal-formatted strings; dates are
         </xs:element>
       </xs:sequence>
     </xs:complexType>
+  </xs:element>
+  <xs:element name="TAX_START_DATE" type="xs:string">
+    <xs:annotation><xs:documentation>Tax effective start date, when configured.</xs:documentation></xs:annotation>
   </xs:element>
   <xs:element name="TAX_TYPE" type="xs:string">
     <xs:annotation><xs:documentation>e.g. StateOrProvince, GST, PST.</xs:documentation></xs:annotation>
