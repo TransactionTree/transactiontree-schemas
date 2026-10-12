@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
-		<xs:documentation>RESPONSE schema for getOrderHeaderDetailsB (header-focused). Monetary fields allow empty values to match live output.</xs:documentation>
+		<xs:documentation>RESPONSE schema for getOrderHeaderDetailsB (header-focused). Monetary fields allow empty values to match live output. Content models are unordered, repeat-tolerant choices ON PURPOSE (2026-10): the production emitter varies element order by tenant and re-emits some elements, so strict sequences reject real responses. Consumers take the first occurrence of a repeated element.</xs:documentation>
 	</xs:annotation>
 	<xs:simpleType name="EmptyString">
 		<xs:annotation>
@@ -77,6 +77,10 @@
 					<xs:documentation>accessTokenKey is not valid</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="E110"><xs:annotation><xs:documentation>Required identifier missing on this operation.</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="E300"><xs:annotation><xs:documentation>PRODUCT_ID not found in the tenant product catalog (observed in production; observed when the tenant product catalog is missing/stale).</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="E888"><xs:annotation><xs:documentation>Unknown X-tenant-Key header (gate level; arrives wrapped in WEBSERVICE).</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="E999"><xs:annotation><xs:documentation>Unhandled exception; RESPONSE_MESSAGE carries detail.</xs:documentation></xs:annotation></xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="CrossReferenceType">
@@ -296,7 +300,7 @@
 		<xs:annotation>
 			<xs:documentation>One order header returned by getOrderHeaderDetailsB.</xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="ORDER_ID" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Internal order identifier.</xs:documentation>
@@ -412,13 +416,13 @@
 					<xs:documentation>Zero or more customer cross-reference entries; may be empty.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="CROSS_REFERENCE" type="CrossReferenceType" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>Customer external id pair.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="PRIMARY_FAX" type="xs:string" minOccurs="0">
@@ -431,7 +435,7 @@
 					<xs:documentation>Postal contact; CONTACT_TYPE usually BILLING or SHIPPING.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="TO_NAME" type="xs:string" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Display name for address label.</xs:documentation>
@@ -477,7 +481,7 @@
 								<xs:documentation>Contact type (BILLING/SHIPPING).</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="BAR_CODE" type="BarCodeType" minOccurs="0">
@@ -490,13 +494,13 @@
 					<xs:documentation>Header-level tenders/payments (optional).</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="TENDER_ITEM" type="TenderItemType" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>Tender/payment entry.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="TOTAL_TAXES" minOccurs="0">
@@ -504,37 +508,41 @@
 					<xs:documentation>Header-level aggregated taxes (optional).</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="TAXES" type="TaxType" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>Tax entry at header level.</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
-		</xs:sequence>
+		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="TransactionType">
 		<xs:annotation>
 			<xs:documentation>Container for one or more ORDER_HEADER nodes.</xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
 			<xs:element name="ORDER_HEADER" type="OrderHeaderType" minOccurs="1" maxOccurs="unbounded"/>
-		</xs:sequence>
+		</xs:choice>
 	</xs:complexType>
+	<xs:element name="WEBSERVICE">
+		<xs:annotation><xs:documentation>Wrapper used by gate-level failures (E888 unknown tenant, E899 access-token validation): those documents arrive as WEBSERVICE/RESPONSE. Service-level responses use the bare RESPONSE root; both roots are declared globally.</xs:documentation></xs:annotation>
+		<xs:complexType><xs:sequence><xs:element ref="RESPONSE"/></xs:sequence></xs:complexType>
+	</xs:element>
 	<xs:element name="RESPONSE">
 		<xs:annotation>
 			<xs:documentation>Top-level element returned by getOrderHeaderDetailsB.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Response timestamp (string).</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="RESPONSE_CODE" type="ResponseCode" minOccurs="0">
+				<xs:element name="RESPONSE_CODE" type="xs:string" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Outcome code when present; see ResponseCode.</xs:documentation>
 					</xs:annotation>
@@ -544,7 +552,7 @@
 						<xs:documentation>Container with one or more ORDER_HEADER nodes.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-			</xs:sequence>
+			</xs:choice>
 			<xs:attribute name="ResponseId" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>Opaque correlation id.</xs:documentation>

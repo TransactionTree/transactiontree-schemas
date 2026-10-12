@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
-		<xs:documentation>Annotated schema for getOrderDetailsC RESPONSE.</xs:documentation>
+		<xs:documentation>Annotated schema for getOrderDetailsC RESPONSE. Content models are unordered, repeat-tolerant choices ON PURPOSE (2026-10): the production emitter varies element order by tenant and re-emits some elements, so strict sequences reject real responses. Consumers take the first occurrence of a repeated element.</xs:documentation>
 	</xs:annotation>
 	<xs:simpleType name="EmptyString">
 		<xs:annotation>
@@ -19,7 +19,7 @@
 	</xs:simpleType>
 	<xs:simpleType name="ResponseCode">
 		<xs:annotation>
-			<xs:documentation>Response codes from the service.</xs:documentation>
+			<xs:documentation>Documented catalog of response codes. NOT binding since 2026-10: RESPONSE_CODE is xs:string so new production codes cannot break validation (a closed enumeration previously hid E300 for years).</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="E101">
@@ -77,6 +77,10 @@
 					<xs:documentation>accessTokenKey is not valid</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="E110"><xs:annotation><xs:documentation>Required identifier missing on this operation.</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="E300"><xs:annotation><xs:documentation>PRODUCT_ID not found in the tenant product catalog (observed in production; observed when the tenant product catalog is missing/stale).</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="E888"><xs:annotation><xs:documentation>Unknown X-tenant-Key header (gate level; arrives wrapped in WEBSERVICE).</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="E999"><xs:annotation><xs:documentation>Unhandled exception; RESPONSE_MESSAGE carries detail.</xs:documentation></xs:annotation></xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="TaxType">
@@ -385,7 +389,7 @@
 		<xs:annotation>
 			<xs:documentation>Order line item with pricing, taxes, attributes, discounts.</xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="ORDER_ITEM_SEQ" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Line sequence.</xs:documentation>
@@ -456,14 +460,14 @@
 					<xs:documentation>Returned date.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="QUANTITY_RETURNED" type="Money" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Qty returned.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="QUANTITY_ORDERED" type="Money" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Qty ordered.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="QUANTITY_RETURNED" type="Money" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Qty returned.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="QUANTITY_TYPE" type="xs:string" minOccurs="0">
@@ -536,9 +540,12 @@
 					<xs:documentation>Return status.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="PRICE_OVERRIDE" type="Money" minOccurs="0">
+			<xs:element name="PLU_NUMBER" type="xs:string" minOccurs="0">
+				<xs:annotation><xs:documentation>Scanned barcode (UPC-A/PLU) when the line was scanned; empty when keyed by SKU. Flooid-fed tenants.</xs:documentation></xs:annotation>
+			</xs:element>
+			<xs:element name="PRICE_OVERRIDE" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Override amount or empty.</xs:documentation>
+					<xs:documentation>Price-override flag for the line: Y/N (Aptos-fed tenants) or true/false (Flooid-fed tenants). Not a monetary amount.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="ITEM_VOID" type="xs:string" minOccurs="0">
@@ -571,9 +578,9 @@
 					<xs:documentation>Item-level taxes.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="TAX" type="TaxType" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="ITEM_ATTRIBUTES" minOccurs="0">
@@ -581,9 +588,9 @@
 					<xs:documentation>Item-level attributes.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="ATTRIBUTE" type="AttributeType" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="ITEM_DISCOUNT" minOccurs="0">
@@ -591,18 +598,18 @@
 					<xs:documentation>Item-level discount list.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="DISCOUNT" type="DiscountType" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
-		</xs:sequence>
+		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="OrderHeaderType">
 		<xs:annotation>
 			<xs:documentation>Header block for a single order within a TRANSACTION.</xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="ORDER_ID" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Order identifier.</xs:documentation>
@@ -713,20 +720,48 @@
 					<xs:documentation>Zero or more cross-reference entries for the customer.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="CROSS_REFERENCE" type="CrossReferenceType" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
+			</xs:element>
+			<xs:element name="PRIMARY_PHONE" type="xs:string" minOccurs="0">
+				<xs:annotation><xs:documentation>Customer primary phone; omitted entirely when none on file.</xs:documentation></xs:annotation>
 			</xs:element>
 			<xs:element name="PRIMARY_FAX" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Primary fax number.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="POSTAL_CONTACTS" type="xs:string" minOccurs="0">
+			<xs:element name="POSTAL_CONTACTS" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Postal contacts container.</xs:documentation>
+					<xs:documentation>Postal contacts container: one CONTACT block per address, CONTACT_TYPE distinguishes BILLING and SHIPPING. (Was wrongly declared as a simple string before 2026-10.)</xs:documentation>
 				</xs:annotation>
+				<xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="CONTACT" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded">
+							<xs:element name="TO_NAME" type="xs:string" minOccurs="0"/>
+							<xs:element name="ADDRESS1" type="xs:string" minOccurs="0"/>
+							<xs:element name="ADDRESS2" type="xs:string" minOccurs="0"/>
+							<xs:element name="CITY" type="xs:string" minOccurs="0"/>
+							<xs:element name="STATE" type="xs:string" minOccurs="0"/>
+							<xs:element name="ZIPCODE" type="xs:string" minOccurs="0"/>
+							<xs:element name="COUNTRY" type="xs:string" minOccurs="0"/>
+							<xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0"/>
+							<xs:element name="CUSTOMER_MECH_REFERENCES" minOccurs="0">
+								<xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="CROSS_REFERENCE" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded">
+											<xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0"/>
+											<xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0"/>
+										</xs:choice></xs:complexType>
+									</xs:element>
+								</xs:choice></xs:complexType>
+							</xs:element>
+							<xs:element name="CONTACT_TYPE" type="xs:string" minOccurs="0"/>
+						</xs:choice></xs:complexType>
+					</xs:element>
+				</xs:choice></xs:complexType>
 			</xs:element>
 			<xs:element name="TAX_EXEMPT" type="xs:string" minOccurs="0">
 				<xs:annotation>
@@ -812,9 +847,9 @@
 					<xs:documentation>Zero or more ORDER_ITEM entries.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="ORDER_ITEM" type="OrderItemType" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="TENDER_ITEMS" minOccurs="0">
@@ -822,9 +857,9 @@
 					<xs:documentation>Zero or more TENDER_ITEM entries.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="TENDER_ITEM" type="TenderItemType" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="TOTAL_TAXES" minOccurs="0">
@@ -832,20 +867,20 @@
 					<xs:documentation>Header-level aggregate taxes.</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
-					<xs:sequence>
+					<xs:choice minOccurs="0" maxOccurs="unbounded">
 						<xs:element name="TAXES" type="TaxType" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
+					</xs:choice>
 				</xs:complexType>
 			</xs:element>
-		</xs:sequence>
+		</xs:choice>
 	</xs:complexType>
 	<xs:complexType name="TransactionType">
 		<xs:annotation>
 			<xs:documentation>TRANSACTION groups one or more ORDER_HEADER blocks.</xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
 			<!-- New LayawayData element under /TRANSACTION/LayawayData -->
-			<xs:element name="LayawayData" minOccurs="0">
+			<xs:element name="LayawayData" minOccurs="1">
 				<xs:annotation>
 					<xs:documentation>Contains layaway and special order information including payment schedules. This element is optional and applies to transactions involving installment payments or deferred fulfillment. Mapped to /POS/TRADE/ORDER</xs:documentation>
 				</xs:annotation>
@@ -908,7 +943,7 @@
 								<xs:documentation>Total Layaway amount in cents /POS/TRADE/ORDER/OrigAmt</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="LayawayStatusDate" type="xs:dateTime" minOccurs="0">
+						<xs:element name="LayawayStatusDate" type="xs:string" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Date the order or layaway was originally placed /POS/TRADE/ORDER/StatusDate</xs:documentation>
 							</xs:annotation>
@@ -918,7 +953,7 @@
 								<xs:documentation>Total Layaway amount in cents /POS/TRADE/ORDER/OrigTax</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="LayawayPlacedDate" type="xs:dateTime" minOccurs="0">
+						<xs:element name="LayawayPlacedDate" type="xs:string" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Date the order or layaway was originally placed, mapped to /POS/TRADE/ORDER/PlacedDate</xs:documentation>
 							</xs:annotation>
@@ -938,14 +973,14 @@
 								<xs:documentation>Contains a list of scheduled payment installments for the order or layaway.</xs:documentation>
 							</xs:annotation>
 							<xs:complexType>
-								<xs:sequence>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
 									<xs:element name="ScheduledPayment" minOccurs="0" maxOccurs="unbounded">
 										<xs:annotation>
 											<xs:documentation>Individual scheduled payment installment with payment number, date, and amount. /POS/TRADE/ORDER/ORDER_SCHED_PMTS</xs:documentation>
 										</xs:annotation>
 										<xs:complexType>
-											<xs:sequence>
-												<xs:element name="ScheduledPaymentNumber" minOccurs="1">
+											<xs:all>
+												<xs:element name="ScheduledPaymentNumber">
 													<xs:annotation>
 														<xs:documentation>Sequential payment number (1, 2, 3, etc.) indicating the installment sequence. mapped to /POS/TRADE/ORDER/ORDER_SCHED_PMTS/SeqNum</xs:documentation>
 													</xs:annotation>
@@ -955,12 +990,12 @@
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:element>
-												<xs:element name="ScheduledPaymentDate" type="xs:dateTime" minOccurs="1">
+												<xs:element name="ScheduledPaymentDate" type="xs:dateTime">
 													<xs:annotation>
 														<xs:documentation>Scheduled payment due date in ISO 8601 format (YYYY-MM-DD). Example: 2025-11-19, mapped to /POS/TRADE/ORDER/ORDER_SCHED_PMTS/SchedDate</xs:documentation>
 													</xs:annotation>
 												</xs:element>
-												<xs:element name="ScheduledPaymentAmount" minOccurs="1">
+												<xs:element name="ScheduledPaymentAmount">
 													<xs:annotation>
 														<xs:documentation>Scheduled payment amount in cents, mapped to /POS/TRADE/ORDER/ORDER_SCHED_PMTS/Amt</xs:documentation>
 													</xs:annotation>
@@ -970,10 +1005,10 @@
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:element>
-											</xs:sequence>
+											</xs:all>
 										</xs:complexType>
 									</xs:element>
-								</xs:sequence>
+								</xs:choice>
 							</xs:complexType>
 						</xs:element>
 					</xs:all>
@@ -981,20 +1016,24 @@
 			</xs:element>
 			<!-- Existing order headers -->
 			<xs:element name="ORDER_HEADER" type="OrderHeaderType" minOccurs="1" maxOccurs="unbounded"/>
-		</xs:sequence>
+		</xs:choice>
 	</xs:complexType>
+	<xs:element name="WEBSERVICE">
+		<xs:annotation><xs:documentation>Wrapper used by gate-level failures (E888 unknown tenant, E899 access-token validation): those documents arrive as WEBSERVICE/RESPONSE. Service-level responses use the bare RESPONSE root; both roots are declared globally.</xs:documentation></xs:annotation>
+		<xs:complexType><xs:sequence><xs:element ref="RESPONSE"/></xs:sequence></xs:complexType>
+	</xs:element>
 	<xs:element name="RESPONSE">
 		<xs:annotation>
 			<xs:documentation>Top-level element for the getOrderDetailsC service response.</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
-			<xs:sequence>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
 				<xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Response timestamp (string; e.g., 2025-11-02 10:42:41.942).</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="RESPONSE_CODE" type="ResponseCode" minOccurs="0">
+				<xs:element name="RESPONSE_CODE" type="xs:string" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Present on error/special states; see ResponseCode.</xs:documentation>
 					</xs:annotation>
@@ -1004,7 +1043,7 @@
 						<xs:documentation>One TRANSACTION per call; contains ORDER_HEADER records.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-			</xs:sequence>
+			</xs:choice>
 			<xs:attribute name="ResponseId" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>Opaque correlation id.</xs:documentation>
