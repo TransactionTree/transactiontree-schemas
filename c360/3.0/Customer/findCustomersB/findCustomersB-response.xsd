@@ -9,7 +9,7 @@
       Purpose
       -------
       Describes the RESPONSE envelope returned by /loyalty-app/control/findCustomersB.
-      The service always builds a RESPONSE element with RESPONSE_CODE and may include
+      On errors the RESPONSE carries RESPONSE_CODE (catalog below, kept non-binding so new production codes cannot break validation; successes omit it) and may include
       contextual echoes (e.g., STORE_ID) or a result payload (customer list) rendered
       by higher layers. Structure of the full result set may vary by tenant.
 
@@ -30,7 +30,7 @@
           E102 – XML parse error (SAX)
           E103 – Parser configuration error
           E104 – IO error reading XmlInput
-          E105 – No effective filters supplied
+          E105 – No effective filters supplied, OR no customer matched the filters (both triggers verified in the service source; the not-found case is routine production traffic preceding new-customer enrollment)
           E127 – Invalid/unknown STORE_ID
         Success codes may be present as "S###" (not fixed here to preserve forward compatibility).
       </xs:documentation>
@@ -66,7 +66,7 @@
         <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0">
           <xs:annotation><xs:documentation>Server timestamp when this response was generated.</xs:documentation></xs:annotation>
         </xs:element>
-        <xs:element name="RESPONSE_CODE" type="ResponseCode">
+        <xs:element name="RESPONSE_CODE" type="xs:string" minOccurs="0">
           <xs:annotation><xs:documentation>Outcome code (see documentation on meanings above).</xs:documentation></xs:annotation>
         </xs:element>
 
