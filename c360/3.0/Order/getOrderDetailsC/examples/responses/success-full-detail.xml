@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RESPONSE ResponseId="100000010">
+    <RESPONSE_DATE>2026-10-12 15:01:00.000</RESPONSE_DATE>
+    <TRANSACTION>
+        <ORDER_HEADER>
+            <ORDER_ID>12345678</ORDER_ID>
+            <FIRST_NAME>JANE</FIRST_NAME>
+            <LAST_NAME>SAMPLE</LAST_NAME>
+            <COMPANY_NAME/>
+            <CUSTOMER_ID>1234567</CUSTOMER_ID>
+            <ORDER_DATE>2026-10-10 12:34:56.0</ORDER_DATE>
+            <EMAIL_ID>jane.sample@example.com</EMAIL_ID>
+            <TAX>1.30</TAX>
+            <SHIPMENT_METHOD/>
+            <PROMOTION_ADJUSTMENT>0.00</PROMOTION_ADJUSTMENT>
+            <SUB_TOTAL>19.99</SUB_TOTAL>
+            <TOTAL_AMOUNT>21.29</TOTAL_AMOUNT>
+            <STORE_ID>001</STORE_ID>
+            <TERMINAL_ID>2</TERMINAL_ID>
+            <CASH_REGISTER_ID>2</CASH_REGISTER_ID>
+            <TRANSACTION_NUMBER>12345678</TRANSACTION_NUMBER>
+            <TRANSACTION_TYPE>SaleTransaction</TRANSACTION_TYPE>
+            <ASSOCIATE_ID>99999</ASSOCIATE_ID>
+            <TOTAL_TAX_AMOUNT>1.30</TOTAL_TAX_AMOUNT>
+            <CUSTOMER_CROSS_REFERENCES>
+                <CROSS_REFERENCE>
+                    <SYSTEM_REFERENCE>POS_ID</SYSTEM_REFERENCE>
+                    <SYSTEM_REFERENCE_ID>10000000000000001</SYSTEM_REFERENCE_ID>
+                </CROSS_REFERENCE>
+            </CUSTOMER_CROSS_REFERENCES>
+            <PRIMARY_PHONE>5555551234</PRIMARY_PHONE>
+            <PRIMARY_FAX/>
+            <TAX_EXEMPT/>
+            <TAX_ID/>
+            <ORDER_ITEMS>
+                <ORDER_ITEM>
+                    <ORDER_ITEM_SEQ>00001</ORDER_ITEM_SEQ>
+                    <SKU>1234567</SKU>
+                    <DESCRIPTION>SAMPLE PRODUCT DESCRIPTION</DESCRIPTION>
+                    <PRICE>19.99</PRICE>
+                    <QUANTITY_ORDERED>1.00</QUANTITY_ORDERED>
+                    <QUANTITY_RETURNED>0</QUANTITY_RETURNED>
+                    <DETAIL_NUMBER>1</DETAIL_NUMBER>
+                    <PARENT_NUMBER/>
+                    <SKU_OWNER>ACME</SKU_OWNER>
+                    <SKU_OWNER_TYPE>1</SKU_OWNER_TYPE>
+                    <SKU_ITEM_TYPE>1</SKU_ITEM_TYPE>
+                    <LINE_TYPE>KNOWN_ITEM_SALE</LINE_TYPE>
+                    <PLU_NUMBER>012345678905</PLU_NUMBER>
+                    <PRICE_OVERRIDE>N</PRICE_OVERRIDE>
+                    <ITEM_TAX>
+                        <TAX>
+                            <TAX_TYPE>StateOrProvince</TAX_TYPE>
+                            <TAX_AMOUNT>1.30</TAX_AMOUNT>
+                            <TAX_PERCENTAGE>6.50</TAX_PERCENTAGE>
+                            <TAX_DESCRIPTION>STATE TAX</TAX_DESCRIPTION>
+                            <TAX_AUTHORITY>XX</TAX_AUTHORITY>
+                            <TAX_RULE_CODE>G</TAX_RULE_CODE>
+                            <TAXABLE_AMOUNT>19.99</TAXABLE_AMOUNT>
+                        </TAX>
+                    </ITEM_TAX>
+                </ORDER_ITEM>
+            </ORDER_ITEMS>
+            <TENDER_ITEMS>
+                <TENDER_ITEM>
+                    <TENDER_ITEM_NAME>CREDIT-VISA</TENDER_ITEM_NAME>
+                    <TENDER_ITEM_VALUE>21.29</TENDER_ITEM_VALUE>
+                    <TENDER_CARD_NAME>VISA</TENDER_CARD_NAME>
+                    <AUTHORIZATION_CODE>APPROV</AUTHORIZATION_CODE>
+                    <TENDER_ITEM_ACCOUNT>************1111</TENDER_ITEM_ACCOUNT>
+                    <TENDER_MEDIA_TYPE>10</TENDER_MEDIA_TYPE>
+                </TENDER_ITEM>
+            </TENDER_ITEMS>
+        </ORDER_HEADER>
+    </TRANSACTION>
+</RESPONSE>
