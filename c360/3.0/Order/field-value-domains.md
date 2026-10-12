@@ -70,9 +70,33 @@ A consumer written against the superset handles every system; absent fields simp
 | `TAX_AUTHORITY` | two-letter province/state codes (`ON`, `QC`, `BC`, `AB`, `SK`, `MB`, `MB1`, `NB`, `NS`, `NL`, `PE`, …) | per-tenant jurisdiction set; `MB1`-style variants occur |
 | `TAX_FLAG` | `true` or absent | |
 
-## Request-side keys the lookup accepts
+## Request-side keys the lookups accept
 
+Authoritative per-operation contracts are the four `*-request.xsd` files — key names,
+required/optional status and **date types differ per operation** (some take `yyyy-MM-dd`
+strings, `getOrderHeaderDetailsB` takes `xs:dateTime`; some declare filters such as
+`TRANSACTION_TYPE` and `REGISTER_NUMBER`; `ORDER_STATUS` appears in some request
+payloads historically but is not declared by the current request schemas). Common keys:
 `PRODUCT_ID` (catalog SKU — scanned barcodes sent here only resolve on systems with a
-barcode→SKU cross-reference), `ORDER_ID`/transaction number, `CUSTOMER_ID`,
-`SYSTEM_REFERENCE`+`SYSTEM_REFERENCE_ID` (external customer id), `STORE_ID`,
-`FROM_DATE`/`THRU_DATE` (`yyyy-MM-dd`), `ORDER_STATUS`, `RECORD_LIMIT`.
+barcode-to-SKU cross-reference), `ORDER_ID`/transaction number, `CUSTOMER_ID`,
+`SYSTEM_REFERENCE`+`SYSTEM_REFERENCE_ID`, `STORE_ID`, `FROM_DATE`/`THRU_DATE`,
+`RECORD_LIMIT`.
+
+## Ingestion-side: per-line ItemAttributes (how the non-standard line fields travel)
+
+POS feeds deliver the generation/POS-specific line fields as generic TTDR
+`ItemAttributes` name/value pairs; ingestion maps each known name to a dedicated
+column, and the lookups emit them back as first-class elements:
+
+| Inbound attribute name | Response element |
+|---|---|
+| `detailNumber` / `parentNumber` | `DETAIL_NUMBER` / `PARENT_NUMBER` |
+| `SKU_OWNER` / `SKU_OWNER_TYPE` / `SKU_ITEM_TYPE` | same names |
+| `LineType` | `LINE_TYPE` |
+| `Image` | `IMAGE` |
+| `level5CompanyCode` / `level5Level5ID` / `level5ProductGroupType` / `level5StructureType` | `LEVEL_5_COMPANY_CODE` / `LEVEL_5_LEVEL_5_ID` / `LEVEL_5_PRODUCT_GROUP_TYPE` / `LEVEL_5_STRUCTURE_TYPE` |
+| `pluNumber` | `PLU_NUMBER` |
+| `priceOverridden` | `PRICE_OVERRIDE` |
+
+Unrecognized attribute names are not persisted by the current ingestion; the org.fio
+generation can additionally emit stored attributes via `ATTRIBUTE_TYPE`/`ATTRIBUTE_DESCRIPTION`/`ATTRIBUTE_DATA` blocks.
