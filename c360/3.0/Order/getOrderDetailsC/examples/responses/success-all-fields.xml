@@ -91,12 +91,16 @@
                     <LEVEL_5_LEVEL_5_ID>A100B1C2D3</LEVEL_5_LEVEL_5_ID>
                     <LEVEL_5_PRODUCT_GROUP_TYPE>3</LEVEL_5_PRODUCT_GROUP_TYPE>
                     <LEVEL_5_STRUCTURE_TYPE>1</LEVEL_5_STRUCTURE_TYPE>
+                    <ORDER_ITEM_TYPE/>
                     <LINE_TYPE>PLU_SALE</LINE_TYPE>
                     <IMAGE>https://cdn.example.com/products/1234567.jpg</IMAGE>
                     <PLU_NUMBER>012345678905</PLU_NUMBER>
                     <PRICE_OVERRIDE>N</PRICE_OVERRIDE>
                     <PRICE_RULE>MKDN</PRICE_RULE>
+                    <ITEM_VOID/>
+                    <ITEM_VOID_LINE/>
                     <ITEM_LEVEL>0</ITEM_LEVEL>
+                    <ITEM_AUTO_SOLD/>
                     <ITEM_DISCOUNT>
                         <DISCOUNT>
                             <DISCOUNT_PERCENT>0.2</DISCOUNT_PERCENT>
