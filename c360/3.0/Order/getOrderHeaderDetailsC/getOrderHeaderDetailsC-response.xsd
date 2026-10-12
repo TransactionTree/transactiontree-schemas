@@ -36,6 +36,16 @@ transaction type. Amounts are decimal-formatted strings; dates are
     </xs:documentation>
   </xs:annotation>
 
+  <xs:element name="WEBSERVICE">
+    <xs:annotation><xs:documentation>Wrapper used by gate-level failures (E888 unknown tenant,
+    E899 access-token validation): those documents arrive as WEBSERVICE/RESPONSE without the
+    ResponseId attribute. Service-level responses arrive as a bare RESPONSE root; both roots
+    are therefore declared globally.</xs:documentation></xs:annotation>
+    <xs:complexType><xs:sequence>
+      <xs:element ref="RESPONSE"/>
+    </xs:sequence></xs:complexType>
+  </xs:element>
+
   <xs:element name="RESPONSE">
     <xs:annotation><xs:documentation>Top-level response container.</xs:documentation></xs:annotation>
     <xs:complexType>

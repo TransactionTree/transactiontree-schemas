@@ -3,6 +3,10 @@
   <xs:annotation>
     <xs:documentation>RESPONSE schema for getOrderDetailsB (Customer360). Returned in the response body.</xs:documentation>
   </xs:annotation>
+  <xs:element name="WEBSERVICE">
+    <xs:annotation><xs:documentation>Wrapper used by gate-level failures (E888 unknown tenant, E899 access-token validation): those documents arrive as WEBSERVICE/RESPONSE. Service-level responses use the bare RESPONSE root; both roots are declared globally.</xs:documentation></xs:annotation>
+    <xs:complexType><xs:sequence><xs:element ref="RESPONSE"/></xs:sequence></xs:complexType>
+  </xs:element>
   <xs:element name="RESPONSE">
     <xs:annotation>
       <xs:documentation>Response payload carrying the matched order header, its line items, and tender detail.</xs:documentation>
@@ -51,9 +55,9 @@
                         <xs:documentation>Customer last name on the order.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
-                    <xs:element name="ORDER_DATE" type="xs:dateTime">
+                    <xs:element name="ORDER_DATE" type="xs:string">
                       <xs:annotation>
-                        <xs:documentation>Date and time the order took place. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                        <xs:documentation>Transaction date. Production format: "yyyy-MM-dd HH:mm:ss.S" — not ISO 8601, hence xs:string.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
                     <xs:element name="EMAIL_ID" type="xs:string">
