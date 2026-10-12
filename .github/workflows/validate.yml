@@ -30,8 +30,8 @@ jobs:
           for ex in glob.glob('**/examples/**/*.xml', recursive=True):
               import os
               opdir = ex.split('examples')[0]
-              kind = 'response' if ('response' in ex or os.sep + 'responses' + os.sep in ex) else 'request'
-              cands = [s for s in schemas if s.startswith(opdir.replace('\','/')) and kind in s]
+              kind = 'response' if 'response' in ex else 'request'
+              cands = [s for s in schemas if s.startswith(opdir.replace(os.sep, chr(47))) and kind in s]
               if not cands:
                   print(f'SKIP {ex} (no matching schema)')
                   continue
@@ -43,4 +43,4 @@ jobs:
           PY
       - name: Forbid internal identifiers (public repo)
         run: |
-          ! grep -rn -E '10\.(0|10)\.[0-9]+\.[0-9]+|org\.fio|org\.lms' --include='*.xsd' --include='*.md' --include='*.xml' c360/ vrg/ product/
+          ! grep -rn -E '10\.(0|10)\.[0-9]+\.[0-9]+|org\.fio|org\.lms' --include='*.xsd' --include='*.md' --include='*.xml' c360/ vrg/ product/ *.md

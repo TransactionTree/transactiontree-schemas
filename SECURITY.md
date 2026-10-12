@@ -25,7 +25,7 @@ ingest services must enforce the rules below in addition to XSD validation.
 - Opaque, scoped, non-reversible tokens
 - Display-safe masked values, normally only the final four digits
 - Normalized approval/decline/error outcomes and response/reason codes
-- SHA-256 digests or authorized evidence-store references
+- keyed, purpose-scoped digests (e.g. HMAC with a scoped key) or authorized evidence-store references — unkeyed digests of low-entropy values are dictionary-attackable and are not an acceptable substitute
 - Typed fleet prompt evidence rather than free text
 - Threshold outcome, method, policy version, and event time for age checks
 - Source standard, representation, version, record ID, and mapping-profile
