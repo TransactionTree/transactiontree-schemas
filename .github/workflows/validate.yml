@@ -1,0 +1,46 @@
+name: Validate schemas
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install lxml
+      - name: Compile every XSD and validate committed examples
+        run: |
+          python - <<'PY'
+          import glob, sys
+          from lxml import etree
+          failures = 0
+          schemas = {}
+          for p in glob.glob('**/*.xsd', recursive=True):
+              try:
+                  schemas[p] = etree.XMLSchema(etree.parse(p))
+                  print(f'OK   {p}')
+              except Exception as e:
+                  failures += 1
+                  print(f'FAIL {p}: {e}')
+          # examples live beside their operation: <op>/examples/** validates
+          # against the operation's response/request XSD by filename convention
+          for ex in glob.glob('**/examples/**/*.xml', recursive=True):
+              import os
+              opdir = ex.split('examples')[0]
+              kind = 'response' if 'response' in ex else 'request'
+              cands = [s for s in schemas if s.startswith(opdir.replace(os.sep, chr(47))) and kind in s]
+              if not cands:
+                  print(f'SKIP {ex} (no matching schema)')
+                  continue
+              doc = etree.parse(ex)
+              ok = any(schemas[c].validate(doc) for c in cands)
+              print(('OK  ' if ok else 'FAIL') + f' {ex}')
+              failures += 0 if ok else 1
+          sys.exit(1 if failures else 0)
+          PY
+      - name: Forbid internal identifiers (public repo)
+        run: |
+          ! grep -rn -E '10\.(0|10)\.[0-9]+\.[0-9]+|org\.fio|org\.lms' --include='*.xsd' --include='*.md' --include='*.xml' c360/ vrg/ product/ *.md
