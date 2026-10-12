@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transactions>
+    <LayawayTransaction>
+        <transId>LAY-2026-00001</transId>
+        <billToPartyId>1234567</billToPartyId>
+        <storeNumber>0001</storeNumber>
+        <terminalId>002</terminalId>
+        <transDate>2026-10-10 12:34:56</transDate>
+        <layawayNumber>LAY-2026-00001</layawayNumber>
+        <totalAmount>299.99</totalAmount>
+        <depositAmount>75.00</depositAmount>
+        <balanceDue>224.99</balanceDue>
+        <status>ACTIVE</status>
+    </LayawayTransaction>
+</Transactions>

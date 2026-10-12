@@ -9,7 +9,7 @@
       Purpose
       -------
       Describes the RESPONSE envelope returned by /loyalty-app/control/findCustomersB.
-      The service always builds a RESPONSE element with RESPONSE_CODE and may include
+      On errors the RESPONSE carries RESPONSE_CODE (catalog below, kept non-binding so new production codes cannot break validation; successes omit it) and may include
       contextual echoes (e.g., STORE_ID) or a result payload (customer list) rendered
       by higher layers. Structure of the full result set may vary by tenant.
 
@@ -66,7 +66,7 @@
         <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0">
           <xs:annotation><xs:documentation>Server timestamp when this response was generated.</xs:documentation></xs:annotation>
         </xs:element>
-        <xs:element name="RESPONSE_CODE" type="ResponseCode">
+        <xs:element name="RESPONSE_CODE" type="xs:string" minOccurs="0">
           <xs:annotation><xs:documentation>Outcome code (see documentation on meanings above).</xs:documentation></xs:annotation>
         </xs:element>
 
