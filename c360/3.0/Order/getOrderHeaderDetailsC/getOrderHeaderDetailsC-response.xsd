@@ -392,7 +392,7 @@ transaction type. Amounts are decimal-formatted strings; dates are
     <xs:annotation><xs:documentation>Scanned barcode (UPC-A/PLU) when the line was scanned; empty when keyed by SKU.</xs:documentation></xs:annotation>
   </xs:element>
   <xs:element name="PRICE_OVERRIDE" type="xs:string">
-    <xs:annotation><xs:documentation>true when the price was overridden at the till.</xs:documentation></xs:annotation>
+    <xs:annotation><xs:documentation>true when the price was overridden at the till; otherwise empty (false is not emitted).</xs:documentation></xs:annotation>
   </xs:element>
   <xs:element name="ITEM_VOID" type="xs:string">
     <xs:annotation><xs:documentation>Void flag.</xs:documentation></xs:annotation>
