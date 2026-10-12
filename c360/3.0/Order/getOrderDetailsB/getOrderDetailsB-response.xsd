@@ -9,12 +9,22 @@
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="RESPONSE_DATE" type="xs:dateTime">
+        <xs:element name="RESPONSE_DATE" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Server timestamp when this response was generated. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+            <xs:documentation>Server timestamp when this response was generated. Format observed in production: "yyyy-MM-dd HH:mm:ss.S" (e.g. 2026-10-12 15:01:02.655) — not ISO 8601, hence xs:string.</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="TRANSACTION">
+        <xs:element name="RESPONSE_CODE" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Outcome code, present ONLY on errors (success responses omit it and carry TRANSACTION instead). Observed in production: E101-E104 (input parse), E110/E111 (customer required/not found), E122 (bad date), E124 (status too long), E126 (no orders matched), E127 (store unknown), E129 (transaction not found), E888 (unknown X-tenant-Key), E899 (accessTokenKey validation failed), E999 (unhandled exception). Kept as xs:string deliberately so new codes do not break validation. Every response is HTTP 200; this element is the real outcome.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="RESPONSE_MESSAGE" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Human-readable error detail, emitted with E999.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="TRANSACTION" minOccurs="0">
           <xs:annotation>
             <xs:documentation>The matched transaction/order.</xs:documentation>
           </xs:annotation>
