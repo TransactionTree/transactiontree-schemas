@@ -140,6 +140,11 @@ but typically include `X-tenant-Key` and an `Authorization` token.
 - **Behavior:** keyed by `ORDER_ID` (required); `CUSTOMER_ID` scopes the
   search to a bill-to / placing customer. `FROM_DATE` / `THRU_DATE` are
   `xs:date`. Response includes the `LayawayData` block when applicable.
+- **LayAway alternate response:** when `TRANSACTION_TYPE=LayAway` the service bypasses the
+  standard `RESPONSE` envelope and returns a `Transactions` document instead — see
+  `getOrderDetailsC-response-ttdr-layaway.xsd` (loyalty-app camelCase `LayawayTransaction`
+  dialect typed from a capture; TTDR-3.2.2-namespaced children validate against
+  `vrg/3.2.2/TTDR-3.2.2.xsd`).
 
 #### `getOrderHeaderDetailsB` — order header summary
 - **Files:** `c360/3.0/Order/getOrderHeaderDetailsB/getOrderHeaderDetailsB-request.xsd`, `getOrderHeaderDetailsB-response.xsd`

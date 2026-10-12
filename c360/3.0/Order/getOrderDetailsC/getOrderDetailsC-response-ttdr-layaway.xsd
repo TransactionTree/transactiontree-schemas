@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Layaway response wrapper for getOrderDetailsC / loyalty-app (rebuilt 2026-10-12).
+     When TRANSACTION_TYPE=LayAway the service does NOT return the standard RESPONSE envelope.
+     Two dialects observed:
+       1. Loyalty-app extension (sandbox): Transactions > LayawayTransaction with camelCase
+          fields - raw requestPayload from LayawayTransactionMaster. Fully typed below,
+          derived from a captured response.
+       2. TTDR 3.2.2: Transactions > Transaction carrying the TTDR namespace - admitted here
+          via xs:any (lax) and separately validated by vrg/3.2.2/TTDR-3.2.2.xsd.
+     Documents are UNQUALIFIED at the root. Content models are unordered, repeat-tolerant
+     choices on purpose. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+  <xs:element name="Transactions">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="LayawayTransaction" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="transId" type="xs:string" minOccurs="0"/>
+          <xs:element name="billToPartyId" type="xs:string" minOccurs="0"/>
+          <xs:element name="storeNumber" type="xs:string" minOccurs="0"/>
+          <xs:element name="terminalId" type="xs:string" minOccurs="0"/>
+          <xs:element name="transDate" type="xs:string" minOccurs="0"/>
+          <xs:element name="layawayNumber" type="xs:string" minOccurs="0"/>
+          <xs:element name="totalAmount" type="xs:string" minOccurs="0"/>
+          <xs:element name="depositAmount" type="xs:string" minOccurs="0"/>
+          <xs:element name="balanceDue" type="xs:string" minOccurs="0"/>
+          <xs:element name="status" type="xs:string" minOccurs="0"/>
+          <xs:element name="items" minOccurs="0" maxOccurs="unbounded">
+            <xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType><xs:choice minOccurs="0" maxOccurs="unbounded">
+                  <xs:element name="sku" type="xs:string" minOccurs="0"/>
+                  <xs:element name="description" type="xs:string" minOccurs="0"/>
+                  <xs:element name="quantity" type="xs:string" minOccurs="0"/>
+                  <xs:element name="price" type="xs:string" minOccurs="0"/>
+                </xs:choice></xs:complexType>
+              </xs:element>
+            </xs:choice></xs:complexType>
+          </xs:element>
+          </xs:choice></xs:complexType>
+        </xs:element>
+        <xs:any namespace="https://www.transactiontree.com/framework/schema/vrg/3.2.2/TTDR3.2.2.xsd" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
