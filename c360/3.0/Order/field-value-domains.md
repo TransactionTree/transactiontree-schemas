@@ -49,7 +49,7 @@ A consumer written against the superset handles every system; absent fields simp
 | `PLU_NUMBER` | scanned barcode (UPC-A/EAN) on scanned lines; empty on keyed lines | emitted by POS feeds that carry scan codes |
 | `LEVEL_5_LEVEL_5_ID` | merchandising path code, format `A<div>B<dept>C<class>D<subclass>` | 4-level hierarchy; `LEVEL_5_PRODUCT_GROUP_TYPE`=`3`, `LEVEL_5_STRUCTURE_TYPE`=`1` on merch lines (`0`/`0` on non-merch) |
 | `RETURNED_STATUS` | empty, or `1` when the line has been returned against | `RECORD_TYPE` in storage: `02` sale line, `15` return line |
-| `PRICE_OVERRIDE` | `Y`/`N` or `true`/`false` (generation-dependent); storage flag `1` | flag, not an amount |
+| `PRICE_OVERRIDE` | Flooid-fed: `true` when the POS flagged an override, otherwise an empty element (`false` is not emitted). Aptos-fed: `Y`/`N` | flag, not an amount |
 | `ITEM_STATUS` | `Pickedup` (sale lines), `1` (return lines) | legacy vocabulary |
 | `IMAGE` | retailer CDN product-image URL at response time | |
 
