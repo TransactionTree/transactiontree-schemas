@@ -1,4 +1,4 @@
-# transactiontree-schemas
+# TransactionTree Integration Schemas
 
 Public XML Schema Definitions (XSDs) and OpenAPI descriptions for
 TransactionTree's customer-facing services. Integrators use this repo to
