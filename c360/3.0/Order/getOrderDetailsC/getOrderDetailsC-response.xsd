@@ -545,7 +545,7 @@
 			</xs:element>
 			<xs:element name="PRICE_OVERRIDE" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Price-override flag for the line: Y/N (Aptos-fed tenants) or true/false (Flooid-fed tenants). Not a monetary amount.</xs:documentation>
+					<xs:documentation>Price-override flag for the line: Y/N (Aptos-fed tenants); true or empty (Flooid-fed tenants -- false is not emitted). Not a monetary amount.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="ITEM_VOID" type="xs:string" minOccurs="0">

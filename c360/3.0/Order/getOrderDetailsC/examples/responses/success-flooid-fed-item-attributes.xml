@@ -64,7 +64,7 @@
                     <IMAGE>https://cdn.example.com/product/1234567.jpg</IMAGE>
                     <RETURNED_STATUS/>
                     <PLU_NUMBER>012345678905</PLU_NUMBER>
-                    <PRICE_OVERRIDE>false</PRICE_OVERRIDE>
+                    <PRICE_OVERRIDE/>
                     <ITEM_VOID/>
                     <ITEM_VOID_LINE/>
                     <ITEM_LEVEL>0</ITEM_LEVEL>
@@ -168,7 +168,7 @@
                     <IMAGE>https://cdn.example.com/product/3456789.jpg</IMAGE>
                     <RETURNED_STATUS/>
                     <PLU_NUMBER/>
-                    <PRICE_OVERRIDE>false</PRICE_OVERRIDE>
+                    <PRICE_OVERRIDE/>
                     <ITEM_VOID/>
                     <ITEM_VOID_LINE/>
                     <ITEM_LEVEL>1</ITEM_LEVEL>
