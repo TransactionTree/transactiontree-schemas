@@ -13,9 +13,9 @@ newer generations only **add** elements, none conflict:
 
 | Generation | Elements emitted | Distinguishing additions |
 |---|---|---|
-| legacy (`org.lms`, 2014-era) | 40 | the original core |
-| current `org.lms` lmsServices-v2 | 105 | CONTACT blocks, LEVEL_5 merchandising, ITEM_TAX detail, discounts, tenders |
-| `org.fio` loyalty-app | 132–133 | `ORIGINAL_*` return linkage, tender tokens, `ATTRIBUTE` blocks, `BALANCE`/`CHANGE`/`CASH_BACK_AMOUNT`, `DEPARTMENT_CODE`, `REGISTER_TYPE`, `WORKDAY_ID`, `TRANSACTION_HISTORY`, `IS_*` flags; one deployment adds `RESPONSE_DATA` (exception detail, sibling of `RESPONSE_MESSAGE`) |
+| legacy (`lmsServices`, 2014-era) | 40 | the original core |
+| current `lmsServices` lmsServices-v2 | 105 | CONTACT blocks, LEVEL_5 merchandising, ITEM_TAX detail, discounts, tenders |
+| `loyalty-app` loyalty-app | 132–133 | `ORIGINAL_*` return linkage, tender tokens, `ATTRIBUTE` blocks, `BALANCE`/`CHANGE`/`CASH_BACK_AMOUNT`, `DEPARTMENT_CODE`, `REGISTER_TYPE`, `WORKDAY_ID`, `TRANSACTION_HISTORY`, `IS_*` flags; one deployment adds `RESPONSE_DATA` (exception detail, sibling of `RESPONSE_MESSAGE`) |
 
 A consumer written against the superset handles every system; absent fields simply don't appear.
 
@@ -59,7 +59,7 @@ A consumer written against the superset handles every system; absent fields simp
 |---|---|
 | `TENDER_TYPE` | `CASH`, `CHECK`, `CREDIT-VISA`, `CREDIT-MC`, `CREDIT-AMEX`, `DEBIT-OTHER`, `GIFT-CARD`, `Coupon`, `Voucher`, `HouseAccount`, `MoneyOrder`, `ForeignCurrency`, `SpecialTender`, `None`, plus legacy numeric codes (`3`, `45`, `121`, `388`, `440`) |
 | `TENDER_MEDIA_TYPE` | `10` (dominant), `11` |
-| `TENDER_TOKEN` / `TENDER_SHORTTOKEN` / `TENDER_LONGTOKEN` | payment tokens (org.fio generation; used by token-based receipt lookup) |
+| `TENDER_TOKEN` / `TENDER_SHORTTOKEN` / `TENDER_LONGTOKEN` | payment tokens (loyalty-app generation; used by token-based receipt lookup) |
 
 ## Taxes
 
@@ -122,6 +122,6 @@ enum member (`Image`, `ProductID`, `ProductStyle`, `ProductDivision`,
 in `AttributeDescription` — an open string, so this route is contract-clean. All observed
 feeds stay within the published TTDR contract by one of these two routes.
 
-Persistence differs by generation: the org.lms generation persists only the recognized
-names above (unrecognized names are dropped); the org.fio generation additionally stores
+Persistence differs by generation: the lmsServices generation persists only the recognized
+names above (unrecognized names are dropped); the loyalty-app generation additionally stores
 attributes generically (name/value) and can emit them via `ATTRIBUTE_TYPE`/`ATTRIBUTE_DESCRIPTION`/`ATTRIBUTE_DATA` blocks.

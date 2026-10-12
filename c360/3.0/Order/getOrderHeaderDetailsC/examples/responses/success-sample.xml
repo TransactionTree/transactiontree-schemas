@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?><RESPONSE ResponseId="119512361">
+<?xml version="1.0" encoding="UTF-8"?><RESPONSE ResponseId="100000001">
     <RESPONSE_DATE>2026-10-12 15:06:36.589</RESPONSE_DATE>
     <TRANSACTION>
         <ORDER_HEADER>
-            <ORDER_ID>54984645</ORDER_ID>
+            <ORDER_ID>12345678</ORDER_ID>
             <FIRST_NAME>JANE</FIRST_NAME>
             <LAST_NAME>SAMPLE</LAST_NAME>
             <COMPANY_NAME/>
@@ -14,10 +14,10 @@
             <PROMOTION_ADJUSTMENT>0.00</PROMOTION_ADJUSTMENT>
             <SUB_TOTAL>0.00</SUB_TOTAL>
             <TOTAL_AMOUNT>109.23</TOTAL_AMOUNT>
-            <STORE_ID>037</STORE_ID>
+            <STORE_ID>001</STORE_ID>
             <TERMINAL_ID>7</TERMINAL_ID>
             <CASH_REGISTER_ID>7</CASH_REGISTER_ID>
-            <TRANSACTION_NUMBER>462515</TRANSACTION_NUMBER>
+            <TRANSACTION_NUMBER>12345678</TRANSACTION_NUMBER>
             <TRANSACTION_TYPE>SaleTransaction</TRANSACTION_TYPE>
             <ASSOCIATE_ID>99999</ASSOCIATE_ID>
             <ASSOCIATE_FIRST_NAME/>
@@ -58,22 +58,22 @@
             <ORDER_ITEMS>
                 <ORDER_ITEM>
                     <ORDER_ITEM_SEQ>00001</ORDER_ITEM_SEQ>
-                    <SKU>9414277</SKU>
-                    <DESCRIPTION>COVER 110IN MOTORCYCLE  LARGE</DESCRIPTION>
+                    <SKU>1234567</SKU>
+                    <DESCRIPTION>SAMPLE PRODUCT DESCRIPTION</DESCRIPTION>
                     <PRICE>34.99</PRICE>
                     <QUANTITY_ORDERED>1.00</QUANTITY_ORDERED>
                     <DETAIL_NUMBER>3</DETAIL_NUMBER>
                     <PARENT_NUMBER/>
-                    <SKU_OWNER>PAL</SKU_OWNER>
+                    <SKU_OWNER>ACME</SKU_OWNER>
                     <SKU_OWNER_TYPE>1</SKU_OWNER_TYPE>
                     <SKU_ITEM_TYPE>1</SKU_ITEM_TYPE>
-                    <LEVEL_5_COMPANY_CODE>PAL</LEVEL_5_COMPANY_CODE>
-                    <LEVEL_5_LEVEL_5_ID>A370B7C49D7</LEVEL_5_LEVEL_5_ID>
+                    <LEVEL_5_COMPANY_CODE>ACME</LEVEL_5_COMPANY_CODE>
+                    <LEVEL_5_LEVEL_5_ID>A100B1C2D3</LEVEL_5_LEVEL_5_ID>
                     <LEVEL_5_PRODUCT_GROUP_TYPE>3</LEVEL_5_PRODUCT_GROUP_TYPE>
                     <LEVEL_5_STRUCTURE_TYPE>1</LEVEL_5_STRUCTURE_TYPE>
                     <ORDER_ITEM_TYPE/>
                     <LINE_TYPE>KNOWN_ITEM_SALE</LINE_TYPE>
-                    <IMAGE>https://www.princessauto.com/ccstore/v1/images/?source=/file/products/9414277_A0CG_00_01.jpg</IMAGE>
+                    <IMAGE>https://cdn.example.com/products/1234567.jpg</IMAGE>
                     <RETURNED_STATUS/>
                     <PLU_NUMBER/>
                     <PRICE_OVERRIDE>true</PRICE_OVERRIDE>
@@ -111,7 +111,7 @@
             </ORDER_ITEMS>
         </ORDER_HEADER>
         <ORDER_HEADER>
-            <ORDER_ID>54391721</ORDER_ID>
+            <ORDER_ID>12345678</ORDER_ID>
             <FIRST_NAME>JANE</FIRST_NAME>
             <LAST_NAME>SAMPLE</LAST_NAME>
             <COMPANY_NAME/>
@@ -123,10 +123,10 @@
             <PROMOTION_ADJUSTMENT>0.00</PROMOTION_ADJUSTMENT>
             <SUB_TOTAL>0.00</SUB_TOTAL>
             <TOTAL_AMOUNT>45.99</TOTAL_AMOUNT>
-            <STORE_ID>037</STORE_ID>
+            <STORE_ID>001</STORE_ID>
             <TERMINAL_ID>4</TERMINAL_ID>
             <CASH_REGISTER_ID>4</CASH_REGISTER_ID>
-            <TRANSACTION_NUMBER>272616</TRANSACTION_NUMBER>
+            <TRANSACTION_NUMBER>12345678</TRANSACTION_NUMBER>
             <TRANSACTION_TYPE>SaleTransaction</TRANSACTION_TYPE>
             <ASSOCIATE_ID>99999</ASSOCIATE_ID>
             <ASSOCIATE_FIRST_NAME/>
@@ -167,22 +167,22 @@
             <ORDER_ITEMS>
                 <ORDER_ITEM>
                     <ORDER_ITEM_SEQ>00001</ORDER_ITEM_SEQ>
-                    <SKU>9414277</SKU>
-                    <DESCRIPTION>COVER 110IN MOTORCYCLE  LARGE</DESCRIPTION>
+                    <SKU>1234567</SKU>
+                    <DESCRIPTION>SAMPLE PRODUCT DESCRIPTION</DESCRIPTION>
                     <PRICE>39.99</PRICE>
                     <QUANTITY_ORDERED>1.00</QUANTITY_ORDERED>
                     <DETAIL_NUMBER>2</DETAIL_NUMBER>
                     <PARENT_NUMBER/>
-                    <SKU_OWNER>PAL</SKU_OWNER>
+                    <SKU_OWNER>ACME</SKU_OWNER>
                     <SKU_OWNER_TYPE>1</SKU_OWNER_TYPE>
                     <SKU_ITEM_TYPE>1</SKU_ITEM_TYPE>
-                    <LEVEL_5_COMPANY_CODE>PAL</LEVEL_5_COMPANY_CODE>
-                    <LEVEL_5_LEVEL_5_ID>A370B7C49D7</LEVEL_5_LEVEL_5_ID>
+                    <LEVEL_5_COMPANY_CODE>ACME</LEVEL_5_COMPANY_CODE>
+                    <LEVEL_5_LEVEL_5_ID>A100B1C2D3</LEVEL_5_LEVEL_5_ID>
                     <LEVEL_5_PRODUCT_GROUP_TYPE>3</LEVEL_5_PRODUCT_GROUP_TYPE>
                     <LEVEL_5_STRUCTURE_TYPE>1</LEVEL_5_STRUCTURE_TYPE>
                     <ORDER_ITEM_TYPE/>
                     <LINE_TYPE>KNOWN_ITEM_SALE</LINE_TYPE>
-                    <IMAGE>https://www.princessauto.com/ccstore/v1/images/?source=/file/products/9414277_A0CG_00_01.jpg</IMAGE>
+                    <IMAGE>https://cdn.example.com/products/1234567.jpg</IMAGE>
                     <RETURNED_STATUS/>
                     <PLU_NUMBER/>
                     <PRICE_OVERRIDE/>

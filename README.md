@@ -21,6 +21,14 @@ rejection.
 
 ---
 
+## Publication policy (public repository)
+
+This repository publishes **contracts only**: schemas, generic value vocabularies and
+sanitized synthetic examples. Merchant/tenant identities, company codes, store numbers,
+internal hostnames/IPs, and production volumes must never appear here. Examples are
+synthetic: structure and formats are real, every value is fabricated. CI rejects known
+internal identifiers.
+
 ## Repository layout
 
 ```
