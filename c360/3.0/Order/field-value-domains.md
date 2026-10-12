@@ -98,5 +98,22 @@ column, and the lookups emit them back as first-class elements:
 | `pluNumber` | `PLU_NUMBER` |
 | `priceOverridden` | `PRICE_OVERRIDE` |
 
-Unrecognized attribute names are not persisted by the current ingestion; the org.fio
-generation can additionally emit stored attributes via `ATTRIBUTE_TYPE`/`ATTRIBUTE_DESCRIPTION`/`ATTRIBUTE_DATA` blocks.
+### Observed attribute vocabularies by POS family
+
+| POS family | ItemAttributes observed inbound |
+|---|---|
+| Flooid-fed | `detailNumber`, `parentNumber`, `SKU_OWNER`, `SKU_OWNER_TYPE`, `SKU_ITEM_TYPE`, `LineType`, `Image`, `level5CompanyCode`, `level5Level5ID`, `level5ProductGroupType`, `level5StructureType`, `pluNumber`, `priceOverridden` |
+| Aptos-fed (apparel) | `detailNumber`, `priceOverridden`, `ProductUPC`, `ProductID`, `ProductStyle`, `Color`, `Size`, `ProductClass`, `ProductDivision`, `ProductDeptGroup`, `ProductOrderNumber` |
+| Aptos-fed (minimal profile) | `detailNumber`, `ImageURL` |
+| Toshiba-RBI-fed | `detailNumber`, `SKU_ITEM_TYPE`, `priceOverridden` |
+| Retail-Pro-fed (mapping in progress) | `detailNumber`, `ProductUPC`, `Size`, `ProductName`, `ProductShortDescription` |
+
+`detailNumber` is the universal spine; `priceOverridden` is near-universal. Apparel feeds
+carry merchandising facets (Color/Size/Style/Division) as attributes where hardgoods feeds
+use the level5 hierarchy codes. Note Aptos-family feeds deliver `ProductUPC` per line —
+systems ingesting those feeds have per-line barcode data; Flooid feeds carry `pluNumber`
+only on scanned lines.
+
+Persistence differs by generation: the org.lms generation persists only the recognized
+names above (unrecognized names are dropped); the org.fio generation additionally stores
+attributes generically (name/value) and can emit them via `ATTRIBUTE_TYPE`/`ATTRIBUTE_DESCRIPTION`/`ATTRIBUTE_DATA` blocks.
