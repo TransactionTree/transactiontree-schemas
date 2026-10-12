@@ -10,7 +10,7 @@ Replaces the earlier schema, which omitted the error envelope, 32 live elements
 LEVEL_5 element names (LEVEL5_COMPANYCODE vs the actual LEVEL_5_COMPANY_CODE).
 
 Two response shapes share this document:
-  1. Error   -- RESPONSE_DATE + RESPONSE_CODE (+ RESPONSE_MESSAGE on E999). No TRANSACTION.
+  1. Error   -- RESPONSE_DATE + RESPONSE_CODE (+ RESPONSE_MESSAGE or, on the loyalty-app generation, RESPONSE_DATA on E999). No TRANSACTION.
   2. Success -- RESPONSE_DATE + TRANSACTION with one or more ORDER_HEADER blocks.
 
 Transport notes (observed in production):
@@ -28,7 +28,7 @@ hid the then-dominant E300; new codes must not break validation):
   E300 PRODUCT_ID not in the product catalog (the dominant failure until the 2026-10 backfill;
        note: scanned barcodes in PRODUCT_ID still E300 until barcode fallback ships)
   E888 unknown X-tenant-Key            E899 accessTokenKey validation failed
-  E999 unhandled exception (RESPONSE_MESSAGE carries the detail)
+  E999 unhandled exception (RESPONSE_MESSAGE carries the detail; the loyalty-app generation uses RESPONSE_DATA)
 
 All content elements are optional (minOccurs=0): field presence varies by tenant and
 transaction type. Amounts are decimal-formatted strings; dates are
@@ -53,6 +53,7 @@ transaction type. Amounts are decimal-formatted strings; dates are
         <xs:element ref="RESPONSE_DATE"/>
         <xs:element ref="RESPONSE_CODE" minOccurs="0"/>
         <xs:element ref="RESPONSE_MESSAGE" minOccurs="0"/>
+        <xs:element ref="RESPONSE_DATA" minOccurs="0"/>
         <xs:element ref="TRANSACTION" minOccurs="0"/>
       </xs:sequence>
       <xs:attribute name="ResponseId" type="xs:string">
@@ -69,6 +70,9 @@ transaction type. Amounts are decimal-formatted strings; dates are
     <xs:annotation><xs:documentation>Outcome code; absent on success. See the catalog in the schema header.</xs:documentation></xs:annotation>
   </xs:element>
 
+  <xs:element name="RESPONSE_DATA" type="xs:string">
+    <xs:annotation><xs:documentation>Exception detail emitted by the loyalty-app loyalty-app generation (sibling of RESPONSE_MESSAGE).</xs:documentation></xs:annotation>
+  </xs:element>
   <xs:element name="RESPONSE_MESSAGE" type="xs:string">
     <xs:annotation><xs:documentation>Human-readable detail, emitted with E999.</xs:documentation></xs:annotation>
   </xs:element>
