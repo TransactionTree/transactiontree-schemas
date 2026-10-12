@@ -53,6 +53,7 @@ transaction type. Amounts are decimal-formatted strings; dates are
         <xs:element ref="RESPONSE_DATE"/>
         <xs:element ref="RESPONSE_CODE" minOccurs="0"/>
         <xs:element ref="RESPONSE_MESSAGE" minOccurs="0"/>
+        <xs:element ref="RESPONSE_DATA" minOccurs="0"/>
         <xs:element ref="TRANSACTION" minOccurs="0"/>
       </xs:sequence>
       <xs:attribute name="ResponseId" type="xs:string">
@@ -69,6 +70,9 @@ transaction type. Amounts are decimal-formatted strings; dates are
     <xs:annotation><xs:documentation>Outcome code; absent on success. See the catalog in the schema header.</xs:documentation></xs:annotation>
   </xs:element>
 
+  <xs:element name="RESPONSE_DATA" type="xs:string">
+    <xs:annotation><xs:documentation>Exception detail emitted by the org.fio loyalty-app generation (sibling of RESPONSE_MESSAGE).</xs:documentation></xs:annotation>
+  </xs:element>
   <xs:element name="RESPONSE_MESSAGE" type="xs:string">
     <xs:annotation><xs:documentation>Human-readable detail, emitted with E999.</xs:documentation></xs:annotation>
   </xs:element>

@@ -28,6 +28,9 @@
             <xs:documentation>Human-readable error detail, emitted with E999.</xs:documentation>
           </xs:annotation>
         </xs:element>
+        <xs:element name="RESPONSE_DATA" type="xs:string" minOccurs="0">
+          <xs:annotation><xs:documentation>Exception detail emitted by the org.fio loyalty-app generation (sibling of RESPONSE_MESSAGE where present).</xs:documentation></xs:annotation>
+        </xs:element>
         <xs:element name="TRANSACTION" minOccurs="0">
           <xs:annotation>
             <xs:documentation>The matched transaction/order.</xs:documentation>
