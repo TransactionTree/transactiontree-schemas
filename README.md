@@ -322,11 +322,10 @@ accepted on a case-by-case basis — open an issue first.
 
 ## License
 
-Proprietary. See [`LICENSE`](LICENSE).
+[Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/) — see [`LICENSE`](LICENSE).
 
-Copyright (c) 2021-2026 TransactionTree, Inc. Permission is granted to
-customers, partners, and integrators to use these schemas to build
-clients against TransactionTree services under an applicable subscription
-or integration agreement.
+Copyright (c) 2021-2026 TransactionTree, Inc. You may copy, embed and
+redistribute these schemas and documents, including in commercial
+integrations, with attribution to TransactionTree, Inc.
 
 For integration questions: **support@transactiontree.com**
