@@ -15,7 +15,7 @@ newer generations only **add** elements, none conflict:
 |---|---|---|
 | legacy (2014-era) | 40 | the original core |
 | older service generation | 105 | CONTACT blocks, LEVEL_5 merchandising, ITEM_TAX detail, discounts, tenders |
-| `loyalty-app` loyalty-app | 132–133 | `ORIGINAL_*` return linkage, tender tokens, `ATTRIBUTE` blocks, `BALANCE`/`CHANGE`/`CASH_BACK_AMOUNT`, `DEPARTMENT_CODE`, `REGISTER_TYPE`, `WORKDAY_ID`, `TRANSACTION_HISTORY`, `IS_*` flags; one deployment adds `RESPONSE_DATA` (exception detail, sibling of `RESPONSE_MESSAGE`) |
+| loyalty-app | 132–133 | `ORIGINAL_*` return linkage, tender tokens, `ATTRIBUTE` blocks, `BALANCE`/`CHANGE`/`CASH_BACK_AMOUNT`, `DEPARTMENT_CODE`, `REGISTER_TYPE`, `WORKDAY_ID`, `TRANSACTION_HISTORY`, `IS_*` flags; one deployment adds `RESPONSE_DATA` (exception detail, sibling of `RESPONSE_MESSAGE`) |
 
 A consumer written against the superset handles every system; absent fields simply don't appear.
 

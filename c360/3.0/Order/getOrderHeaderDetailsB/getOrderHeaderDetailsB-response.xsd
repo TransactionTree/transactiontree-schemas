@@ -78,7 +78,7 @@
 				</xs:annotation>
 			</xs:enumeration>
 			<xs:enumeration value="E110"><xs:annotation><xs:documentation>Required identifier missing on this operation.</xs:documentation></xs:annotation></xs:enumeration>
-			<xs:enumeration value="E300"><xs:annotation><xs:documentation>PRODUCT_ID not found in the tenant product catalog (observed in production; observed when the tenant product catalog is missing/stale).</xs:documentation></xs:annotation></xs:enumeration>
+			<xs:enumeration value="E300"><xs:annotation><xs:documentation>PRODUCT_ID not found in the tenant product catalog (observed in production when the tenant product catalog is missing/stale).</xs:documentation></xs:annotation></xs:enumeration>
 			<xs:enumeration value="E888"><xs:annotation><xs:documentation>Unknown X-tenant-Key header (gate level; arrives wrapped in WEBSERVICE).</xs:documentation></xs:annotation></xs:enumeration>
 			<xs:enumeration value="E999"><xs:annotation><xs:documentation>Unhandled exception; RESPONSE_MESSAGE carries detail.</xs:documentation></xs:annotation></xs:enumeration>
 		</xs:restriction>
@@ -551,7 +551,7 @@
 				  <xs:annotation><xs:documentation>Exception detail emitted with E999 by the older service generation.</xs:documentation></xs:annotation>
 				</xs:element>
 				<xs:element name="RESPONSE_DATA" type="xs:string" minOccurs="0">
-				  <xs:annotation><xs:documentation>Exception detail emitted by the loyalty-app loyalty-app generation (sibling of RESPONSE_MESSAGE where present).</xs:documentation></xs:annotation>
+				  <xs:annotation><xs:documentation>Exception detail emitted by the loyalty-app service generation (sibling of RESPONSE_MESSAGE where present).</xs:documentation></xs:annotation>
 				</xs:element>
 				<xs:element name="TRANSACTION" type="TransactionType" minOccurs="0">
 					<xs:annotation>

@@ -3,7 +3,7 @@
   <xs:annotation>
     <xs:documentation>
 RESPONSE schema for getOrderHeaderDetailsC (Customer360) -- rebuilt 2026-10-12 against
-verified production responses (a production tenant) and the service source.
+verified production responses from a Flooid-fed tenant and the service source.
 
 Replaces the earlier schema, which omitted the error envelope, 32 live elements
 (CONTACT block, CUSTOMER_ID, TERMINAL_ID, item flags, per-tax detail) and misspelled the
@@ -71,7 +71,7 @@ transaction type. Amounts are decimal-formatted strings; dates are
   </xs:element>
 
   <xs:element name="RESPONSE_DATA" type="xs:string">
-    <xs:annotation><xs:documentation>Exception detail emitted by the loyalty-app loyalty-app generation (sibling of RESPONSE_MESSAGE).</xs:documentation></xs:annotation>
+    <xs:annotation><xs:documentation>Exception detail emitted by the loyalty-app service generation (sibling of RESPONSE_MESSAGE).</xs:documentation></xs:annotation>
   </xs:element>
   <xs:element name="RESPONSE_MESSAGE" type="xs:string">
     <xs:annotation><xs:documentation>Human-readable detail, emitted with E999.</xs:documentation></xs:annotation>
@@ -308,7 +308,7 @@ transaction type. Amounts are decimal-formatted strings; dates are
     <xs:annotation><xs:documentation>Line sequence, zero-padded (00001).</xs:documentation></xs:annotation>
   </xs:element>
   <xs:element name="SKU" type="xs:string">
-    <xs:annotation><xs:documentation>Product SKU (7-digit for ACME).</xs:documentation></xs:annotation>
+    <xs:annotation><xs:documentation>Product SKU (numeric where the merchant item master is numeric).</xs:documentation></xs:annotation>
   </xs:element>
   <xs:element name="DESCRIPTION" type="xs:string">
     <xs:annotation><xs:documentation>Line description (transaction skuDescription; falls back to product description).</xs:documentation></xs:annotation>
@@ -326,7 +326,7 @@ transaction type. Amounts are decimal-formatted strings; dates are
     <xs:annotation><xs:documentation>Parent line number for linked lines; empty otherwise.</xs:documentation></xs:annotation>
   </xs:element>
   <xs:element name="SKU_OWNER" type="xs:string">
-    <xs:annotation><xs:documentation>SKU owning company code, e.g. ACME.</xs:documentation></xs:annotation>
+    <xs:annotation><xs:documentation>SKU owning merchant company code.</xs:documentation></xs:annotation>
   </xs:element>
   <xs:element name="SKU_OWNER_TYPE" type="xs:string">
     <xs:annotation><xs:documentation>SKU owner type code.</xs:documentation></xs:annotation>

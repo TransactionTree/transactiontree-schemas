@@ -9,6 +9,20 @@ and the repository follows [Semantic Versioning](https://semver.org/) at the
 **per-schema** level (C360 3.0, VRG / TTDR 3.3.0). The repo itself is not
 versioned.
 
+## 2026-10-12
+
+- Order family response schemas rebuilt/verified against live production responses across
+  every deployed service generation (PRs #7–#11): error envelopes (RESPONSE_CODE /
+  RESPONSE_MESSAGE / RESPONSE_DATA), WEBSERVICE gate-error root, unordered repeat-tolerant
+  content models, missing elements (CONTACT block, CUSTOMER_ID, TERMINAL_ID, LEVEL_5 set,
+  PLU_NUMBER, EMAIL_ID, per-line ITEM_TAX), corrected element names and types.
+- New: getOrderDetailsC layaway alternate-response schema; field-value-domains.md
+  (production-observed value vocabularies, generation superset chain, ItemAttributes
+  ingestion mapping and per-POS-family vocabularies).
+- Hygiene: de-identified annotations and examples for public publication; CI validation
+  workflow added (XSD compile + example validation + internal-identifier guard);
+  SECURITY.md at root.
+
 ## TTDR / VRG 3.3.0 — 2026-10-02
 
 ### Added

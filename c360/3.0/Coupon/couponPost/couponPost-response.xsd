@@ -29,7 +29,7 @@
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <!-- NOTE: 'TRANSACTOIN' is a genuine misspelling in the LIVE service and is the ONLY spelling emitted — verified on the live service 2026-08-15. Do NOT correct it; it is the real wire contract. -->
+              <!-- NOTE: 'TRANSACTOIN' is a genuine misspelling in the LIVE service and is the ONLY spelling emitted — verified against the live service 2026-08-15. Do NOT correct it; it is the real wire contract. -->
               <xs:element name="RESP_TRANSACTOIN_DETAILS">
                 <xs:annotation>
                   <xs:documentation>Outcome of the coupon post.</xs:documentation>
