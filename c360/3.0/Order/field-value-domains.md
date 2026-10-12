@@ -115,13 +115,12 @@ systems ingesting those feeds have per-line barcode data; Flooid feeds carry `pl
 only on scanned lines.
 
 How the name travels: when the TTDR `AttributeType` enumeration has a member for the
-facet (`Color`, `Size`, `ProductUPC`, `ProductClass`, `ProductOrderNumber`), feeds send it
-as the AttributeType; otherwise `AttributeType=Other` with the name in
-`AttributeDescription` (an open string). **Contract-vs-reality note:** deployed feeds also
-send AttributeType values outside the published TTDR 3.2.2/3.3.0 enumerations (e.g.
-`detailNumber`, `priceOverridden` as types) — strictly invalid against the TTDR schema but
-accepted by the lenient production ingestion. Names listed in this table that are not enum
-members travel via the `Other`/`AttributeDescription` route or as out-of-contract types.
+facet (`Color`, `Size`, `ProductUPC`, `ProductClass`, `ProductOrderNumber`,
+`detailNumber`, `priceOverridden`), feeds send it as the AttributeType; names without an
+enum member (`Image`, `ProductID`, `ProductStyle`, `ProductDivision`,
+`ProductDeptGroup`, the `level5*` set, …) travel as `AttributeType=Other` with the name
+in `AttributeDescription` — an open string, so this route is contract-clean. All observed
+feeds stay within the published TTDR contract by one of these two routes.
 
 Persistence differs by generation: the org.lms generation persists only the recognized
 names above (unrecognized names are dropped); the org.fio generation additionally stores
