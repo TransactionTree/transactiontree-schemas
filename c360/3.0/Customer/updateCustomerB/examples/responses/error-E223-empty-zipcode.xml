@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Postal ZIPCODE was sent empty. The echo element is ZIPCODE (no underscore) and is itself empty. -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_DATE>2026-10-12 15:10:11.000</RESPONSE_DATE>
+  <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  <ZIPCODE/>
+  <RESPONSE_CODE>E223</RESPONSE_CODE>
+</RESPONSE>

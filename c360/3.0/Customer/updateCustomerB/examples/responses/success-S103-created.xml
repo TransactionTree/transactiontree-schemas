@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- New customer created, loyalty program not in play: the usual create answer. -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_DATE>2026-10-12 15:10:02.5</RESPONSE_DATE>
+  <CUSTOMER_ID>1234571</CUSTOMER_ID>
+  <RESPONSE_CODE>S103</RESPONSE_CODE>
+</RESPONSE>

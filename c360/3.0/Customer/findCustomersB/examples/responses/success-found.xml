@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<RESPONSE xmlns="https://www.transactiontree.com/schema/loyalty/findCustomersB/response/1.0">
-    <RESPONSE_DATE>2026-10-12 15:03:00.000</RESPONSE_DATE>
-    <STORE_ID>001</STORE_ID>
-    <CUSTOMER_ID>1234567</CUSTOMER_ID>
-</RESPONSE>

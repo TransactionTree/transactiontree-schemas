@@ -2,11 +2,17 @@
   "openapi": "3.0.3",
   "info": {
     "title": "getPersonCompleteDetailsB (controller)",
-    "version": "1.0.1"
+    "version": "1.1.0"
   },
   "servers": [
     {
-      "url": "{{baseUrl}}/loyalty-app"
+      "url": "{baseUrl}",
+      "description": "Deployment base URL including the web-application path, e.g. https://host.example.com/<web-app>",
+      "variables": {
+        "baseUrl": {
+          "default": "https://host.example.com/web-app"
+        }
+      }
     }
   ],
   "paths": {
@@ -18,20 +24,22 @@
         "summary": "Get full person/customer details (controller XML)",
         "parameters": [
           {
-            "name": "X-tenant-Key",
+            "name": "accessTokenKey",
             "in": "header",
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Access token. A 'Bearer ' prefix is added by the service when absent. A missing or invalid token returns RESPONSE_CODE E899."
           },
           {
-            "name": "Authorization",
+            "name": "X-tenant-Key",
             "in": "header",
             "required": false,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Tenant key. Required on multi-tenant deployments of the older service generation; not read by this operation in the loyalty-app service generation."
           }
         ],
         "requestBody": {
@@ -50,8 +58,13 @@
                 ]
               },
               "examples": {
-                "criteria": {
-                  "value": "<REQUEST><CRITERIA><CUSTOMER_ID>20026872</CUSTOMER_ID><RECORDS_LIMIT>100</RECORDS_LIMIT></CRITERIA></REQUEST>"
+                "byCustomerId": {
+                  "summary": "Lookup by customer id",
+                  "value": "<REQUEST><CRITERIA><CUSTOMER_ID>1234567</CUSTOMER_ID></CRITERIA></REQUEST>"
+                },
+                "byCrossReference": {
+                  "summary": "Lookup by cross-reference",
+                  "value": "<REQUEST><CRITERIA><SYSTEM_REFERENCE>POS_ID</SYSTEM_REFERENCE><SYSTEM_REFERENCE_ID>9000001</SYSTEM_REFERENCE_ID></CRITERIA></REQUEST>"
                 }
               }
             }
@@ -59,7 +72,14 @@
         },
         "responses": {
           "200": {
-            "description": "XML response envelope with person details"
+            "description": "XML RESPONSE document (un-namespaced). Errors are also returned with HTTP 200: a successful lookup carries one or more CUSTOMER blocks and NO RESPONSE_CODE; an unsuccessful one carries RESPONSE_CODE (E105 = no usable filter or no match). See getPersonCompleteDetailsB-response.xsd and the examples folder.",
+            "content": {
+              "text/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "x-schemas": {

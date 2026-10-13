@@ -548,7 +548,7 @@
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="RESPONSE_MESSAGE" type="xs:string" minOccurs="0">
-				  <xs:annotation><xs:documentation>Exception detail emitted with E999 by the lmsServices generation.</xs:documentation></xs:annotation>
+				  <xs:annotation><xs:documentation>Exception detail emitted with E999 by the older service generation.</xs:documentation></xs:annotation>
 				</xs:element>
 				<xs:element name="RESPONSE_DATA" type="xs:string" minOccurs="0">
 				  <xs:annotation><xs:documentation>Exception detail emitted by the loyalty-app service generation (sibling of RESPONSE_MESSAGE where present).</xs:documentation></xs:annotation>

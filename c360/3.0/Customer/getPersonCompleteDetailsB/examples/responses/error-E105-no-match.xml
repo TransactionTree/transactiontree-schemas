@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Service-level error envelope: ResponseId + RESPONSE_DATE + RESPONSE_CODE, nothing else.
+     E105 = no usable search filter OR no customer matched (the routine "not found" answer).
+     The same envelope carries E101-E104 and E127. -->
+<RESPONSE ResponseId="100000005">
+  <RESPONSE_DATE>2026-10-12 15:00:05.000</RESPONSE_DATE>
+  <RESPONSE_CODE>E105</RESPONSE_CODE>
+</RESPONSE>

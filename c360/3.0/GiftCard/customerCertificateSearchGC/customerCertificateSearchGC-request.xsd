@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
   <xs:annotation>
-    <xs:documentation>REQUEST schema for customerCertificateSearchGC (Customer360). This XML is carried in the form field 'XmlInput'.</xs:documentation>
+    <xs:documentation>STATUS: UNVERIFIED / LEGACY -- no operation of this name is implemented in the loyalty-app service generation (verified 2026-10); use c360/3.0/Coupon/customerCertificateSearch/ instead. Retained unchanged for reference. REQUEST schema for customerCertificateSearchGC (Customer360). This XML is carried in the form field 'XmlInput'.</xs:documentation>
   </xs:annotation>
   <xs:element name="REQUEST">
     <xs:annotation>

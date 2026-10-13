@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Validation error for a resolved customer: RESPONSE_DATE, CUSTOMER_ID, RESPONSE_CODE.
+     Here FIRST_NAME or LAST_NAME was sent empty. Most validation codes (E127, E128, E129, E131, E132, E133,
+     E162, E163, E201, E222, E224) use this envelope. -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_DATE>2026-10-12 15:10:05.000</RESPONSE_DATE>
+  <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  <RESPONSE_CODE>E223</RESPONSE_CODE>
+</RESPONSE>

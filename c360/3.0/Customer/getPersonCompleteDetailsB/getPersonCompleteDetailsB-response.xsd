@@ -1,114 +1,266 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- getPersonCompleteDetailsB — Response Schema
-     Envelope returned by /loyalty-app/control/getPersonCompleteDetailsB.
-     Paired with getPersonCompleteDetailsB-request.xsd and getPersonCompleteDetailsB-openapi.json. -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           elementFormDefault="qualified"
-           version="1.0">
-  <xs:simpleType name="ResponseCodeType">
-    <xs:annotation>
-      <xs:documentation>
-        Response codes observed in this family of endpoints:
-         • S100/S102/S103/S104 — success variants
-         • E101 — missing/empty input
-         • E102/E103/E104 — malformed / parse / IO
-         • E105 — no effective filters / required context missing
-         • E106/E107 — invalid state/country association
-         • E127 — invalid store id / not found
-         • E133 — duplicate/conflict
-         • E166 — invalid Canadian ZIP format
-         • E201 — invalid date format
-         • E205 — address/postal validation failed
-         • E222 — invalid email format (when email present)
-         • E888 — tenant missing/invalid
-         • E899 — access token invalid / authorization failure
-        Exact meanings may be tenant-specific; see service code for details.
-      </xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="S100"/><xs:enumeration value="S102"/><xs:enumeration value="S103"/><xs:enumeration value="S104"/>
-      <xs:enumeration value="E101"/><xs:enumeration value="E102"/><xs:enumeration value="E103"/><xs:enumeration value="E104"/>
-      <xs:enumeration value="E105"/><xs:enumeration value="E106"/><xs:enumeration value="E107"/>
-      <xs:enumeration value="E127"/><xs:enumeration value="E133"/><xs:enumeration value="E166"/>
-      <xs:enumeration value="E201"/><xs:enumeration value="E205"/><xs:enumeration value="E222"/>
-      <xs:enumeration value="E888"/><xs:enumeration value="E899"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="YN"><xs:restriction base="xs:string"><xs:enumeration value="Y"/><xs:enumeration value="N"/></xs:restriction></xs:simpleType>
-  <xs:simpleType name="DateTimeLoose"><xs:restriction base="xs:string"><xs:pattern value="^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(\.\d{1,3})?$"/></xs:restriction></xs:simpleType>
-  <xs:complexType name="ContactOutType">
-    <xs:sequence>
-      <xs:element name="TO_NAME" type="xs:string" minOccurs="0"/>
-      <xs:element name="ADDRESS1" type="xs:string" minOccurs="0"/>
-      <xs:element name="ADDRESS2" type="xs:string" minOccurs="0"/>
-      <xs:element name="CITY" type="xs:string" minOccurs="0"/>
-      <xs:element name="STATE" type="xs:string" minOccurs="0"/>
-      <xs:element name="ZIPCODE" type="xs:string" minOccurs="0"/>
-      <xs:element name="ZIP" type="xs:string" minOccurs="0"/>
-      <xs:element name="COUNTRY" type="xs:string" minOccurs="0"/>
-      <xs:element name="EMAIL" type="xs:string" minOccurs="0"/>
-      <xs:element name="PHONE" type="xs:string" minOccurs="0"/>
-      <xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0"/>
-      <xs:element name="BAD_POSTAL_ADDRESS_STATUS" type="YN" minOccurs="0"/>
-      <xs:element name="BAD_EMAIL_ADDRESS_STATUS" type="YN" minOccurs="0"/>
-      <xs:element name="ALLOW_SOLICITATION" type="YN" minOccurs="0"/>
-      <xs:element name="CONTACT_TYPE" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="ContactGroupOutType">
-    <xs:sequence>
-      <xs:element name="CONTACT" type="ContactOutType" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="CrossReferenceType">
-    <xs:sequence>
-      <xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0"/>
-      <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="CrossReferencesOutType"><xs:sequence>
-      <xs:element name="CROSS_REFERENCE" type="CrossReferenceType" minOccurs="0" maxOccurs="unbounded"/>
-  </xs:sequence></xs:complexType>
-  <xs:complexType name="MarketSegmentsType"><xs:sequence>
-    <xs:element name="MKT_SEGMENT" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-  </xs:sequence></xs:complexType>
-  <xs:complexType name="CustomerOutType">
-    <xs:sequence>
-      <xs:element name="FIRST_NAME" type="xs:string" minOccurs="0"/>
-      <xs:element name="LAST_NAME" type="xs:string" minOccurs="0"/>
-      <xs:element name="GENDER" minOccurs="0">
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="MALE"/>
-          <xs:enumeration value="FEMALE"/>
-          <xs:enumeration value="UNKNOWN"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:element>
-      <xs:element name="BIRTHDAY" type="xs:string" minOccurs="0"/>
-      <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0"/>
-      <xs:element name="REQ_REWARD_POINTS" type="xs:string" minOccurs="0"/>
-      <xs:element name="EV_BALANCE" type="xs:string" minOccurs="0"/>
-      <xs:element name="CASHIER" type="xs:string" minOccurs="0"/>
-      <xs:element name="ASSIGNED_STORE" type="xs:string" minOccurs="0"/>
-      <xs:element name="LOYALTY_STORE" type="xs:string" minOccurs="0"/>
-      <xs:element name="PREFERRED_STORE" type="xs:string" minOccurs="0"/>
-      <xs:element name="MKT_SEGMENTS" type="MarketSegmentsType" minOccurs="0"/>
-      <xs:element name="CUSTOMER_CROSS_REFERENCES" type="CrossReferencesOutType" minOccurs="0"/>
-      <xs:element name="POSTAL_CONTACTS" type="ContactGroupOutType" minOccurs="0"/>
-      <xs:element name="EMAIL_CONTACTS"  type="ContactGroupOutType" minOccurs="0"/>
-      <xs:element name="PHONE_CONTACTS"  type="ContactGroupOutType" minOccurs="0"/>
-      <xs:element name="POS_SEGMENT" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0">
+  <xs:annotation>
+    <xs:documentation>
+RESPONSE schema for getPersonCompleteDetailsB (Customer360) -- rebuilt 2026-10-12 against the
+loyalty-app service generation.
+
+Two response shapes share this document:
+  1. Success -- RESPONSE_DATE + one CUSTOMER block per matched customer. NO RESPONSE_CODE is sent
+     on success: the presence of CUSTOMER is the success signal.
+  2. Error   -- RESPONSE_DATE + RESPONSE_CODE, no CUSTOMER. This operation sends no message or
+     detail element with the code.
+
+Transport notes
+  - Every handled outcome is HTTP 200; the outcome is only in the document.
+  - Service-level responses and the E899 token failure carry the ResponseId attribute.
+  - E999 is a fixed fallback document: no ResponseId and an EMPTY RESPONSE_DATE.
+  - The WEBSERVICE wrapper is declared because gate-level failures have been seen wrapped that
+    way on sibling operations. This operation's own handler in the loyalty-app service
+    generation always answers with a bare RESPONSE root.
+
+RESPONSE_CODE catalog (xs:string ON PURPOSE -- an open set, new codes must not break validation)
+  E101 XmlInput empty            E102 malformed XML
+  E103 parser configuration      E104 I/O error reading the input
+  E105 no usable search filter, OR no (enabled) customer matched -- the routine "not found"
+       answer before enrolling a new customer
+  E127 STORE_ID unknown (or no store configured when STORE_ID is omitted)
+  E899 accessTokenKey validation failed (the search did not run)
+  E999 unhandled failure (fixed fallback document)
+
+All content elements are optional. Element order inside CUSTOMER and CONTACT is stable on the
+loyalty-app service generation (the order used below) but is modelled as a free choice so that
+differences between service generations do not break validation. An element whose value is
+unknown is normally sent EMPTY rather than omitted.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="WEBSERVICE">
+    <xs:annotation><xs:documentation>Wrapper seen on gate-level failures of sibling operations (WEBSERVICE/RESPONSE,
+without ResponseId). Not produced by this operation's handler on the loyalty-app service generation; declared so
+that such a document still validates.</xs:documentation></xs:annotation>
+    <xs:complexType><xs:sequence>
+      <xs:element ref="RESPONSE"/>
+    </xs:sequence></xs:complexType>
+  </xs:element>
+
   <xs:element name="RESPONSE">
+    <xs:annotation><xs:documentation>Top-level response container.</xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="RESPONSE_DATE" type="DateTimeLoose" minOccurs="0"/>
-        <xs:element name="CUSTOMER" type="CustomerOutType" minOccurs="0"/>
-        <xs:element name="RESPONSE_CODE" type="ResponseCodeType"/>
+        <xs:element ref="RESPONSE_DATE"/>
+        <xs:element ref="CUSTOMER" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="RESPONSE_CODE" minOccurs="0"/>
       </xs:sequence>
-      <xs:attribute name="ResponseId" type="xs:string" use="optional"/>
+      <xs:attribute name="ResponseId" type="xs:string">
+        <xs:annotation><xs:documentation>Server-side request-log correlation id. Present on every response built by the
+service (including E899); absent on the E999 fallback document.</xs:documentation></xs:annotation>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
+
+  <xs:element name="RESPONSE_DATE" type="xs:string">
+    <xs:annotation><xs:documentation>Server timestamp, format "yyyy-MM-dd HH:mm:ss.S" with 1 to 3 fractional digits
+(e.g. 2026-10-12 15:01:02.655). Deliberately xs:string: not ISO 8601, and EMPTY on the E999 fallback document.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="RESPONSE_CODE" type="xs:string">
+    <xs:annotation><xs:documentation>Outcome code; ABSENT on success. See the catalog in the schema header.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="CUSTOMER">
+    <xs:annotation><xs:documentation>One matched customer. Repeats when the search matched several customers
+(see RECORDS_LIMIT in the request schema). Emission order: FIRST_NAME, LAST_NAME, GENDER, BIRTHDAY, CUSTOMER_ID,
+REQ_REWARD_POINTS, EV_BALANCE, CASHIER, ASSIGNED_STORE, LOYALTY_STORE (conditional), PREFERRED_STORE, MKT_SEGMENTS,
+CUSTOMER_CROSS_REFERENCES, POSTAL_CONTACTS, EMAIL_CONTACTS, PHONE_CONTACTS, POS_SEGMENT.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="FIRST_NAME"/>
+        <xs:element ref="LAST_NAME"/>
+        <xs:element ref="GENDER"/>
+        <xs:element ref="BIRTHDAY"/>
+        <xs:element ref="CUSTOMER_ID"/>
+        <xs:element ref="REQ_REWARD_POINTS"/>
+        <xs:element ref="EV_BALANCE"/>
+        <xs:element ref="CASHIER"/>
+        <xs:element ref="ASSIGNED_STORE"/>
+        <xs:element ref="LOYALTY_STORE"/>
+        <xs:element ref="PREFERRED_STORE"/>
+        <xs:element ref="MKT_SEGMENTS"/>
+        <xs:element ref="CUSTOMER_CROSS_REFERENCES"/>
+        <xs:element ref="POSTAL_CONTACTS"/>
+        <xs:element ref="EMAIL_CONTACTS"/>
+        <xs:element ref="PHONE_CONTACTS"/>
+        <xs:element ref="POS_SEGMENT"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="FIRST_NAME" type="xs:string">
+    <xs:annotation><xs:documentation>First name; empty when not on file.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="LAST_NAME" type="xs:string">
+    <xs:annotation><xs:documentation>Last name; empty when not on file.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="GENDER" type="xs:string">
+    <xs:annotation><xs:documentation>Value domain: MALE, FEMALE, UNKNOWN, or EMPTY when no gender is stored.
+(UNKNOWN is sent when a gender is stored that is neither male nor female.) Kept as xs:string because the empty
+form is routine.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="BIRTHDAY" type="xs:string">
+    <xs:annotation><xs:documentation>Stored birth date as "yyyy-MM-dd", or empty. Birthdays captured without a year
+come back with a placeholder year (e.g. 0999-05-17); a birthday captured as year+month comes back on day 01.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="CUSTOMER_ID" type="xs:string">
+    <xs:annotation><xs:documentation>Customer identifier. Always populated.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="REQ_REWARD_POINTS" type="xs:string">
+    <xs:annotation><xs:documentation>Whole number: loyalty points still required to reach the reward threshold configured for the
+environment (default threshold 75). "0" when the threshold is already reached or the customer has no loyalty identifier.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="EV_BALANCE" type="xs:string">
+    <xs:annotation><xs:documentation>Loyalty points balance (earned minus redeemed) as a decimal string; "0" when the
+customer has no loyalty identifier. Not fixed-scale: whole numbers come back without decimals (e.g. 125), and
+fractional balances may carry a long binary-fraction expansion. Parse as a decimal and round.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="CASHIER" type="xs:string">
+    <xs:annotation><xs:documentation>Cashier / operator reference stored on the customer; empty when none.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="ASSIGNED_STORE" type="xs:string">
+    <xs:annotation><xs:documentation>Store the customer is assigned to; empty when none.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="LOYALTY_STORE" type="xs:string">
+    <xs:annotation><xs:documentation>Store of loyalty enrollment. CONDITIONAL: only present when the loyalty program is
+switched on for the environment AND this customer is loyalty-enabled; may then be empty.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="PREFERRED_STORE" type="xs:string">
+    <xs:annotation><xs:documentation>Customer's preferred local store; empty when none.</xs:documentation></xs:annotation>
+  </xs:element>
+  <xs:element name="POS_SEGMENT" type="xs:string">
+    <xs:annotation><xs:documentation>Point-of-sale segment code for the customer; empty when none.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="MKT_SEGMENTS">
+    <xs:annotation><xs:documentation>Marketing segments of the customer, newest first. Present but EMPTY when the customer
+has none. The number of entries is capped by an environment setting (default 2).</xs:documentation></xs:annotation>
+    <xs:complexType><xs:sequence>
+      <xs:element name="MKT_SEGMENT" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation><xs:documentation>Segment identifier.</xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence></xs:complexType>
+  </xs:element>
+
+  <xs:element name="CUSTOMER_CROSS_REFERENCES">
+    <xs:annotation><xs:documentation>External identifiers of the customer. Present but EMPTY when there are none to show.
+Only a fixed set of identifier types is returned (others on file are not exposed), and LOYALTY_ID is withheld
+unless the customer is loyalty-enabled.</xs:documentation></xs:annotation>
+    <xs:complexType><xs:sequence>
+      <xs:element name="CROSS_REFERENCE" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="SYSTEM_REFERENCE" type="xs:string">
+              <xs:annotation><xs:documentation>Identifier type. Returned types include LOYALTY_ID, POS_ID, APTOS_ID, DW_ID,
+ATG_CUST_ID, CHEETAHMAIL_ID, LEGACY_ID, WINDSS_ID, AFFINITY_ID, HARTEHANKS_ID, HH_HOUSEHOLD_ID, plus the type named in
+the request's SYSTEM_REFERENCE where that is a brand-specific type. Open value set.</xs:documentation></xs:annotation>
+            </xs:element>
+            <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string">
+              <xs:annotation><xs:documentation>Identifier value.</xs:documentation></xs:annotation>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence></xs:complexType>
+  </xs:element>
+
+  <xs:element name="POSTAL_CONTACTS">
+    <xs:annotation><xs:documentation>The customer's current primary/general postal address. ALWAYS carries exactly one
+CONTACT: when no address is on file it is a placeholder with empty fields and BAD_POSTAL_ADDRESS_STATUS = Y.</xs:documentation></xs:annotation>
+    <xs:complexType><xs:sequence>
+      <xs:element ref="CONTACT" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence></xs:complexType>
+  </xs:element>
+  <xs:element name="EMAIL_CONTACTS">
+    <xs:annotation><xs:documentation>The customer's current primary e-mail address. ALWAYS carries exactly one CONTACT:
+when no primary e-mail is on file -- or it is withheld by the environment's solicitation settings -- it is a
+placeholder with empty EMAIL, BAD_EMAIL_ADDRESS_STATUS = Y and ALLOW_SOLICITATION = Y. An empty EMAIL therefore
+means "nothing to show"; do not read the placeholder's flags as consent.</xs:documentation></xs:annotation>
+    <xs:complexType><xs:sequence>
+      <xs:element ref="CONTACT" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence></xs:complexType>
+  </xs:element>
+  <xs:element name="PHONE_CONTACTS">
+    <xs:annotation><xs:documentation>The customer's current primary phone. Unlike the other two groups there is NO
+placeholder: the container is EMPTY when no primary phone is on file or it is withheld by solicitation settings.</xs:documentation></xs:annotation>
+    <xs:complexType><xs:sequence>
+      <xs:element ref="CONTACT" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence></xs:complexType>
+  </xs:element>
+
+  <xs:element name="CONTACT">
+    <xs:annotation><xs:documentation>One contact entry. Which children appear depends on the parent group:
+  POSTAL_CONTACTS: TO_NAME, ADDRESS1, ADDRESS2, CITY, STATE, ZIPCODE, COUNTRY, CONTACT_MECH_ID,
+                   BAD_POSTAL_ADDRESS_STATUS, ALLOW_SOLICITATION, CONTACT_TYPE
+  EMAIL_CONTACTS:  EMAIL, CONTACT_MECH_ID, BAD_EMAIL_ADDRESS_STATUS, ALLOW_SOLICITATION, CONTACT_TYPE
+  PHONE_CONTACTS:  PHONE, CONTACT_MECH_ID, ALLOW_SOLICITATION, CONTACT_TYPE</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="TO_NAME" type="xs:string">
+          <xs:annotation><xs:documentation>Addressee name; empty when not stored.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="ADDRESS1" type="xs:string">
+          <xs:annotation><xs:documentation>Address line 1; empty when not stored.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="ADDRESS2" type="xs:string">
+          <xs:annotation><xs:documentation>Address line 2; empty when not stored.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="CITY" type="xs:string">
+          <xs:annotation><xs:documentation>City; empty when not stored.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="STATE" type="xs:string">
+          <xs:annotation><xs:documentation>State / province code; empty when not stored.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="ZIPCODE" type="xs:string">
+          <xs:annotation><xs:documentation>Postal code, upper-cased; empty when not stored. The postal-code extension is not returned.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="COUNTRY" type="xs:string">
+          <xs:annotation><xs:documentation>Country code as stored (e.g. CAN); empty when not stored.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="EMAIL" type="xs:string">
+          <xs:annotation><xs:documentation>E-mail address; empty on the placeholder entry.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="PHONE" type="xs:string">
+          <xs:annotation><xs:documentation>Phone number: stored area code immediately followed by the number, no separators and no country code.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="CONTACT_MECH_ID" type="xs:string">
+          <xs:annotation><xs:documentation>Identifier of this contact record; send it back in updateCustomerB to update or expire
+this exact record. Empty on a placeholder entry.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="BAD_POSTAL_ADDRESS_STATUS" type="YesNo">
+          <xs:annotation><xs:documentation>Y = address NOT confirmed deliverable; N = address verified. N requires both a
+positive address-verification record for the customer and the address not being flagged undeliverable. Y on the placeholder entry.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="BAD_EMAIL_ADDRESS_STATUS" type="YesNo">
+          <xs:annotation><xs:documentation>Y = e-mail flagged undeliverable (or placeholder entry); N = not flagged.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="ALLOW_SOLICITATION" type="xs:string">
+          <xs:annotation><xs:documentation>Marketing consent for this contact. Value domain: Y (allowed), N (not allowed),
+U (unknown / never asked), or EMPTY (nothing stored; always empty on the postal placeholder entry). Brand-level
+consent for the request's store takes precedence over the contact-level value where one exists. Kept as
+xs:string: the value is passed through from stored data and is not limited to Y/N.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="CONTACT_TYPE" type="xs:string">
+          <xs:annotation><xs:documentation>Fixed per group: PRIMARY_LOCATION (postal -- also used when the stored purpose is the
+general location), PRIMARY_EMAIL, PRIMARY_PHONE. Empty on a placeholder entry.</xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="YesNo">
+    <xs:annotation><xs:documentation>Y or N. These two status flags are always sent with one of the two values.</xs:documentation></xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Y"/>
+      <xs:enumeration value="N"/>
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>

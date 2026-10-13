@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A processing step failed: RESPONSE_DATE, RESPONSE_CODE, RESPONSE_DATA and no CUSTOMER_ID.
+     RESPONSE_DATA can be empty when the underlying failure had no message. -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_DATE>2026-10-12 15:10:14.000</RESPONSE_DATE>
+  <RESPONSE_CODE>E1006</RESPONSE_CODE>
+  <RESPONSE_DATA>Example failure detail.</RESPONSE_DATA>
+</RESPONSE>

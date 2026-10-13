@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Existing customer updated: the usual update answer (sparse form; no other element is sent). -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_DATE>2026-10-12 15:10:03.04</RESPONSE_DATE>
+  <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  <RESPONSE_CODE>S102</RESPONSE_CODE>
+</RESPONSE>

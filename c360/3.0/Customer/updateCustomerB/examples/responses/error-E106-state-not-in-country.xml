@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- E106 also covers a STATE that does not belong to the COUNTRY sent; the echo is then COUNTRY, not STATE. -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_DATE>2026-10-12 15:10:08.000</RESPONSE_DATE>
+  <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  <COUNTRY>CAN</COUNTRY>
+  <RESPONSE_CODE>E106</RESPONSE_CODE>
+</RESPONSE>

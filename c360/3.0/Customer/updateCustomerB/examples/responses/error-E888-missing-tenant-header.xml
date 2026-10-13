@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Gate-level failure: the X-tenant-Key header was missing or empty. RESPONSE_CODE is the ONLY child -
+     there is no RESPONSE_DATE on this answer. ResponseId is present. -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_CODE>E888</RESPONSE_CODE>
+</RESPONSE>

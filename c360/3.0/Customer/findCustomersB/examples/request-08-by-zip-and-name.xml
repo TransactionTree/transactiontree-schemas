@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Pattern 6 - postal lookup: 5-character ZIP_CODE exact + ZIP4 exact; LAST_NAME is a
+     contains match in this path. -->
+<REQUEST>
+  <CRITERIA>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <ZIP_CODE>00000</ZIP_CODE>
+    <ZIP4>0000</ZIP4>
+    <STORE_ID>001</STORE_ID>
+  </CRITERIA>
+</REQUEST>

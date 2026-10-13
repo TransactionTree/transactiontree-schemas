@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- NOT FOUND, on a deployment with phone validation enabled: RESPONSE_DATA carries one child
+     element per detail returned by the validation provider. The child element names are
+     provider-defined (upper-cased keys); the two shown here are ILLUSTRATIVE ONLY. -->
+<RESPONSE ResponseId="100000006">
+  <RESPONSE_DATE>2026-10-12 15:03:00.655</RESPONSE_DATE>
+  <RESPONSE_CODE>E163</RESPONSE_CODE>
+  <RESPONSE_DATA>
+    <EXAMPLE_DETAIL_ONE>value</EXAMPLE_DETAIL_ONE>
+    <EXAMPLE_DETAIL_TWO>value</EXAMPLE_DETAIL_TWO>
+  </RESPONSE_DATA>
+</RESPONSE>

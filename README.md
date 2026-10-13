@@ -102,64 +102,128 @@ internal identifiers.
 > documentation may still use "BORMC"; treat them as synonymous.
 
 All C360 endpoints take their XML payload as form field `XmlInput` on a
-POST to `/loyalty-app/control/{endpoint}`. Required headers vary by tenant
-but typically include `X-tenant-Key` and an `Authorization` token.
+POST to `/{web-app}/control/{endpoint}`. Requests carry an `accessTokenKey`
+header (a missing or invalid token returns `RESPONSE_CODE` `E899`);
+multi-tenant deployments also require `X-tenant-Key` (`E888` when missing).
+Errors are returned with HTTP 200 inside the XML document. Element names in
+requests are matched case-insensitively, in any order, and unknown elements
+are ignored. No C360 schema uses a target namespace: the services emit plain
+un-namespaced XML.
+
+Two service generations are in production. They share these contracts; where
+they differ, the schema annotations say so (for example, "not found" on
+`findCustomersB` is `E163` on the loyalty-app generation and `E105` on the
+older one).
+
+### Verification status
+
+Each operation's schema is checked against the service implementation, and
+its examples are validated in CI on every change.
+
+| Operation | Status | Basis |
+|---|---|---|
+| `findCustomersB` | Verified 2026-10 | Source of both service generations |
+| `getPersonCompleteDetailsB` | Verified 2026-10 | Source of both service generations |
+| `updateCustomerB` | Verified 2026-10 | Source of both service generations |
+| `getOrderDetailsC` | Verified 2026-10 | Response: source plus production responses. Request: source of the loyalty-app generation |
+| `getOrderHeaderDetailsC` | Verified 2026-10 | Source plus production responses |
+| `getOrderHeaderDetailsB` | Verified 2026-10 | Source |
+| `getOrderDetailsB` | Verified 2026-10 | Source (same implementation as `getOrderDetailsC`) |
+| `couponAuthentication` | Verified 2026-10 | Source of the loyalty-app generation only |
+| `couponPost` | Verified 2026-10 | Source of the loyalty-app generation only |
+| `customerCertificateSearch` | Verified 2026-10 | Source of the loyalty-app generation only |
+| `customerCertificateSearchGC` | **Unverified / legacy** | Not implemented in the loyalty-app generation; use `customerCertificateSearch` |
 
 ### Customer
 
 #### `findCustomersB` — search for customers
-- **Files:** `c360/3.0/Customer/findCustomersB/findCustomersB-request.xsd`, `findCustomersB-response.xsd`, `examples/request-sample.xml`
-- **Request namespace:** `https://www.transactiontree.com/schema/loyalty/findCustomersB/1.0`
-- **Response namespace:** `https://www.transactiontree.com/schema/loyalty/findCustomersB/response/1.0`
-- **Behavior:** at least one filter must be supplied inside `CRITERIA`
-  (otherwise `RESPONSE_CODE` `E105`). `STORE_ID`, when given, must exist
-  (`E127`). `PHONE_NUMBER` is split into area-code (first three chars) +
-  remainder when length > 7. `ZIP_CODE` drives multiple lookup paths
-  depending on length. `SYSTEM_REFERENCE` + `SYSTEM_REFERENCE_ID` can
-  short-circuit to an exact match. `RECORDS_LIMIT` caps the result window.
+- **Files:** `c360/3.0/Customer/findCustomersB/` — request and response XSD, `examples/`
+- **Behavior:** at least one counting filter must be supplied inside
+  `CRITERIA` (otherwise `E105`); `PROVINCE` alone does not count. Filters
+  are applied in a fixed precedence: address, then phone, then e-mail, then
+  cross-reference (`SYSTEM_REFERENCE` + `SYSTEM_REFERENCE_ID`, an exact
+  match). `STORE_ID`, when given, must exist (`E127`). Each match is one
+  `CUSTOMER` block; on the loyalty-app generation at most 50 are returned
+  and `RECORDS_LIMIT` is accepted but not applied. A successful response
+  carries no `RESPONSE_CODE`.
 
-#### `getPersonCompleteDetailsB` — fetch a single customer's full profile
-- **Files:** `c360/3.0/Customer/getPersonCompleteDetailsB/getPersonCompleteDetailsB-request.xsd`, `getPersonCompleteDetailsB-response.xsd`, `getPersonCompleteDetailsB-openapi.json`
-- **No `targetNamespace`** (schema-version `1.0`).
-- **Behavior:** accepts either a `CRITERIA` search (typical) or a
-  `CUSTOMER` anchor. Empty filters trigger `E101` / `E105`. Email format,
-  Canadian postal rules, and state/country pairing are validated by the
-  service code (`E222`, `E166`, `E106`, `E107` respectively). Response
-  returns nested `POSTAL_CONTACTS` / `EMAIL_CONTACTS` / `PHONE_CONTACTS`
-  collections along with cross-references and market segments. See the
-  `ResponseCodeType` annotation in the response XSD for the full code
-  table.
+#### `getPersonCompleteDetailsB` — fetch full customer profiles
+- **Files:** `c360/3.0/Customer/getPersonCompleteDetailsB/` — request and response XSD, `getPersonCompleteDetailsB-openapi.json`, `examples/`
+- **Behavior:** a `CRITERIA` search by customer id, cross-reference,
+  e-mail, phone, name or address. Returns one `CUSTOMER` block per match with nested
+  `POSTAL_CONTACTS` / `EMAIL_CONTACTS` / `PHONE_CONTACTS`, cross-references
+  and marketing segments. `E105` means either no usable filter or no match.
+  The service does not validate e-mail, phone or postal formats on this
+  operation. A successful response carries no `RESPONSE_CODE`.
 
 #### `updateCustomerB` — create or update a customer record
-- **Files:** `c360/3.0/Customer/updateCustomerB/updateCustomerB-request.xsd`, `updateCustomerB-response.xsd`, `examples/request-sample.xml`
-- **Request namespace:** `https://www.transactiontree.com/schema/loyalty/updateCustomerB/1.0`
-- **Behavior:** a single `CUSTOMER` with optional identity, store/loyalty,
-  cross-references, and contact collections (postal, email, phone).
-  Collections are repeatable (0..n). Most scalar fields are optional
-  unless tenant policy says otherwise. Business rules (store existence,
-  email format, date parsing) are enforced in code and reported via
-  `RESPONSE_CODE`.
+- **Files:** `c360/3.0/Customer/updateCustomerB/` — request and response XSD, `examples/`
+- **Behavior:** a single `CUSTOMER` with optional identity, store, loyalty,
+  cross-reference and contact collections. Returns `S102` (updated) or
+  `S103` (created) with the `CUSTOMER_ID`. **An update fully replaces
+  `FIRST_NAME`, `LAST_NAME`, `GENDER`, `BIRTHDAY` and `CASHIER`: omitting
+  one clears it.** The response is a flat, order-free list and may carry
+  more than one `RESPONSE_CODE`; the last one is the final outcome.
 
 ### Order
 
-#### `getOrderDetailsC` — full order detail (lines, payments, tender, etc.)
-- **Files:** `c360/3.0/Order/getOrderDetailsC/getOrderDetailsC-request.xsd`, `getOrderDetailsC-response.xsd`
-- **No `targetNamespace`.**
-- **Behavior:** keyed by `ORDER_ID` (required); `CUSTOMER_ID` scopes the
-  search to a bill-to / placing customer. `FROM_DATE` / `THRU_DATE` are
-  `xs:date`. Response includes the `LayawayData` block when applicable.
+#### `getOrderDetailsC` — full order detail (lines, payments, tender, taxes)
+- **Files:** `c360/3.0/Order/getOrderDetailsC/` — request XSD, response XSD, `getOrderDetailsC-response-ttdr-layaway.xsd`, `examples/`
+- **Behavior:** on the loyalty-app generation `STORE_ID` is required
+  (`E127`); every other filter is
+  optional and filters combine with AND: `ORDER_ID`, `CUSTOMER_ID` (or a
+  cross-reference pair), `REGISTER_NUMBER`, `FROM_DATE` / `THRU_DATE`,
+  `ORDER_STATUS`, `PRODUCTS`, and the tender-token filters. `E126` means
+  no order matched.
 - **LayAway alternate response:** when `TRANSACTION_TYPE=LayAway` the service bypasses the
   standard `RESPONSE` envelope and returns a `Transactions` document instead — see
-  `getOrderDetailsC-response-ttdr-layaway.xsd` (loyalty-app camelCase `LayawayTransaction`
-  dialect typed from a capture; TTDR-3.2.2-namespaced children validate against
-  `vrg/3.2.2/TTDR-3.2.2.xsd`).
+  `getOrderDetailsC-response-ttdr-layaway.xsd`.
+
+#### `getOrderDetailsB` — full order detail, customer required
+- **Files:** `c360/3.0/Order/getOrderDetailsB/` — request and response XSD, `examples/`
+- **Behavior:** the same implementation and response as `getOrderDetailsC`.
+  The only difference is that `CUSTOMER_ID` is required (`E110`). New
+  integrations should use `getOrderDetailsC`.
+
+#### `getOrderHeaderDetailsC` — order lookup by product or order
+- **Files:** `c360/3.0/Order/getOrderHeaderDetailsC/` — request and response XSD, `examples/`
+- **Behavior:** returns order headers with their line items. See
+  `c360/3.0/Order/field-value-domains.md` for value vocabularies.
 
 #### `getOrderHeaderDetailsB` — order header summary
-- **Files:** `c360/3.0/Order/getOrderHeaderDetailsB/getOrderHeaderDetailsB-request.xsd`, `getOrderHeaderDetailsB-response.xsd`
-- **No `targetNamespace`.**
+- **Files:** `c360/3.0/Order/getOrderHeaderDetailsB/` — request and response XSD, `examples/`
 - **Behavior:** filter-driven header lookup; all request filters are
-  optional. Monetary fields in the response may be empty strings (the
-  schema explicitly permits this to match live output).
+  optional. Monetary fields in the response may be empty strings.
+
+### Coupon
+
+#### `couponAuthentication` — check whether a coupon can be used
+- **Files:** `c360/3.0/Coupon/couponAuthentication/` — request and response XSD, `examples/`
+- **Behavior:** read-only. `REQ_COUPON_TYPE` must be `SERIALIZE` or
+  `NONSERIALIZE` and must match the coupon (`E842`). A positive answer
+  carries `RESP_STATUS_CODE` and no `RESPONSE_CODE`.
+
+#### `couponPost` — redeem a coupon
+- **Files:** `c360/3.0/Coupon/couponPost/` — request and response XSD, `examples/`
+- **Behavior:** marks the coupon as used. Success is `RESPONSE_CODE`
+  `S104` with `RESP_STATUS_CODE` `COUPON_AVAILABLE`. An optional
+  `CUSTOMER_ID` links the coupon to a customer (`E855` if unknown).
+
+#### `customerCertificateSearch` — list a customer's coupons
+- **Files:** `c360/3.0/Coupon/customerCertificateSearch/` — request and response XSD, `examples/`
+- **Behavior:** `CUSTOMER_ID` is required (`E110` / `E111`). Results are
+  grouped under `LOYALTY_COUPONS` and `MARKETING_COUPONS`. Optional
+  filters: date range, `STORE_ID`, `COUPON_PROMO_TYPE`, `COUPON_STATUS`;
+  `RECORD_LIMIT` defaults to 100 per group. The same operation is also
+  reachable as `customerCertificateSearchB`.
+
+### Gift card
+
+#### `customerCertificateSearchGC` — unverified / legacy
+- **Files:** `c360/3.0/GiftCard/customerCertificateSearchGC/` — request and response XSD
+- **Status:** no operation of this name is implemented in the loyalty-app
+  service generation. The schema is retained unchanged for reference and has
+  no examples. Use `customerCertificateSearch`.
 
 ---
 
@@ -254,7 +318,7 @@ entry.
 
 | Family | Current major | Notes |
 |---|---|---|
-| C360 (fka BORMC) | `3.0` | Endpoints carry their own `1.0` request/response namespaces where namespaced; newer endpoints (`getPersonComplete*`, `getOrder*`) use no `targetNamespace`. |
+| C360 (fka BORMC) | `3.0` | No C360 schema uses a `targetNamespace`; the services emit and accept un-namespaced XML. |
 | TTDR / VRG | `3.3.0` | Convenience-retail sibling release. TTDR 3.2.2 remains supported and is not deprecated. |
 
 A future version will live in a new sibling directory rather than overwriting

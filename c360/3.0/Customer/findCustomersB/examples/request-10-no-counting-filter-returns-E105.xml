@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Negative example - only non-counting elements are supplied, so the service returns E105
+     (see responses/error-E105-no-filters.xml). -->
+<REQUEST>
+  <CRITERIA>
+    <PROVINCE>XX</PROVINCE>
+    <STORE_ID>001</STORE_ID>
+    <RECORDS_LIMIT>10</RECORDS_LIMIT>
+    <REQUEST_DATE>2026-10-12 15:03:00</REQUEST_DATE>
+  </CRITERIA>
+</REQUEST>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A customer's completed orders at a store within a date range that contain either listed product. -->
+<REQUEST>
+  <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  <STORE_ID>001</STORE_ID>
+  <FROM_DATE>2026-07-01</FROM_DATE>
+  <THRU_DATE>2026-10-12</THRU_DATE>
+  <ORDER_STATUS>COMPLETED</ORDER_STATUS>
+  <RECORD_LIMIT>25</RECORD_LIMIT>
+  <REQUEST_DATE>2026-10-12 15:20:00</REQUEST_DATE>
+  <PRODUCTS>
+    <PRODUCT_ID>1234567</PRODUCT_ID>
+    <PRODUCT_ID>2345678</PRODUCT_ID>
+  </PRODUCTS>
+</REQUEST>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A search that matched more than one customer returns one CUSTOMER block each (abridged here to the
+     identifying fields; each block normally carries the full set shown in success-full.xml). -->
+<RESPONSE ResponseId="100000004">
+  <RESPONSE_DATE>2026-10-12 15:00:04.321</RESPONSE_DATE>
+  <CUSTOMER>
+    <FIRST_NAME>JANE</FIRST_NAME>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  </CUSTOMER>
+  <CUSTOMER>
+    <FIRST_NAME>JOHN</FIRST_NAME>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <CUSTOMER_ID>1234568</CUSTOMER_ID>
+  </CUSTOMER>
+</RESPONSE>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- New customer created; every element a success can carry. CUSTOMER_ID is the NEW identifier - store it.
+     LOYALTY_ID is only sent when the loyalty program is switched on and an identifier was assigned. -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_DATE>2026-10-12 15:10:01.123</RESPONSE_DATE>
+  <CUSTOMER_ID>1234570</CUSTOMER_ID>
+  <LOYALTY_ID>00123457</LOYALTY_ID>
+  <RESPONSE_CODE>S103</RESPONSE_CODE>
+</RESPONSE>

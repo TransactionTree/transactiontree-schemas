@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Update that replaced the customer loyalty identifier. Note the ORDER: on this path LOYALTY_ID is written
+     first, before RESPONSE_DATE. Do not rely on element order in this response. -->
+<RESPONSE ResponseId="100000010">
+  <LOYALTY_ID>00123458</LOYALTY_ID>
+  <RESPONSE_DATE>2026-10-12 15:10:04.321</RESPONSE_DATE>
+  <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  <RESPONSE_CODE>S102</RESPONSE_CODE>
+</RESPONSE>
