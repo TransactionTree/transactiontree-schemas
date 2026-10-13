@@ -321,8 +321,12 @@ entry.
 | C360 (fka BORMC) | `3.0` | No C360 schema uses a `targetNamespace`; the services emit and accept un-namespaced XML. |
 | TTDR / VRG | `3.3.0` | Convenience-retail sibling release. TTDR 3.2.2 remains supported and is not deprecated. |
 
-A future version will live in a new sibling directory rather than overwriting
-an existing published schema.
+A new contract version will live in a new sibling directory rather than
+overwriting an existing published schema. Corrections are different: when a
+published schema is found to disagree with what the service actually accepts
+or returns, it is corrected in place and the change is recorded in
+[`CHANGELOG.md`](CHANGELOG.md), including any correction that is breaking for
+consumers who validated against the earlier file.
 
 ---
 
