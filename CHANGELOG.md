@@ -26,6 +26,8 @@ these schemas, then confirming each difference in the code of both service gener
   order-free, `ORDER_STATUS` and (B) `ORDER_ID` added, `SYSTEM_REFERENCE` is an open value,
   dates and limit are strings (`RECORD_LIMIT` default 25, capped at 100).
 - **`findCustomersB` request:** empty filter elements (for example `<ZIP_CODE/>`) validate.
+- **`updateCustomerB` request:** elements may appear in any order within `CUSTOMER`, `CONTACT`
+  and `CROSS_REFERENCE`, as the service accepts. The fixed order rejected valid requests.
 
 ### Behaviour now documented correctly
 - **The `PRODUCTS` wrapper is not read.** Only direct children of the request root are read, so

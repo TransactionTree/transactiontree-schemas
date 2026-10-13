@@ -20,6 +20,7 @@
 
       How the service reads this document
         - Element names are matched without regard to case; unknown elements are ignored.
+          Elements may appear in any order within CUSTOMER, CONTACT and CROSS_REFERENCE.
           The service ignores XML namespaces: it reads this document the same with or without a
           namespace declaration. This schema has no target namespace; use the plain form shown in
           the examples.
@@ -242,7 +243,7 @@
         (e.g., ATG_CUST_ID, LOYALTY_ID) to the same CUSTOMER or CONTACT.
       </xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
+		<xs:all>
 			<xs:element name="SYSTEM_REFERENCE" type="SystemReferenceCode">
 				<xs:annotation>
 					<xs:documentation>
@@ -258,7 +259,7 @@
           </xs:documentation>
 				</xs:annotation>
 			</xs:element>
-		</xs:sequence>
+		</xs:all>
 	</xs:complexType>
 	<xs:complexType name="CustomerMechReferencesType">
 		<xs:annotation>
@@ -280,7 +281,7 @@
         and may set primary/general purposes when missing.
       </xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
+		<xs:all>
 			<xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Existing contact mechanism ID (if updating).</xs:documentation>
@@ -351,7 +352,7 @@
 					<xs:documentation>Cross references tied to this address (source IDs, upstream keys).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-		</xs:sequence>
+		</xs:all>
 	</xs:complexType>
 	<xs:complexType name="EmailContactType">
 		<xs:annotation>
@@ -360,7 +361,7 @@
         Bad formats produce E222. EXPPIRE=Y with CONTACT_MECH_ID may retire the email.
       </xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
+		<xs:all>
 			<xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Existing mechanism ID (update path).</xs:documentation>
@@ -396,7 +397,7 @@
 					<xs:documentation>Cross references tied to this email (source message IDs, upstream keys).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-		</xs:sequence>
+		</xs:all>
 	</xs:complexType>
 	<xs:complexType name="PhoneContactType">
 		<xs:annotation>
@@ -405,7 +406,7 @@
         Use CONTACT_TYPE=PRIMARY_PHONE for a main number where applicable.
       </xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
+		<xs:all>
 			<xs:element name="CONTACT_MECH_ID" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Existing mechanism ID (update path).</xs:documentation>
@@ -436,7 +437,7 @@
 					<xs:documentation>Cross references tied to this phone (upstream identifiers).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-		</xs:sequence>
+		</xs:all>
 	</xs:complexType>
 	<xs:complexType name="CustomerCrossReferencesType">
 		<xs:annotation>
@@ -488,7 +489,7 @@
         (see response schema).
       </xs:documentation>
 		</xs:annotation>
-		<xs:sequence>
+		<xs:all>
 			<!-- Identity / person -->
 			<xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
 				<xs:annotation>
@@ -592,7 +593,7 @@
 					<xs:documentation>One or more phone numbers for the customer.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-		</xs:sequence>
+		</xs:all>
 	</xs:complexType>
 	<xs:element name="REQUEST">
 		<xs:annotation>
