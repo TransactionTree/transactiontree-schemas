@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The ONE response that distinguishes getOrderDetailsB from getOrderDetailsC: CUSTOMER_ID missing or
+     empty. The same request sent to getOrderDetailsC is processed normally. -->
+<RESPONSE ResponseId="100000002">
+  <RESPONSE_DATE>2026-10-12 15:20:01.456</RESPONSE_DATE>
+  <RESPONSE_CODE>E110</RESPONSE_CODE>
+</RESPONSE>

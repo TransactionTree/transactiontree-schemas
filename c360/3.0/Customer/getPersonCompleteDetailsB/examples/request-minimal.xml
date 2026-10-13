@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Smallest useful request: look one customer up by identifier. -->
+<REQUEST>
+  <CRITERIA>
+    <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  </CRITERIA>
+</REQUEST>

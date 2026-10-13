@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Pattern 4 - customer id lookup, exact match. -->
+<REQUEST>
+  <CRITERIA>
+    <CUSTOMER_ID>1234567</CUSTOMER_ID>
+    <STORE_ID>001</STORE_ID>
+  </CRITERIA>
+</REQUEST>

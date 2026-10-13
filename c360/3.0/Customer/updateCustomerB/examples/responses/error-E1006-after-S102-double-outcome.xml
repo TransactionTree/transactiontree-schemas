@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Double outcome: the update was reported (S102) and then failed while being saved. The document carries a
+     second RESPONSE_DATE, RESPONSE_CODE and RESPONSE_DATA. The LAST RESPONSE_CODE is the final outcome: this
+     request FAILED. -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_DATE>2026-10-12 15:10:16.000</RESPONSE_DATE>
+  <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  <RESPONSE_CODE>S102</RESPONSE_CODE>
+  <RESPONSE_DATE>2026-10-12 15:10:16.250</RESPONSE_DATE>
+  <RESPONSE_CODE>E1006</RESPONSE_CODE>
+  <RESPONSE_DATA>Example failure detail.</RESPONSE_DATA>
+</RESPONSE>

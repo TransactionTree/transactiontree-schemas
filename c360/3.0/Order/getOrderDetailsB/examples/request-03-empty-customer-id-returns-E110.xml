@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Negative example: CUSTOMER_ID carries no value, so getOrderDetailsB returns E110
+     (responses/error-E110-customer-id-required.xml). The identical request is valid on
+     getOrderDetailsC. -->
+<REQUEST>
+  <CUSTOMER_ID/>
+  <ORDER_ID>12345678</ORDER_ID>
+  <STORE_ID>001</STORE_ID>
+  <REGISTER_NUMBER>002</REGISTER_NUMBER>
+</REQUEST>

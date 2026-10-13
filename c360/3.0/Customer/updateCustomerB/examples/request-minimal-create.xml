@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Smallest sensible request to enroll a new customer: a name and one primary contact.
+     No CUSTOMER_ID: the service looks for an existing customer with the same e-mail / primary phone
+     and creates a new one only if none is found. The answer carries the CUSTOMER_ID (S103 created, S102 updated). -->
+<REQUEST>
+  <CUSTOMER>
+    <FIRST_NAME>JANE</FIRST_NAME>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <EMAIL_CONTACTS>
+      <CONTACT>
+        <EMAIL>jane.sample@example.com</EMAIL>
+        <CONTACT_TYPE>PRIMARY_EMAIL</CONTACT_TYPE>
+      </CONTACT>
+    </EMAIL_CONTACTS>
+  </CUSTOMER>
+</REQUEST>

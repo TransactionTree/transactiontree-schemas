@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Pattern 2b - phone lookup narrowed by name. FIRST_NAME / LAST_NAME must match exactly. -->
+<REQUEST>
+  <CRITERIA>
+    <FIRST_NAME>JANE</FIRST_NAME>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <PHONE_NUMBER>5555550100</PHONE_NUMBER>
+    <STORE_ID>001</STORE_ID>
+  </CRITERIA>
+</REQUEST>

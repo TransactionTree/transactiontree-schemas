@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- LayAway branch: TRANSACTION_TYPE=LayAway bypasses the store and customer checks, so the
+     request needs neither STORE_ID nor CUSTOMER_ID. The response is a Transactions document,
+     not the standard RESPONSE envelope (see getOrderDetailsC-response-ttdr-layaway.xsd). -->
+<REQUEST>
+  <TRANSACTION_TYPE>LayAway</TRANSACTION_TYPE>
+  <LAYAWAY_NUMBER>1234567</LAYAWAY_NUMBER>
+</REQUEST>

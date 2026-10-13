@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Remove one phone contact from a customer: EXPIRE = Y together with the CONTACT_MECH_ID returned by
+     getPersonCompleteDetailsB. The five person fields are sent as well because every update replaces them. -->
+<REQUEST>
+  <CUSTOMER>
+    <CUSTOMER_ID>1234567</CUSTOMER_ID>
+    <FIRST_NAME>JANE</FIRST_NAME>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <GENDER>FEMALE</GENDER>
+    <BIRTHDAY>1990-05-17</BIRTHDAY>
+    <CASHIER>1001</CASHIER>
+    <PHONE_CONTACTS>
+      <CONTACT>
+        <CONTACT_MECH_ID>2000003</CONTACT_MECH_ID>
+        <PHONE>5555550100</PHONE>
+        <CONTACT_TYPE>PRIMARY_PHONE</CONTACT_TYPE>
+        <EXPIRE>Y</EXPIRE>
+      </CONTACT>
+    </PHONE_CONTACTS>
+  </CUSTOMER>
+</REQUEST>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Access token missing or invalid: rejected before the search runs. Bare RESPONSE root (the loyalty-app
+     service generation does not wrap gate errors for this operation). -->
+<RESPONSE ResponseId="100000004">
+  <RESPONSE_DATE>2026-10-12 15:20:01.456</RESPONSE_DATE>
+  <RESPONSE_CODE>E899</RESPONSE_CODE>
+</RESPONSE>

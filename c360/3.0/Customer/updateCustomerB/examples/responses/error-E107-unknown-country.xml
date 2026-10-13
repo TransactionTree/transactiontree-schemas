@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- COUNTRY is not a known country code; the value is echoed. -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_DATE>2026-10-12 15:10:09.000</RESPONSE_DATE>
+  <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  <COUNTRY>ZZZ</COUNTRY>
+  <RESPONSE_CODE>E107</RESPONSE_CODE>
+</RESPONSE>

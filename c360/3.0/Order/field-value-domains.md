@@ -13,8 +13,8 @@ newer generations only **add** elements, none conflict:
 
 | Generation | Elements emitted | Distinguishing additions |
 |---|---|---|
-| legacy (`lmsServices`, 2014-era) | 40 | the original core |
-| current `lmsServices` lmsServices-v2 | 105 | CONTACT blocks, LEVEL_5 merchandising, ITEM_TAX detail, discounts, tenders |
+| legacy (2014-era) | 40 | the original core |
+| older service generation | 105 | CONTACT blocks, LEVEL_5 merchandising, ITEM_TAX detail, discounts, tenders |
 | loyalty-app | 132–133 | `ORIGINAL_*` return linkage, tender tokens, `ATTRIBUTE` blocks, `BALANCE`/`CHANGE`/`CASH_BACK_AMOUNT`, `DEPARTMENT_CODE`, `REGISTER_TYPE`, `WORKDAY_ID`, `TRANSACTION_HISTORY`, `IS_*` flags; one deployment adds `RESPONSE_DATA` (exception detail, sibling of `RESPONSE_MESSAGE`) |
 
 A consumer written against the superset handles every system; absent fields simply don't appear.
@@ -128,6 +128,6 @@ enum member (`Image`, `ProductID`, `ProductStyle`, `ProductDivision`,
 in `AttributeDescription` — an open string, so this route is contract-clean. All observed
 feeds stay within the published TTDR contract by one of these two routes.
 
-Persistence differs by generation: the lmsServices generation persists only the recognized
+Persistence differs by generation: the older service generation persists only the recognized
 names above (unrecognized names are dropped); the loyalty-app generation additionally stores
 attributes generically (name/value) and can emit them via `ATTRIBUTE_TYPE`/`ATTRIBUTE_DESCRIPTION`/`ATTRIBUTE_DATA` blocks.

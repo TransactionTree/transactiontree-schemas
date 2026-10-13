@@ -1,97 +1,280 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           elementFormDefault="qualified"
-           targetNamespace="https://www.transactiontree.com/schema/loyalty/findCustomersB/response/1.0"
-           xmlns="https://www.transactiontree.com/schema/loyalty/findCustomersB/response/1.0">
+           elementFormDefault="qualified">
 
   <xs:annotation>
     <xs:documentation>
       Purpose
       -------
-      Describes the RESPONSE envelope returned by /loyalty-app/control/findCustomersB.
-      On errors the RESPONSE carries RESPONSE_CODE (catalog below, kept non-binding so new production codes cannot break validation; successes omit it) and may include
-      contextual echoes (e.g., STORE_ID) or a result payload (customer list) rendered
-      by higher layers. Structure of the full result set may vary by tenant.
+      RESPONSE envelope returned by the customer search operation findCustomersB
+      (verified against the loyalty-app service generation, 2026-10).
 
-      Notes
-      -----
-      • RESPONSE_DATE is a string timestamp (server time).
-      • RESPONSE_CODE uses defined errors below; success codes may be "S###".
-      • For portability, this schema permits any additional elements via xs:any.
+      Namespace
+      ---------
+      The service emits the response without any namespace declaration (plain
+      &lt;RESPONSE ResponseId="..."&gt;), so this schema has no target namespace. Earlier revisions
+      declared one, which no real response could satisfy.
+
+      Shapes
+      ------
+      Success (one or more customers found):
+        RESPONSE @ResponseId, RESPONSE_DATE, then one CUSTOMER block per customer (1 to 50).
+        A success response carries NO RESPONSE_CODE and no count / paging elements.
+      Not found:
+        RESPONSE @ResponseId, RESPONSE_DATE, RESPONSE_CODE (E163 in the loyalty-app service
+        generation; E105 in the older service generation), optionally RESPONSE_DATA holding
+        phone-validation details as child elements.
+      Request / validation error:
+        RESPONSE @ResponseId, RESPONSE_DATE, RESPONSE_CODE.
+      Internal error with diagnostics enabled (E1006):
+        RESPONSE @ResponseId, RESPONSE_DATE, [CUSTOMER blocks built so far], a second
+        RESPONSE_DATE, RESPONSE_CODE, RESPONSE_DATA holding the exception text.
+      Unhandled failure (E999):
+        RESPONSE (no ResponseId), an EMPTY RESPONSE_DATE, RESPONSE_CODE.
+
+      Because RESPONSE_DATE can repeat and the blocks can interleave, the content model is an
+      unordered, repeat-tolerant choice. Consumers should read RESPONSE_CODE first: absent means
+      success.
+
+      Timestamps are "yyyy-MM-dd HH:mm:ss.S" strings (1 to 3 fractional digits, server local
+      time), not ISO 8601.
     </xs:documentation>
   </xs:annotation>
 
-  <!-- Allow either specific error codes or any S### success code -->
-  <xs:simpleType name="ResponseCode">
+  <xs:complexType name="ResponseDataType" mixed="true">
     <xs:annotation>
       <xs:documentation>
-        Codes observed in service:
-          E101 – Missing XmlInput
-          E102 – XML parse error (SAX)
-          E103 – Parser configuration error
-          E104 – IO error reading XmlInput
-          E105 – No effective filters supplied, OR no customer matched the filters (both triggers verified in the service source; the not-found case is routine production traffic preceding new-customer enrollment)
-          E127 – Invalid/unknown STORE_ID
-        Success codes may be present as "S###" (not fixed here to preserve forward compatibility).
+        RESPONSE_DATA has two forms:
+          (a) with E1006: plain text - the internal exception message;
+          (b) with the "not found" code, when phone validation is enabled for the deployment and
+              the validation service returned details: a set of child elements, one per detail
+              returned, each named by the UPPER-CASED key supplied by the validation provider and
+              holding a text value. The element names are provider-defined and not fixed by the
+              service, hence the open content.
       </xs:documentation>
     </xs:annotation>
-    <xs:union>
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="E101"/>
-          <xs:enumeration value="E102"/>
-          <xs:enumeration value="E103"/>
-          <xs:enumeration value="E104"/>
-          <xs:enumeration value="E105"/>
-          <xs:enumeration value="E127"/>
-        </xs:restriction>
-      </xs:simpleType>
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:pattern value="S[0-9]{3}"/>
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:union>
-  </xs:simpleType>
+    <xs:sequence>
+      <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MktSegmentsType">
+    <xs:annotation>
+      <xs:documentation>Container, always emitted inside the contact section (may be empty).</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="MKT_SEGMENT" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Marketing segment code assigned to the customer, most recently assigned first. The number returned is limited by deployment configuration (default 2).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CrossReferenceType">
+    <xs:annotation>
+      <xs:documentation>One external-system identifier held by the customer.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Identifier type (e.g. POS_ID, LOYALTY_ID). Same value domain as SYSTEM_REFERENCE in the request.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Identifier value.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CustomerType">
+    <xs:annotation>
+      <xs:documentation>
+        One matched customer. Emission order in the loyalty-app service generation:
+          identity   FIRST_NAME, LAST_NAME, BIRTHDAY, GENDER, CUSTOMER_ID, REQ_REWARD_POINTS,
+                     EV_BALANCE, CASHIER, ASSIGNED_STORE                       (always present)
+          address    ADDRESS1, ADDRESS2, CITY, [STATE], ZIP, COUNTRY,
+                     BAD_POSTAL_ADDRESS_STATUS, ALLOW_SOLICITATION             (1st ALLOW_SOLICITATION)
+          e-mail     EMAIL_ID, BAD_EMAIL_ADDRESS_STATUS, ALLOW_SOLICITATION    (2nd ALLOW_SOLICITATION)
+          phone      [PHONE_NUMBER, ALLOW_SOLICITATION]                        (3rd ALLOW_SOLICITATION)
+          segments   MKT_SEGMENTS
+          references CROSS_REFERENCE (0..n)
+          POS        POS_SEGMENT
+        ALLOW_SOLICITATION therefore appears up to THREE times with different meanings; its meaning
+        is given by its position (it follows the block it belongs to). STATE is only emitted when a
+        postal address exists. The phone pair is omitted entirely when the customer has a primary
+        phone but its solicitation setting suppresses display. The address / e-mail / phone /
+        segments section can be cut short if an internal data error occurs while it is built, so
+        every element is optional and the model is an unordered, repeat-tolerant choice.
+        Elements carrying no data are emitted EMPTY rather than omitted.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="FIRST_NAME" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>First name. The literal "Guest" is returned for a customer who is not enrolled in the loyalty programme (the real name is withheld). Empty when not recorded.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="LAST_NAME" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Last name. The literal "Customer" is returned for a customer who is not enrolled in the loyalty programme. Empty when not recorded.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BIRTHDAY" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Date of birth as "yyyy-MM-dd", or empty when not recorded.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="GENDER" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>One of MALE, FEMALE, UNKNOWN, or empty when no gender is recorded.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CUSTOMER_ID" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Customer identifier (the value to use as CUSTOMER_ID in other operations).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="REQ_REWARD_POINTS" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Whole number (integer text, "0" when none): points the customer still needs to reach the next reward.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EV_BALANCE" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Loyalty points balance (earned minus redeemed) as decimal text; "0" when the customer has no loyalty identifier or no points. Not rounded: a fractional balance can carry many decimal digits.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CASHIER" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Cashier / associate reference stored on the customer record; usually empty.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ASSIGNED_STORE" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Home store assigned to the customer, or empty.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ADDRESS1" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Primary postal address, line 1. Empty when the customer has no current primary postal address.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ADDRESS2" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Primary postal address, line 2, or empty.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CITY" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>City, or empty.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="STATE" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>State / province code. Emitted only when a primary postal address exists (ABSENT, not empty, otherwise).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ZIP" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>ZIP / postal code, upper-cased, or empty.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUNTRY" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Country code, or empty.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BAD_POSTAL_ADDRESS_STATUS" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Y or N. N only when the customer's address has been verified and is not flagged invalid; Y in every other case, including "no address on file".</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ALLOW_SOLICITATION" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Solicitation (contact permission) flag for the block it follows: 1st occurrence = postal address, 2nd = e-mail, 3rd = phone. Values: Y (allowed), N (not allowed), U (unknown), or empty when the block has no data or no flag is stored.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="EMAIL_ID" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Primary e-mail address. Empty when the customer has none, or when the solicitation setting for the address suppresses display.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BAD_EMAIL_ADDRESS_STATUS" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Y or N. N when an e-mail address is returned and is not flagged invalid; Y when it is flagged invalid or when EMAIL_ID is empty.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="PHONE_NUMBER" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Primary phone as area code + number, digits concatenated, no country code. Empty when the customer has no primary phone; ABSENT (together with the 3rd ALLOW_SOLICITATION) when a phone exists but its solicitation setting suppresses display.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="MKT_SEGMENTS" type="MktSegmentsType">
+        <xs:annotation>
+          <xs:documentation>Marketing segments container (may be empty).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CROSS_REFERENCE" type="CrossReferenceType">
+        <xs:annotation>
+          <xs:documentation>Repeats once per external-system identifier held by the customer (zero or more). A LOYALTY_ID reference is withheld for a customer who is not enrolled in the loyalty programme.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="POS_SEGMENT" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Point-of-sale segment code for the customer, or empty.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
 
   <xs:element name="RESPONSE">
     <xs:annotation>
       <xs:documentation>
-        Top-level response container. RESPONSE_CODE indicates outcome;
-        other fields are optional echoes or payload containers.
+        Top-level response container. See the schema header for the shapes.
       </xs:documentation>
     </xs:annotation>
     <xs:complexType>
-      <xs:sequence>
-        <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Server timestamp when this response was generated.</xs:documentation></xs:annotation>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="RESPONSE_DATE" type="xs:string">
+          <xs:annotation><xs:documentation>Server timestamp, "yyyy-MM-dd HH:mm:ss.S" (e.g. 2026-10-12 15:03:00.655). Always the first child. Emitted a second time on E1006; EMPTY on E999.</xs:documentation></xs:annotation>
         </xs:element>
-        <xs:element name="RESPONSE_CODE" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Outcome code (see documentation on meanings above).</xs:documentation></xs:annotation>
-        </xs:element>
-
-        <!-- Common echoes / context (optional) -->
-        <xs:element name="STORE_ID" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Store context echoed when supplied.</xs:documentation></xs:annotation>
-        </xs:element>
-        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Customer identifier (if single-hit flows echo it).</xs:documentation></xs:annotation>
-        </xs:element>
-
-        <!-- Optional: room for tenant-specific result blocks (customer lists, counts, etc.).
-             Restricted to elements in OTHER namespaces so the optional STORE_ID/CUSTOMER_ID
-             echoes above don't ambiguate against xs:any (UPA). Tenant extensions must use
-             their own namespace. -->
-        <xs:any namespace="##other" minOccurs="0" maxOccurs="unbounded" processContents="lax">
+        <xs:element name="RESPONSE_CODE" type="xs:string">
           <xs:annotation>
             <xs:documentation>
-              Tenant/brand-specific result payload (e.g., CUSTOMERS/CUSTOMER list, total count, paging tokens).
-              Left open intentionally to avoid over-constraining varied response renderings.
-              Elements must use a namespace other than the response targetNamespace.
+              Outcome code. ABSENT on success. Open string - the catalog below is documentation,
+              not a restriction, so new codes cannot break validation.
+                E101  XmlInput parameter missing or empty
+                E102  request XML not well-formed
+                E103  XML parser configuration error
+                E104  I/O error reading the request XML
+                E105  no usable search filter supplied (see the request schema for which filters
+                      count). In the older service generation E105 is ALSO returned when no
+                      customer matches.
+                E127  STORE_ID supplied but unknown (or no store is configured)
+                E163  no customer matched the search (loyalty-app service generation). Routine
+                      traffic: it normally precedes new-customer enrollment. May be accompanied by
+                      RESPONSE_DATA.
+                E899  access token missing or invalid (rejected before the search runs)
+                E999  unhandled failure
+                E1006 internal error; emitted only when diagnostics are enabled for the
+                      deployment, with the exception text in RESPONSE_DATA
+              Consumers should treat E105 and E163 alike as "not found" unless they sent no filters.
             </xs:documentation>
           </xs:annotation>
-        </xs:any>
-      </xs:sequence>
+        </xs:element>
+        <xs:element name="RESPONSE_DATA" type="ResponseDataType">
+          <xs:annotation><xs:documentation>Error detail text (E1006) or phone-validation details (not found). See ResponseDataType.</xs:documentation></xs:annotation>
+        </xs:element>
+        <xs:element name="CUSTOMER" type="CustomerType">
+          <xs:annotation><xs:documentation>One block per matched customer; 1 to 50 on success, in no guaranteed order. Absent on "not found" and on errors.</xs:documentation></xs:annotation>
+        </xs:element>
+      </xs:choice>
+      <xs:attribute name="ResponseId" type="xs:string" use="optional">
+        <xs:annotation><xs:documentation>Server-assigned log / correlation identifier for this call. Present on every response except E999.</xs:documentation></xs:annotation>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 

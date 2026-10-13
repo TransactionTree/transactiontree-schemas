@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Smallest safe update of a known customer. FIRST_NAME, LAST_NAME, GENDER, BIRTHDAY and CASHIER are
+     replaced as a set on every update: any of the five left out is CLEARED on the customer, so send them all
+     (read them first with getPersonCompleteDetailsB). Contacts not mentioned are left untouched. -->
+<REQUEST>
+  <CUSTOMER>
+    <CUSTOMER_ID>1234567</CUSTOMER_ID>
+    <FIRST_NAME>JANE</FIRST_NAME>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <GENDER>FEMALE</GENDER>
+    <BIRTHDAY>1990-05-17</BIRTHDAY>
+    <CASHIER>1001</CASHIER>
+  </CUSTOMER>
+</REQUEST>

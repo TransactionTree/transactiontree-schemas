@@ -1,106 +1,148 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           elementFormDefault="qualified"
-           targetNamespace="https://www.transactiontree.com/schema/loyalty/updateCustomerB/response/1.0"
-           xmlns="https://www.transactiontree.com/schema/loyalty/updateCustomerB/response/1.0">
+           elementFormDefault="qualified">
 
   <xs:annotation>
     <xs:documentation>
-      Purpose:
-        Describes the structure of the RESPONSE document returned by updateCustomerB.
-        The service always returns a top-level RESPONSE element with a RESPONSE_CODE
-        and optional context fields (CUSTOMER_ID, LOYALTY_ID, COUNTRY, STATE, ZIPCODE, etc.).
+RESPONSE schema for updateCustomerB (Customer360) -- rebuilt 2026-10-12 against the
+loyalty-app service generation.
 
-      Notes:
-        • RESPONSE_DATE is a timestamp string the service sets.
-        • RESPONSE_CODE enumerations capture both successes and precise error conditions.
-        • Additional elements may be included depending on the code path and validation failure.
+Namespace: the service writes the RESPONSE document without any XML namespace, so this schema
+has no target namespace. Earlier revisions declared one, which no real response could satisfy.
+
+The response is a FLAT list of elements under RESPONSE. The service builds it incrementally,
+so the ORDER of the children varies by code path and RESPONSE_DATE / RESPONSE_CODE /
+RESPONSE_DATA can occur more than once (see "double outcome" below). The content is therefore
+modelled as a free, repeatable choice.
+
+Typical shapes
+  Updated  : [LOYALTY_ID] RESPONSE_DATE CUSTOMER_ID RESPONSE_CODE=S102
+  Created  : RESPONSE_DATE CUSTOMER_ID [LOYALTY_ID] RESPONSE_CODE=S103
+  Rejected : RESPONSE_DATE [CUSTOMER_ID] [echo of the offending value] RESPONSE_CODE=Exxx
+  Failed   : RESPONSE_DATE [CUSTOMER_ID] RESPONSE_CODE=Exxx RESPONSE_DATA   (RESPONSE_DATA may precede the code)
+  No tenant: RESPONSE_CODE=E888 only (no RESPONSE_DATE)
+  Fallback : RESPONSE_DATE (empty) RESPONSE_CODE=E999, no ResponseId
+ALWAYS read the outcome from RESPONSE_CODE; when it occurs more than once the LAST one is the
+final outcome. Every handled outcome is HTTP 200.
+
+Double outcome: an update can report S102 and then fail while saving. The document then
+carries a second RESPONSE_DATE, a second RESPONSE_CODE (E1006) and RESPONSE_DATA after the S102.
+
+CUSTOMER_ID in an error response is the customer the request was resolved to at that point
+(sent, or found by the duplicate check); it is omitted when none had been resolved.
+
+RESPONSE_CODE catalog (xs:string ON PURPOSE -- an open set, new codes must not break validation)
+ Success
+  S102 existing customer updated          S103 new customer created
+ Input
+  E101 XmlInput empty                     E102 malformed XML (detail in RESPONSE_DATA)
+  E103 parser configuration (RESPONSE_DATA)   E104 I/O error reading the input (RESPONSE_DATA)
+  E201 BIRTHDAY not in an accepted format
+  E222 EMAIL fails the e-mail format check
+  E223 a required value was sent EMPTY: FIRST_NAME, LAST_NAME, postal ZIPCODE (echoed as ZIPCODE)
+       or EMAIL (echoed as EMAIL)
+  E106 STATE unknown (echoed as STATE), or STATE does not belong to COUNTRY (echoed as COUNTRY)
+  E107 COUNTRY unknown (echoed as COUNTRY)
+  E166 Canadian postal code invalid (echoed as ZIP_CODE)
+  E127 STORE_ID / ASSIGNED_STORE / PREFERRED_STORE / LOYALTY_STORE not a known store
+ Identity and loyalty
+  E162 a cross-reference identifier in the request already belongs to another customer
+  E163 the primary phone number is on the blocked-number list
+  E224 the primary phone number is already the primary phone of another customer
+  E128 LOYALTY_ID (or WINDSS_ID) already assigned to another customer
+  E129 ATG_CUST_ID already assigned to another customer
+  E131 customer already has a different ATG_CUST_ID      E132 customer already has a different WINDSS_ID
+  E133 LOYALTY_ID not numeric, or all zeros
+ Processing
+  E108 customer creation failed unexpectedly (RESPONSE_DATA)
+  E110 no customer resolved for the update      E111 customer record not found for the update
+  E112 create/identifier storage failed (RESPONSE_DATA)
+  E1006 a processing step failed (RESPONSE_DATA carries the detail)
+ Gate
+  E888 X-tenant-Key header missing or empty (the operation did not run)
+  E899 accessTokenKey validation failed (the operation did not run)
+  E999 unhandled failure (fixed fallback document)
     </xs:documentation>
   </xs:annotation>
 
-  <xs:simpleType name="ResponseCode">
-    <xs:annotation>
-      <xs:documentation>
-        Response codes observed in service code:
-          Success
-            S102: Operation completed (e.g., successful update/creation).
-            S103: Loyalty-related success (e.g., loyalty activation/assignment).
-          Common Errors
-            E101: Missing required request data (e.g., empty XmlInput) in certain paths.
-            E102/E103/E104: XML parsing/config errors (SAX/Parser/IO).
-            E106: Invalid STATE for COUNTRY association (Geo/GeoAssoc failed).
-            E107: Invalid COUNTRY (or mismatch) for given state/zip.
-            E108: Loyalty activation/assignment failed (specific path).
-            E110/E111/E112: Loyalty/identity-related issues per service logic.
-            E127: Unknown store (ASSIGNED_STORE / PREFERRED_STORE / LOYALTY_STORE / STORE_ID not found).
-            E128/E129/E131/E132/E133/E134: Loyalty ID conflicts or transition errors.
-            E162: Duplicate cross-reference conflict with another party.
-            E166: Canadian postal code invalid (regex/length check).
-            E201: Birthday format invalid.
-            E205: Address validation failure (per internal rules).
-            E222: Email format invalid.
-            E223: Missing/invalid required field in context (e.g., name/email/zip) depending on path.
-            E888: Missing tenant header or equivalent authorization context.
-            E899: Access token invalid/authorization failure.
-      </xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string">
-      <!-- Success -->
-      <xs:enumeration value="S102"/>
-      <xs:enumeration value="S103"/>
-
-      <!-- Errors -->
-      <xs:enumeration value="E101"/><xs:enumeration value="E102"/><xs:enumeration value="E103"/>
-      <xs:enumeration value="E104"/><xs:enumeration value="E106"/><xs:enumeration value="E107"/>
-      <xs:enumeration value="E108"/><xs:enumeration value="E110"/><xs:enumeration value="E111"/>
-      <xs:enumeration value="E112"/><xs:enumeration value="E127"/><xs:enumeration value="E128"/>
-      <xs:enumeration value="E129"/><xs:enumeration value="E131"/><xs:enumeration value="E132"/>
-      <xs:enumeration value="E133"/><xs:enumeration value="E134"/><xs:enumeration value="E162"/>
-      <xs:enumeration value="E166"/><xs:enumeration value="E201"/><xs:enumeration value="E205"/>
-      <xs:enumeration value="E222"/><xs:enumeration value="E223"/><xs:enumeration value="E888"/>
-      <xs:enumeration value="E899"/>
-    </xs:restriction>
-  </xs:simpleType>
+  <xs:element name="WEBSERVICE">
+    <xs:annotation><xs:documentation>Wrapper seen on gate-level failures of sibling operations (WEBSERVICE/RESPONSE,
+without ResponseId). Not produced by this operation's handler on the loyalty-app service generation, which answers
+E888 and E899 with a bare RESPONSE root; declared so that such a document still validates.</xs:documentation></xs:annotation>
+    <xs:complexType><xs:sequence>
+      <xs:element ref="RESPONSE"/>
+    </xs:sequence></xs:complexType>
+  </xs:element>
 
   <xs:element name="RESPONSE">
-    <xs:annotation>
-      <xs:documentation>
-        Top-level response container. RESPONSE_CODE always present. Other elements are
-        populated when relevant (e.g., echoing the failing COUNTRY/STATE/ZIP for E106/E107/E166).
-      </xs:documentation>
-    </xs:annotation>
+    <xs:annotation><xs:documentation>Top-level response container; flat, order-free (see the schema header).</xs:documentation></xs:annotation>
     <xs:complexType>
-      <xs:sequence>
-        <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Server-side timestamp when the response was generated.</xs:documentation></xs:annotation>
-        </xs:element>
-        <xs:element name="RESPONSE_CODE" type="ResponseCode">
-          <xs:annotation><xs:documentation>Outcome code (see documentation above).</xs:documentation></xs:annotation>
-        </xs:element>
-
-        <!-- Context echoes (optional; present depending on code path) -->
-        <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Customer identifier relevant to the result.</xs:documentation></xs:annotation>
-        </xs:element>
-        <xs:element name="LOYALTY_ID" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Loyalty identifier relevant to the result.</xs:documentation></xs:annotation>
-        </xs:element>
-        <xs:element name="ZIPCODE" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Echo of ZIP/ZIPCODE used in the failing/validated context.</xs:documentation></xs:annotation>
-        </xs:element>
-        <xs:element name="ZIP_CODE" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Alternate echo field used by some paths for postal codes.</xs:documentation></xs:annotation>
-        </xs:element>
-        <xs:element name="STATE" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>State/province value echoed, especially for E106/E107.</xs:documentation></xs:annotation>
-        </xs:element>
-        <xs:element name="COUNTRY" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Country value echoed, especially for E106/E107.</xs:documentation></xs:annotation>
-        </xs:element>
-        <xs:element name="EMAIL" type="xs:string" minOccurs="0">
-          <xs:annotation><xs:documentation>Email value echoed when email-specific errors occur.</xs:documentation></xs:annotation>
-        </xs:element>
-      </xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="RESPONSE_DATE"/>
+        <xs:element ref="RESPONSE_CODE"/>
+        <xs:element ref="RESPONSE_DATA"/>
+        <xs:element ref="CUSTOMER_ID"/>
+        <xs:element ref="LOYALTY_ID"/>
+        <xs:element ref="STATE"/>
+        <xs:element ref="COUNTRY"/>
+        <xs:element ref="ZIPCODE"/>
+        <xs:element ref="ZIP_CODE"/>
+        <xs:element ref="EMAIL"/>
+      </xs:choice>
+      <xs:attribute name="ResponseId" type="xs:string">
+        <xs:annotation><xs:documentation>Server-side request-log correlation id. Present on every response built by the
+service (including E888 and E899); absent on the E999 fallback document.</xs:documentation></xs:annotation>
+      </xs:attribute>
     </xs:complexType>
+  </xs:element>
+
+  <xs:element name="RESPONSE_DATE" type="xs:string">
+    <xs:annotation><xs:documentation>Server timestamp, format "yyyy-MM-dd HH:mm:ss.S" with 1 to 3 fractional digits
+(e.g. 2026-10-12 15:01:02.655). Deliberately xs:string: not ISO 8601. Absent on E888; empty on the E999 fallback.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="RESPONSE_CODE" type="xs:string">
+    <xs:annotation><xs:documentation>Outcome code. Unlike the read operations, updateCustomerB sends a code on success too
+(S102 / S103). See the catalog in the schema header. If repeated, the last occurrence is the final outcome.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="RESPONSE_DATA" type="xs:string">
+    <xs:annotation><xs:documentation>Free-text failure detail (an internal error message), sent with E102, E103, E104, E108,
+E112 and E1006. May be EMPTY when the underlying failure carried no message. For diagnostics only; do not parse.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="CUSTOMER_ID" type="xs:string">
+    <xs:annotation><xs:documentation>On S102: the customer that was updated. On S103: the identifier of the NEWLY CREATED
+customer -- store it. On errors: the customer the request had been resolved to, when any.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="LOYALTY_ID" type="xs:string">
+    <xs:annotation><xs:documentation>Loyalty identifier now attached to the customer. Sent only when the loyalty program is
+switched on for the environment and this request assigned, replaced or generated a loyalty identifier. On an update
+it is written BEFORE RESPONSE_DATE.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="STATE" type="xs:string">
+    <xs:annotation><xs:documentation>Echo of the rejected STATE value (E106, unknown state/province).</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="COUNTRY" type="xs:string">
+    <xs:annotation><xs:documentation>Echo of the COUNTRY value: with E107 the country is unknown; with E106 the STATE sent
+does not belong to this country.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="ZIPCODE" type="xs:string">
+    <xs:annotation><xs:documentation>Echo sent with E223 when the postal ZIPCODE was sent empty (or was missing from a postal
+contact that needed a new address record) -- so this element is itself EMPTY.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="ZIP_CODE" type="xs:string">
+    <xs:annotation><xs:documentation>Echo of the rejected postal code (E166, invalid Canadian postal code), upper-cased.
+Note the different spelling from ZIPCODE: both are sent by the service, on different errors.</xs:documentation></xs:annotation>
+  </xs:element>
+
+  <xs:element name="EMAIL" type="xs:string">
+    <xs:annotation><xs:documentation>Echo sent with E223 when an e-mail contact was sent with an empty or missing EMAIL
+-- so this element is itself EMPTY.</xs:documentation></xs:annotation>
   </xs:element>
 </xs:schema>

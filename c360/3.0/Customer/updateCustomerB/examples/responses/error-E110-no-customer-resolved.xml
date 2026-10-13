@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Bare error envelope, RESPONSE_DATE + RESPONSE_CODE only. Also the shape of E101 (empty XmlInput). -->
+<RESPONSE ResponseId="100000010">
+  <RESPONSE_DATE>2026-10-12 15:10:17.000</RESPONSE_DATE>
+  <RESPONSE_CODE>E110</RESPONSE_CODE>
+</RESPONSE>

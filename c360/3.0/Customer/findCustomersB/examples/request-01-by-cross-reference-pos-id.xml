@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Pattern 1 - cross-reference lookup (the dominant production pattern): exact match on
+     SYSTEM_REFERENCE + SYSTEM_REFERENCE_ID. Returns at most one customer. -->
+<REQUEST>
+  <CRITERIA>
+    <SYSTEM_REFERENCE>POS_ID</SYSTEM_REFERENCE>
+    <SYSTEM_REFERENCE_ID>9000001</SYSTEM_REFERENCE_ID>
+    <STORE_ID>001</STORE_ID>
+  </CRITERIA>
+</REQUEST>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Look up one order by its POS transaction number for a known customer. CUSTOMER_ID and STORE_ID are
+     required on getOrderDetailsB. -->
+<REQUEST>
+  <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  <ORDER_ID>12345678</ORDER_ID>
+  <STORE_ID>001</STORE_ID>
+  <REGISTER_NUMBER>002</REGISTER_NUMBER>
+  <FROM_DATE>2026-10-01</FROM_DATE>
+  <THRU_DATE>2026-10-12</THRU_DATE>
+  <RECORD_LIMIT>5</RECORD_LIMIT>
+</REQUEST>

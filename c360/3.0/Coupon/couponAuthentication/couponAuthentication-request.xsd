@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
   <xs:annotation>
-    <xs:documentation>REQUEST schema for couponAuthentication (Customer360). This XML is carried in the form field 'XmlInput'.</xs:documentation>
+    <xs:documentation>
+REQUEST schema for couponAuthentication (Customer360). This XML is carried in the form field
+'XmlInput'. Audited 2026-10-12 against the loyalty-app service generation.
+
+couponAuthentication is a read-only check: it reports whether a coupon code is usable at a
+store. It does not consume the coupon (see couponPost).
+
+Reading rules of the service:
+  - Only the REQUEST child of the root is inspected; the root element name itself is not checked.
+  - REQ_COUPON_DETAILS and REQ_TRANSACTION_DETAILS may appear in either order, as may their children.
+  - Element names are case-sensitive.
+  - When the tenant has a coupon prefix configured and enabled, a leading prefix is stripped
+    from REQ_COUPON_CODE before lookup; the response still echoes the code as sent.
+    </xs:documentation>
   </xs:annotation>
   <xs:element name="WEBSERVICE">
     <xs:annotation>
@@ -14,21 +27,21 @@
             <xs:documentation>Request payload. Carries the coupon being authenticated and the transaction context in which it is presented.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
-            <xs:sequence>
+            <xs:all>
               <xs:element name="REQ_COUPON_DETAILS">
                 <xs:annotation>
                   <xs:documentation>Identifies the coupon to authenticate.</xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
-                  <xs:sequence>
+                  <xs:all>
                     <xs:element name="REQ_COUPON_CODE" type="xs:string">
                       <xs:annotation>
-                        <xs:documentation>The coupon code presented for authentication (as scanned or keyed at the POS).</xs:documentation>
+                        <xs:documentation>The coupon code presented for authentication (as scanned or keyed at the POS). Missing or empty returns RESPONSE_CODE E116.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
                     <xs:element name="REQ_COUPON_TYPE">
                       <xs:annotation>
-                        <xs:documentation>Coupon issuance model. Determines whether usage limits and per-code tracking apply.</xs:documentation>
+                        <xs:documentation>Coupon issuance model. Must equal the type of the promotion the coupon belongs to, otherwise the service returns RESPONSE_CODE E842 (also returned when this element is missing or empty). The value is echoed back as RESP_COUPON_TYPE. NOTE: the non-serialized value is NONSERIALIZE with no hyphen; the previously published value NON-SERIALIZE never matches and always yields E842.</xs:documentation>
                       </xs:annotation>
                       <xs:simpleType>
                         <xs:restriction base="xs:NMTOKEN">
@@ -37,43 +50,43 @@
                               <xs:documentation>Serialized coupons allow merchandisers to create large numbers of coupons with usage limits and randomly generated coupon codes in order to closely target and monitor coupon use.</xs:documentation>
                             </xs:annotation>
                           </xs:enumeration>
-                          <xs:enumeration value="NON-SERIALIZE">
+                          <xs:enumeration value="NONSERIALIZE">
                             <xs:annotation>
-                              <xs:documentation>Non-serialized coupons do not have usage limits.</xs:documentation>
+                              <xs:documentation>Non-serialized coupons: one shared code for the whole promotion.</xs:documentation>
                             </xs:annotation>
                           </xs:enumeration>
                         </xs:restriction>
                       </xs:simpleType>
                     </xs:element>
-                  </xs:sequence>
+                  </xs:all>
                 </xs:complexType>
               </xs:element>
-              <xs:element name="REQ_TRANSACTION_DETAILS">
+              <xs:element name="REQ_TRANSACTION_DETAILS" minOccurs="0">
                 <xs:annotation>
-                  <xs:documentation>Transaction context in which the coupon is being authenticated.</xs:documentation>
+                  <xs:documentation>Transaction context in which the coupon is being authenticated. Optional: when REQ_STORE_ID is not supplied the service falls back to a default store of the tenant.</xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="REQ_STORE_ID" type="xs:string">
+                  <xs:all>
+                    <xs:element name="REQ_STORE_ID" type="xs:string" minOccurs="0">
                       <xs:annotation>
-                        <xs:documentation>Unique location identifier from the sending application where the data is being generated.</xs:documentation>
+                        <xs:documentation>Store identifier, matched exactly as sent (no zero-padding is applied). An unknown store returns RESPONSE_CODE E127. When omitted or empty, a default store of the tenant is used. The coupon's promotion must be assigned to this store (otherwise E113).</xs:documentation>
                       </xs:annotation>
                     </xs:element>
-                    <xs:element name="REQUEST_DATE" type="xs:dateTime">
+                    <xs:element name="REQUEST_DATE" type="xs:string" minOccurs="0">
                       <xs:annotation>
-                        <xs:documentation>The date and time of this request. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                        <xs:documentation>The date and time of this request. Accepted but not interpreted by the service (any text is tolerated); ISO 8601 is recommended, e.g. 2026-10-12T15:00:00Z. Coupon validity is always evaluated against the server clock.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
-                  </xs:sequence>
+                  </xs:all>
                 </xs:complexType>
               </xs:element>
-            </xs:sequence>
+            </xs:all>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
       <xs:attribute name="ResponseId" type="xs:string">
         <xs:annotation>
-          <xs:documentation>All the Responses are tracked by the log process and reports can be generated based on the Responses. Each response is added with a response Id to reference any issues during the transmission and perform the same backwards.</xs:documentation>
+          <xs:documentation>Retained from the earlier published schema. Not read by the service on requests; the tracking id is generated by the service and returned on the response.</xs:documentation>
         </xs:annotation>
       </xs:attribute>
     </xs:complexType>
