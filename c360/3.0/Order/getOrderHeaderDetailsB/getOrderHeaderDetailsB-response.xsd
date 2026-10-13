@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="2.0">
 	<xs:annotation>
 		<xs:documentation>RESPONSE schema for getOrderHeaderDetailsB (header-focused). Monetary fields allow empty values to match live output. Content models are unordered, repeat-tolerant choices ON PURPOSE (2026-10): the production emitter varies element order by tenant and re-emits some elements, so strict sequences reject real responses. Consumers take the first occurrence of a repeated element.</xs:documentation>
 	</xs:annotation>

@@ -39,6 +39,12 @@ these schemas, then confirming each difference in the code of both service gener
 ### Added
 - A gate-error example per operation and three `getOrderHeaderDetailsB` request examples.
 
+### Versioning
+- Every C360 operation schema corrected in the 2026-10-12 and 2026-10-13 audits now declares
+  `version="2.0"` on `<xs:schema>` (the layaway alternate response is `1.0`), as the README's
+  versioning rule requires for client-visible changes. The gift-card schema is unverified and
+  unchanged, so it carries no version.
+
 ## 2026-10-12 — customer, coupon and getOrderDetailsB audit
 
 Every schema below was checked against the service implementation. Before this change the
