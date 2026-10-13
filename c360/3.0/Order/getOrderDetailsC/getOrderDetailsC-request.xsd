@@ -40,9 +40,9 @@
             <xs:documentation>Optional on getOrderDetailsC. Customer identifier; when supplied, restricts the search to orders billed to this customer. Supplied but not a known customer: E111.</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="STORE_ID" type="xs:string">
+        <xs:element name="STORE_ID" type="xs:string" minOccurs="0">
           <xs:annotation>
-            <xs:documentation>REQUIRED. Store the order took place at. Missing, empty or unknown: E127. Leading-zero variants of the store number are treated as the same store. (Exception: optional on the LayAway branch.)</xs:documentation>
+            <xs:documentation>Required by the service for every request except the LayAway branch (see TRANSACTION_TYPE): missing, empty or unknown returns E127. Declared optional here only because XSD 1.0 cannot make it conditional on TRANSACTION_TYPE. Store the order took place at; leading-zero variants of the store number are treated as the same store.</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element name="ORDER_ID" type="xs:string" minOccurs="0">

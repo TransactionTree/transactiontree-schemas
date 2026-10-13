@@ -38,7 +38,7 @@ Reading rules of the service:
                   <xs:documentation>Customer identifier whose coupons are being searched. Missing or empty returns RESPONSE_CODE E110; an unknown or disabled customer returns E111.</xs:documentation>
                 </xs:annotation>
               </xs:element>
-              <xs:element name="RECORD_LIMIT" type="xs:int" minOccurs="0">
+              <xs:element name="RECORD_LIMIT" type="xs:string" minOccurs="0">
                 <xs:annotation>
                   <xs:documentation>Maximum number of coupons returned PER GROUP (applied separately to LOYALTY_COUPONS and to MARKETING_COUPONS). Defaults to 100 when omitted or not a number.</xs:documentation>
                 </xs:annotation>

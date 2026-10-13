@@ -169,8 +169,8 @@ its examples are validated in CI on every change.
 
 #### `getOrderDetailsC` — full order detail (lines, payments, tender, taxes)
 - **Files:** `c360/3.0/Order/getOrderDetailsC/` — request XSD, response XSD, `getOrderDetailsC-response-ttdr-layaway.xsd`, `examples/`
-- **Behavior:** on the loyalty-app generation `STORE_ID` is required
-  (`E127`); every other filter is
+- **Behavior:** on the loyalty-app generation the service requires
+  `STORE_ID` (`E127`) except on the LayAway branch; every other filter is
   optional and filters combine with AND: `ORDER_ID`, `CUSTOMER_ID` (or a
   cross-reference pair), `REGISTER_NUMBER`, `FROM_DATE` / `THRU_DATE`,
   `ORDER_STATUS`, `PRODUCTS`, and the tender-token filters. `E126` means
@@ -182,7 +182,7 @@ its examples are validated in CI on every change.
 #### `getOrderDetailsB` — full order detail, customer required
 - **Files:** `c360/3.0/Order/getOrderDetailsB/` — request and response XSD, `examples/`
 - **Behavior:** the same implementation and response as `getOrderDetailsC`.
-  The only difference is that `CUSTOMER_ID` is required (`E110`). New
+  The only difference is that the service requires `CUSTOMER_ID` (`E110`). New
   integrations should use `getOrderDetailsC`.
 
 #### `getOrderHeaderDetailsC` — order lookup by product or order

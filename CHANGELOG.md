@@ -23,8 +23,9 @@ published files rejected real traffic; the changes are corrections, not new beha
   service (`E842`).
 - **`customerCertificateSearch` response restructured**: rows are grouped under
   `LOYALTY_COUPONS` and `MARKETING_COUPONS`; the date element is `COUPON_REDEEMED_DATE`.
-- **`getOrderDetailsC` request**: only `STORE_ID` is required; `ORDER_ID`, `REQUEST_DATE`,
-  the date range and `REGISTER_NUMBER` are optional. Added `ORDER_STATUS`,
+- **`getOrderDetailsC` request**: no element is schema-required. The service requires
+  `STORE_ID` except on the LayAway branch; `ORDER_ID`, `REQUEST_DATE`, the date range and
+  `REGISTER_NUMBER` are optional. Added `ORDER_STATUS`,
   `LAYAWAY_NUMBER` and the three tender-token filters.
 
 ### Corrected
