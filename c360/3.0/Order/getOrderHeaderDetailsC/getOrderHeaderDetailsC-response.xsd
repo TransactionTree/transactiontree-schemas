@@ -43,12 +43,17 @@ transaction type. Amounts are decimal-formatted strings; dates are
   </xs:annotation>
 
   <xs:element name="WEBSERVICE">
-    <xs:annotation><xs:documentation>Wrapper used by gate-level failures (E888 unknown tenant,
-    E899 access-token validation): those documents arrive as WEBSERVICE/RESPONSE without the
-    ResponseId attribute. Service-level responses arrive as a bare RESPONSE root; both roots
-    are therefore declared globally.</xs:documentation></xs:annotation>
+    <xs:annotation><xs:documentation>Gate-error envelope (E888 unknown tenant, E899 access-token validation), raised
+    before the operation runs. The older service generation returns WEBSERVICE / RESPONSE / RESPONSE_CODE,
+    normally with no RESPONSE_DATE and never with ResponseId. Service-level responses arrive as a bare
+    RESPONSE root, which always carries RESPONSE_DATE.</xs:documentation></xs:annotation>
     <xs:complexType><xs:sequence>
-      <xs:element ref="RESPONSE"/>
+      <xs:element name="RESPONSE">
+        <xs:complexType><xs:sequence>
+          <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0"/>
+          <xs:element name="RESPONSE_CODE" type="xs:string"/>
+        </xs:sequence></xs:complexType>
+      </xs:element>
     </xs:sequence></xs:complexType>
   </xs:element>
 
@@ -56,7 +61,7 @@ transaction type. Amounts are decimal-formatted strings; dates are
     <xs:annotation><xs:documentation>Top-level response container.</xs:documentation></xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="RESPONSE_DATE" minOccurs="0"/>
+        <xs:element ref="RESPONSE_DATE"/>
         <xs:element ref="RESPONSE_CODE" minOccurs="0"/>
         <xs:element ref="RESPONSE_MESSAGE" minOccurs="0"/>
         <xs:element ref="RESPONSE_DATA" minOccurs="0"/>
