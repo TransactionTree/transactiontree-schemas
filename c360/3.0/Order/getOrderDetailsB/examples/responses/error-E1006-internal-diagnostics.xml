@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Internal error on a deployment with diagnostics enabled: a SECOND RESPONSE_DATE, then E1006 and the
+     exception text in RESPONSE_DATA. -->
+<RESPONSE ResponseId="100000005">
+  <RESPONSE_DATE>2026-10-12 15:20:01.456</RESPONSE_DATE>
+  <RESPONSE_DATE>2026-10-12 15:20:01.502</RESPONSE_DATE>
+  <RESPONSE_CODE>E1006</RESPONSE_CODE>
+  <RESPONSE_DATA>Example internal error text</RESPONSE_DATA>
+</RESPONSE>

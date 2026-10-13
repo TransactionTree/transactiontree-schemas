@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<REQUEST>
+  <criteria>
+    <REQUEST_DATE>2026-10-12T15:00:00Z</REQUEST_DATE>
+    <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  </criteria>
+</REQUEST>

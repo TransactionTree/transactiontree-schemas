@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Pattern 7 - address lookup. PROVINCE carries the state / province code (STATE is ignored).
+     PROVINCE alone would return E105, so it is combined with CITY here. -->
+<REQUEST>
+  <CRITERIA>
+    <CITY>SPRINGFIELD</CITY>
+    <PROVINCE>XX</PROVINCE>
+    <STORE_ID>001</STORE_ID>
+  </CRITERIA>
+</REQUEST>

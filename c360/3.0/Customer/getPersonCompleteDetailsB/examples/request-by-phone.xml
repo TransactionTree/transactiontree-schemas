@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Lookup by phone: exact match on the stored number, digits only, area code included. -->
+<REQUEST>
+  <CRITERIA>
+    <PHONE_NUMBER>5555550100</PHONE_NUMBER>
+    <STORE_ID>001</STORE_ID>
+  </CRITERIA>
+</REQUEST>

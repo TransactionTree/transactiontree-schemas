@@ -1,22 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="https://www.transactiontree.com/schema/loyalty/updateCustomerB/1.0" xmlns="https://www.transactiontree.com/schema/loyalty/updateCustomerB/1.0">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
 		<xs:documentation>
-      Purpose:
-        Defines the request payload for the /loyalty-app/control/updateCustomerB endpoint.
-        The service parses XML and applies business rules (no native XSD validation in code);
-        this schema documents the accepted structure and the rules enforced downstream.
+      REQUEST schema for updateCustomerB (Customer360) -- audited 2026-10-12 against the
+      loyalty-app service generation.
 
-      Key ideas:
-        • A single CUSTOMER with optional identity fields, store/loyalty info, cross-references,
-          and contact collections (postal, email, phone).
-        • Collections are repeatable (0..n). Scalar fields are optional (0..1) unless your
-          tenant’s policy requires them.
-        • Several business rules (e.g., store existence, email format, date parsing) are enforced
-          in the service and are documented here for clarity.
+      Transport
+        POST /loyalty-app/control/updateCustomerB, form field "XmlInput" carrying this XML.
+        Headers: X-tenant-Key (missing/empty: RESPONSE_CODE E888) and accessTokenKey
+        (validation failure: E899). Both are checked before the request is processed.
+
+      What the operation does
+        Creates a customer or updates an existing one ("upsert"). The target is resolved in this order:
+          1. CUSTOMER_ID, when sent;
+          2. a CUSTOMER_CROSS_REFERENCES identifier that already belongs to a customer;
+          3. the duplicate check on POS_ID cross reference, e-mail and PRIMARY_PHONE;
+          4. otherwise (or when the resolved customer is disabled) a NEW customer is created.
+        Updated answers S102, created answers S103 with the new CUSTOMER_ID (see the response schema).
+
+      How the service reads this document
+        - Element names are matched without regard to case; unknown elements are ignored.
+          The service ignores XML namespaces: it reads this document the same with or without a
+          namespace declaration. This schema has no target namespace; use the plain form shown in
+          the examples.
+        - The duplicate check (step 3) only recognises CONTACT entries whose CONTACT_TYPE is exactly
+          PRIMARY_EMAIL / PRIMARY_PHONE and a CROSS_REFERENCE whose SYSTEM_REFERENCE is exactly POS_ID,
+          in upper case.
+        - Children of CUSTOMER are applied in document order. Keep the order of this schema
+          (identity and store fields, then cross references, then contacts).
+
+      UPDATE IS A FULL REPLACE FOR THE PERSON FIELDS. On an update the service overwrites
+      FIRST_NAME, LAST_NAME, GENDER, BIRTHDAY and CASHIER with what this request carries --
+      an element that is OMITTED is cleared on the customer. Always send all five when updating.
+      Contacts are different: only the contacts present in the request are touched.
+
+      Sending an element EMPTY is not the same as omitting it: empty FIRST_NAME, LAST_NAME,
+      postal ZIPCODE or EMAIL is rejected with E223.
 
       Versioning:
-        targetNamespace includes /1.0. Add new versions by publishing a new namespace.
+        Earlier revisions of this schema declared a target namespace ending in /1.0; it was removed
+        because neither the service nor its callers use one.
     </xs:documentation>
 	</xs:annotation>
 	<!-- ===== Simple types (with documentation) ===== -->
@@ -37,21 +60,22 @@
 	<xs:simpleType name="EmailType">
 		<xs:annotation>
 			<xs:documentation>
-        Email address validated by the service with this regex (copied here for consistency):
-          ^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$
-        Tip: keep under 254 chars. Invalid addresses trigger RESPONSE_CODE E222.
+        E-mail address. The service checks the address against the pattern below and answers
+        RESPONSE_CODE E222 when it does not match. (XSD patterns are implicitly anchored, so the
+        pattern carries no ^ or $.) Keep under 254 characters.
       </xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:pattern value="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"/>
+			<xs:pattern value="[_A-Za-z0-9\-\+]+(\.[_A-Za-z0-9\-]+)*@[A-Za-z0-9\-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})"/>
 			<xs:maxLength value="254"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="PhoneType">
 		<xs:annotation>
 			<xs:documentation>
-        A free-form phone value. The service stores and may length-check phones but does not
-        enforce a strict pattern here. Keep to digits and separators; max 32 chars recommended.
+        Phone number. Stored exactly as sent, as one number (it is not split into country / area
+        code), and looked up by exact match -- send digits only, area code included
+        (e.g. 5555550100). No pattern is enforced by the service.
       </xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
@@ -61,11 +85,11 @@
 	<xs:simpleType name="ZipType">
 		<xs:annotation>
 			<xs:documentation>
-        Postal code. Business rules:
-          • If COUNTRY = CAN, code validates with LoyaltyAppConstants.CAN_ZIP_VALIDATION_02 and length ≤ 7.
-            Failures produce RESPONSE_CODE E166.
-          • US/other countries: validated via country/state coherence, not a strict regex here.
-        Tip: include uppercase and no trailing spaces.
+        Postal code; upper-cased by the service. Business rules:
+          - Sent EMPTY: rejected with RESPONSE_CODE E223.
+          - If COUNTRY = CAN (and STATE is sent): must be at most 7 characters and match
+            [A-CEGHJ-NPR-TVXY]\d[A-Z] ?\d[A-Z]\d (e.g. "A1A 1A1"); otherwise E166.
+          - Other countries: no format rule.
       </xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
@@ -75,7 +99,7 @@
 	<xs:simpleType name="Zip4Type">
 		<xs:annotation>
 			<xs:documentation>
-        Optional ZIP+4 add-on (e.g., 30303-1234). Not required; included where applicable.
+        Optional postal-code extension (the "+4" digits only, e.g. 1234). Stored separately from ZIPCODE.
       </xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
@@ -85,29 +109,36 @@
 	<xs:simpleType name="GenderCode">
 		<xs:annotation>
 			<xs:documentation>
-        Customer gender. Service normalization:
-          • Input "MALE"  → stored/treated as 'M'
-          • Input "FEMALE"→ stored/treated as 'F'
-          • Any other     → treated as 'U' (unknown/undisclosed)
-        This schema accepts MALE|FEMALE|U to keep intent explicit to clients.
+        Customer gender. Service normalization (case-insensitive):
+          MALE   : stored as male
+          FEMALE : stored as female
+          ANY OTHER non-empty value : stored as unknown
+        Send the full words. The single letters M and F are NOT understood -- they are stored
+        as unknown -- which is why they are not allowed here. UNKNOWN is the value the read
+        operation (getPersonCompleteDetailsB) returns, so it is accepted for round-trips; U is
+        kept for existing callers. Both mean unknown.
       </xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="MALE"/>
 			<xs:enumeration value="FEMALE"/>
+			<xs:enumeration value="UNKNOWN"/>
 			<xs:enumeration value="U"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="ContactPurposeTypeId">
 		<xs:annotation>
 			<xs:documentation>
-        Purpose/classification for a contact mechanism. Must be one of the
-        ContactMechPurposeType IDs configured in your environment.
-        Used by the service to set or infer primary/general roles for a contact.
+        Purpose of a contact entry. The list below is the set of purpose identifiers configured in a
+        reference environment; the service itself does not restrict the value, but an identifier that
+        is not configured makes the contact step fail. When CONTACT_TYPE is omitted the service uses
+        PRIMARY_LOCATION (postal), PRIMARY_EMAIL (e-mail) or PRIMARY_PHONE (phone).
+        Only PRIMARY_EMAIL and PRIMARY_PHONE entries take part in duplicate detection, and only
+        primary/general entries are returned by getPersonCompleteDetailsB.
       </xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<!-- Full list of configured values -->
+			<!-- Purpose identifiers configured in a reference environment -->
 			<xs:enumeration value="AOS_EMAIL_ADDRESS"/>
 			<xs:enumeration value="AOS_MOBILE_PHONE"/>
 			<xs:enumeration value="BILLING_EMAIL"/>
@@ -171,36 +202,32 @@
 	<xs:simpleType name="SystemReferenceCode">
 		<xs:annotation>
 			<xs:documentation>
-        External system identifiers recognized by the service for CUSTOMER- and
-        CONTACT-level cross references. Used for dedupe, lookups, and loyalty logic.
+        Type of an external identifier. OPEN value set: the service accepts any identifier type
+        configured in the environment and stores the pair as sent, so this is xs:string rather
+        than a closed list. Types with special behaviour:
+          POS_ID       - used by the duplicate check to find an existing customer.
+          LOYALTY_ID   - only when the loyalty program is switched on: must be numeric and not all
+                         zeros (E133) and not already assigned to another customer (E128). Sending
+                         a different LOYALTY_ID for a customer that already has one REPLACES it and
+                         moves the points balance to the new identifier.
+          ATG_CUST_ID  - must not belong to another customer (E129) and cannot be changed once set (E131).
+          WINDSS_ID    - must not belong to another customer (E128) and cannot be changed once set (E132).
+        Other commonly configured types: APTOS_ID, DW_ID, CHEETAHMAIL_ID, LEGACY_ID, AFFINITY_ID,
+        HARTEHANKS_ID, HH_HOUSEHOLD_ID. For any type, an identifier that already belongs to a
+        different customer is rejected with E162 when the request targets an existing customer.
       </xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="ATG_CUST_ID"/>
-			<xs:enumeration value="BRAND_C_CUST_ID"/>
-			<xs:enumeration value="BRAND_B_CUST_ID"/>
-			<xs:enumeration value="BRAND_A_CUST_ID"/>
-			<xs:enumeration value="BRAND_D_CUST_ID"/>
-			<xs:enumeration value="APTOS_ID"/>
-			<xs:enumeration value="DW_ID"/>
-			<xs:enumeration value="CHEETAHMAIL_ID"/>
-			<xs:enumeration value="LEGACY_ID"/>
-			<xs:enumeration value="HARTEHANKS_ID"/>
-			<xs:enumeration value="HH_HOUSEHOLD_ID"/>
-			<xs:enumeration value="WINDSS_ID"/>
-			<xs:enumeration value="AFFINITY_ID"/>
-			<xs:enumeration value="LOYALTY_ID"/>
-			<xs:enumeration value="PLATFORM_ID"/>
-			<xs:enumeration value="BRAND_E_PERS_ID"/>
-			<xs:enumeration value="POS_ID"/>
+			<xs:minLength value="1"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="BirthdayString">
 		<xs:annotation>
 			<xs:documentation>
-        Birthday accepted as a text value. Supported formats in service:
-          yyyy-MM-dd | MM-dd | yyyy-MM | yyyy/MM/dd | MM/dd | yyyy/MM.
-        Invalid formats trigger RESPONSE_CODE E201.
+        Birthday as text. Accepted forms: yyyy-MM-dd | MM-dd | yyyy-MM | yyyy/MM/dd | MM/dd | yyyy/MM.
+        A value that cannot be parsed answers RESPONSE_CODE E201; a value containing neither "-"
+        nor "/" is silently ignored. A birthday without a year is stored with a placeholder year,
+        one without a day is stored as day 01. An empty element is treated as "no birthday".
       </xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
@@ -227,8 +254,7 @@
 			<xs:element name="SYSTEM_REFERENCE_ID" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>
-            The value in the external system (e.g., "1234567"). Keep within your partner’s
-            documented limits; the service stores and dedupes on this value.
+            The identifier value in the external system (e.g. "1234567"). Stored as sent.
           </xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -282,21 +308,14 @@
 			</xs:element>
 			<xs:element name="STATE" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>State/province/region code; must associate with COUNTRY in Geo.</xs:documentation>
+					<xs:documentation>State / province code (e.g. XX). Must be a known state or province (else E106, value echoed).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:choice minOccurs="0">
-				<xs:element name="ZIP" type="ZipType">
-					<xs:annotation>
-						<xs:documentation>Postal/ZIP code (alternate tag name).</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-				<xs:element name="ZIPCODE" type="ZipType">
-					<xs:annotation>
-						<xs:documentation>Postal/ZIP code (preferred by current service paths).</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:choice>
+			<xs:element name="ZIPCODE" type="ZipType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Postal code. This is the ONLY postal-code element the service reads (an element named ZIP is ignored). Needed whenever the entry creates a new address; sending it empty answers E223.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="ZIP4" type="Zip4Type" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Zip+4 add-on when available.</xs:documentation>
@@ -304,7 +323,7 @@
 			</xs:element>
 			<xs:element name="COUNTRY" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Country code; must map to Geo(geoTypeId='COUNTRY').</xs:documentation>
+					<xs:documentation>Country code as configured in the environment (e.g. CAN). Unknown: E107. When omitted it is derived from STATE. STATE must belong to COUNTRY (else E106).</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="CONTACT_TYPE" type="ContactPurposeTypeId" minOccurs="0">
@@ -314,17 +333,17 @@
 			</xs:element>
 			<xs:element name="ALLOW_SOLICITATION" type="YNFlag" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Consent flag for marketing/communications to this address.</xs:documentation>
+					<xs:documentation>Marketing consent for this address: Y or N (case-insensitive). Omitted or any other value is treated as Y.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="DELIVERABLE" type="YNFlag" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Internal deliverability flag; Y indicates known deliverable address.</xs:documentation>
+					<xs:documentation>Deliverability of the address: Y = deliverable, N = not deliverable. When omitted the service derives it: N if ADDRESS1, CITY, STATE or ZIPCODE is missing, otherwise Y.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="EXPIRE" type="YNFlag" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>When Y with CONTACT_MECH_ID present, service may expire/delete the contact.</xs:documentation>
+					<xs:documentation>Y (upper case) removes this contact from the customer instead of updating it; the entry is matched by CONTACT_MECH_ID or, without one, to the current primary/general address. Any other value is ignored. Has no effect when a new customer is created.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="CUSTOMER_MECH_REFERENCES" type="CustomerMechReferencesType" minOccurs="0">
@@ -349,7 +368,7 @@
 			</xs:element>
 			<xs:element name="EMAIL" type="EmailType" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Primary email address for this entry.</xs:documentation>
+					<xs:documentation>E-mail address. Required in every e-mail CONTACT: missing or empty answers E223; a malformed address answers E222.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="CONTACT_TYPE" type="ContactPurposeTypeId" minOccurs="0">
@@ -359,17 +378,17 @@
 			</xs:element>
 			<xs:element name="ALLOW_SOLICITATION" type="YNFlag" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Opt-in/opt-out marker for email communications.</xs:documentation>
+					<xs:documentation>Marketing consent for this e-mail address: Y or N (case-insensitive). Omitted or any other value is treated as Y.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="EMAIL_DELIVERABLE_FLAG" type="YNFlag" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Internal flag for email deliverability checks.</xs:documentation>
+					<xs:documentation>Deliverability of the e-mail address: Y = deliverable, N = undeliverable (the read operation then reports BAD_EMAIL_ADDRESS_STATUS = Y). Applied when an existing e-mail contact is updated; when omitted and the address changes, it is reset to Y.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="EXPIRE" type="YNFlag" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Mark this email contact as expired (when CONTACT_MECH_ID is provided).</xs:documentation>
+					<xs:documentation>Y (upper case) removes this e-mail contact from the customer; requires CONTACT_MECH_ID of an existing contact of the customer. Any other value is ignored.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="CUSTOMER_MECH_REFERENCES" type="CustomerMechReferencesType" minOccurs="0">
@@ -394,7 +413,7 @@
 			</xs:element>
 			<xs:element name="PHONE" type="PhoneType" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Phone number string (digits and separators). Max 32 chars recommended.</xs:documentation>
+					<xs:documentation>Phone number, digits only with area code (e.g. 5555550100). A PRIMARY_PHONE that is on the blocked-number list answers E163; one that is already the primary phone of another customer answers E224.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="CONTACT_TYPE" type="ContactPurposeTypeId" minOccurs="0">
@@ -404,12 +423,12 @@
 			</xs:element>
 			<xs:element name="ALLOW_SOLICITATION" type="YNFlag" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Consent flag for phone/SMS communications.</xs:documentation>
+					<xs:documentation>Marketing consent for this phone number: Y or N (case-insensitive). Omitted or any other value is treated as Y.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="EXPIRE" type="YNFlag" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Mark this phone contact as expired (when CONTACT_MECH_ID is provided).</xs:documentation>
+					<xs:documentation>Y (upper case) removes this phone contact from the customer; requires CONTACT_MECH_ID of an existing contact of the customer. Any other value is ignored.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="CUSTOMER_MECH_REFERENCES" type="CustomerMechReferencesType" minOccurs="0">
@@ -423,7 +442,7 @@
 		<xs:annotation>
 			<xs:documentation>
         CUSTOMER-level cross references. Often used for loyalty IDs and external customer IDs.
-        Multiple references are allowed and may be brand/tenant specific.
+        Multiple references are allowed; the available types depend on the environment.
       </xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -473,42 +492,41 @@
 			<!-- Identity / person -->
 			<xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Internal customer ID (if known) to perform updates.</xs:documentation>
+					<xs:documentation>Customer identifier, when known (e.g. 1234567): the request then updates that customer. Omit it to let the service find the customer by cross reference / duplicate check or create a new one. An identifier that matches no enabled customer does not fail: unless the duplicate check finds another customer, a NEW customer is created and the identifier sent here is passed on as its id.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="FIRST_NAME" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Given name. Missing names can trigger E223 in some paths.</xs:documentation>
+					<xs:documentation>First name. Sent empty: E223. On an update, OMITTING it clears the stored first name -- always send it.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="LAST_NAME" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Family name. Missing names can trigger E223 in some paths.</xs:documentation>
+					<xs:documentation>Last name. Sent empty: E223. On an update, OMITTING it clears the stored last name -- always send it.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="GENDER" type="GenderCode" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Customer gender (MALE|FEMALE|U). Service normalizes internally.</xs:documentation>
+					<xs:documentation>Customer gender: MALE, FEMALE, or UNKNOWN / U. On an update, omitting it clears the stored gender.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="BIRTHDAY" type="BirthdayString" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>
-            Private birthday date for a specific customer. If this date is set in a customer profile,
-            certain offers or discounts may be initiated only for that day. Accepted textual formats:
-            yyyy-MM-dd | MM-dd | yyyy-MM | yyyy/MM/dd | MM/dd | yyyy/MM. Invalid → E201.
+            Customer birthday. Accepted forms: yyyy-MM-dd | MM-dd | yyyy-MM | yyyy/MM/dd | MM/dd | yyyy/MM.
+            Unparseable: E201. On an update, omitting it clears the stored birthday.
           </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<!-- Store / loyalty context -->
 			<xs:element name="ASSIGNED_STORE" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Store the customer is assigned to. Must exist (else E127).</xs:documentation>
+					<xs:documentation>Store the customer is assigned to (e.g. 001). Must exist (else E127). On an update it is only stored when the customer has no assigned store yet.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="LOYALTY_STORE" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Store used for loyalty context. Must exist (else E127).</xs:documentation>
+					<xs:documentation>Store of loyalty enrollment. Must exist (else E127). On an update it is only stored when this request enrolls the customer with a LOYALTY_ID cross reference.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="PREFERRED_STORE" type="xs:string" minOccurs="0">
@@ -518,36 +536,38 @@
 			</xs:element>
 			<xs:element name="STORE_ID" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Store executing the update. Must exist; invalid → E127.</xs:documentation>
+					<xs:documentation>Store sending the request (e.g. 001); selects the brand for solicitation flags. Defaults to the first store configured in the environment. Unknown: E127.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="LOYALTY_ID" type="xs:string" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>
-            Loyalty identifier cross reference. Special behavior if ENABLE_LOYALTY_PROGRAM=YES; conflicts and
-            activation/replace flows map to codes like E128/E129/E131/E132/E133/E134 and success S103.
+            Only read when a NEW customer is created and the loyalty program is switched on: a non-empty
+            value marks the new customer as a loyalty customer. It is NOT stored as the loyalty identifier
+            and is ignored on updates. To assign or replace a loyalty identifier send a CROSS_REFERENCE
+            with SYSTEM_REFERENCE = LOYALTY_ID under CUSTOMER_CROSS_REFERENCES.
           </xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<!-- Segmentation / misc -->
 			<xs:element name="MKT_SEGMENT" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Marketing segment code (tenant/brand specific semantics).</xs:documentation>
+					<xs:documentation>Marketing segment code; used only to choose the brand for solicitation flags. Not stored on the customer.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="CASHIER" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Cashier/operator reference captured for auditing.</xs:documentation>
+					<xs:documentation>Cashier / operator reference stored on the customer. On an update, omitting it clears the stored value.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="REQ_REWARD_POINTS" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Requested reward points adjustment (if supported by tenant rules).</xs:documentation>
+					<xs:documentation>IGNORED by the service. Output-only value of getPersonCompleteDetailsB; tolerated here so a read result can be sent back unchanged.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="EV_BALANCE" type="xs:string" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>Current or computed e-voucher / reward balance echoed by service.</xs:documentation>
+					<xs:documentation>IGNORED by the service. Output-only value of getPersonCompleteDetailsB; tolerated here so a read result can be sent back unchanged.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<!-- Cross references -->

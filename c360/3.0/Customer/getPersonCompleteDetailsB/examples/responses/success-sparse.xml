@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Success for a customer with almost nothing on file: shows which elements arrive EMPTY rather than absent.
+     - GENDER, BIRTHDAY, CASHIER, stores, POS_SEGMENT: empty elements.
+     - LOYALTY_STORE: absent (customer is not loyalty-enabled).
+     - MKT_SEGMENTS, CUSTOMER_CROSS_REFERENCES: present but empty.
+     - POSTAL_CONTACTS / EMAIL_CONTACTS: one placeholder CONTACT each (empty fields, "bad" status Y).
+       The e-mail placeholder says ALLOW_SOLICITATION = Y; that is filler, not consent.
+     - PHONE_CONTACTS: empty container, no placeholder. -->
+<RESPONSE ResponseId="100000002">
+  <RESPONSE_DATE>2026-10-12 15:00:02.5</RESPONSE_DATE>
+  <CUSTOMER>
+    <FIRST_NAME>JOHN</FIRST_NAME>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <GENDER/>
+    <BIRTHDAY/>
+    <CUSTOMER_ID>1234568</CUSTOMER_ID>
+    <REQ_REWARD_POINTS>0</REQ_REWARD_POINTS>
+    <EV_BALANCE>0</EV_BALANCE>
+    <CASHIER/>
+    <ASSIGNED_STORE/>
+    <PREFERRED_STORE/>
+    <MKT_SEGMENTS/>
+    <CUSTOMER_CROSS_REFERENCES/>
+    <POSTAL_CONTACTS>
+      <CONTACT>
+        <TO_NAME/>
+        <ADDRESS1/>
+        <ADDRESS2/>
+        <CITY/>
+        <STATE/>
+        <ZIPCODE/>
+        <COUNTRY/>
+        <CONTACT_MECH_ID/>
+        <BAD_POSTAL_ADDRESS_STATUS>Y</BAD_POSTAL_ADDRESS_STATUS>
+        <ALLOW_SOLICITATION/>
+        <CONTACT_TYPE/>
+      </CONTACT>
+    </POSTAL_CONTACTS>
+    <EMAIL_CONTACTS>
+      <CONTACT>
+        <EMAIL/>
+        <CONTACT_MECH_ID/>
+        <BAD_EMAIL_ADDRESS_STATUS>Y</BAD_EMAIL_ADDRESS_STATUS>
+        <ALLOW_SOLICITATION>Y</ALLOW_SOLICITATION>
+        <CONTACT_TYPE/>
+      </CONTACT>
+    </EMAIL_CONTACTS>
+    <PHONE_CONTACTS/>
+    <POS_SEGMENT/>
+  </CUSTOMER>
+</RESPONSE>

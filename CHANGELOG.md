@@ -9,6 +9,57 @@ and the repository follows [Semantic Versioning](https://semver.org/) at the
 **per-schema** level (C360 3.0, VRG / TTDR 3.3.0). The repo itself is not
 versioned.
 
+## 2026-10-12 — customer, coupon and getOrderDetailsB audit
+
+Every schema below was checked against the service implementation. Before this change the
+published files rejected real traffic; the changes are corrections, not new behaviour.
+
+### Breaking for anyone validating against the earlier files
+- **`findCustomersB` and `updateCustomerB` no longer declare a `targetNamespace`.** The
+  services emit un-namespaced XML and match request elements by local name only, so the
+  namespaced schemas could not validate any real response.
+- **Coupon type value corrected to `NONSERIALIZE`** in `couponAuthentication` and
+  `couponPost` requests. The previously published `NON-SERIALIZE` is rejected by the
+  service (`E842`).
+- **`customerCertificateSearch` response restructured**: rows are grouped under
+  `LOYALTY_COUPONS` and `MARKETING_COUPONS`; the date element is `COUPON_REDEEMED_DATE`.
+- **`getOrderDetailsC` request**: no element is schema-required. The service requires
+  `STORE_ID` except on the LayAway branch; `ORDER_ID`, `REQUEST_DATE`, the date range and
+  `REGISTER_NUMBER` are optional. Added `ORDER_STATUS`,
+  `LAYAWAY_NUMBER` and the three tender-token filters.
+
+### Corrected
+- `findCustomersB` response: declares the `ResponseId` attribute and the per-customer
+  `CUSTOMER` block (previously inexpressible). "Not found" is `E163` on the loyalty-app
+  generation and `E105` on the older one; both are documented.
+- `getPersonCompleteDetailsB`: a success response (no `RESPONSE_CODE`) is now expressible;
+  multiple `CUSTOMER` blocks allowed; request patterns that rejected every real e-mail,
+  phone and postal value removed; request fields `PROVINCE`, `STORE_ID` and
+  `REQUEST_DATE` added; the unread `CUSTOMER` anchor form removed.
+- `updateCustomerB` response: `ResponseId`, `RESPONSE_DATA`, order-free and repeatable
+  content, complete code catalog. Request: e-mail pattern fixed; documents that an update
+  fully replaces name, gender, birthday and cashier.
+- `couponAuthentication` / `couponPost` responses: success responses now validate;
+  undeclared emitted elements added; status codes are open strings with the value domain
+  documented.
+- `getOrderDetailsB`: documented as the same implementation as `getOrderDetailsC` with
+  `CUSTOMER_ID` required; schemas rebuilt to match.
+- `getPersonCompleteDetailsB-openapi.json`: header names and examples corrected.
+
+### Added
+- 97 synthetic examples across these seven operations, covering each request pattern,
+  full and sparse success responses, and each distinct error envelope.
+- Verification-status table in the README.
+
+### Status change
+- `customerCertificateSearchGC` marked **unverified / legacy**: no operation of that name
+  exists in the loyalty-app service generation. Retained unchanged for reference.
+
+### Hygiene
+- Removed internal source-file, class and module names and brand-specific identifier
+  names from annotations and examples. The CI identifier guard now rejects them and also
+  scans `.json` files.
+
 ## 2026-10-12
 
 - Order family response schemas rebuilt/verified against live production responses across

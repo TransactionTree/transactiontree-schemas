@@ -1,63 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
   <xs:annotation>
-    <xs:documentation>RESPONSE schema for couponPost (Customer360). Returned in the response body.</xs:documentation>
+    <xs:documentation>
+RESPONSE schema for couponPost (Customer360). Returned in the response body.
+Audited 2026-10-12 against the loyalty-app service generation.
+
+Two document roots are possible:
+  1. WEBSERVICE/RESPONSE -- every response produced by the operation itself.
+  2. bare RESPONSE       -- produced before the operation runs (access-token gate, E899) or by
+                            the generic runtime-error page (E999).
+
+How to read the outcome:
+  - SUCCESS is RESPONSE_CODE S104 together with RESP_STATUS_CODE COUPON_AVAILABLE. The coupon
+    has been consumed (marked as scanned) by this call.
+  - Any other RESPONSE_CODE means nothing was posted.
+
+RESPONSE_CODE catalog (kept as xs:string on purpose; new codes must not break validation):
+  S104 coupon posted (success)
+  E101 XmlInput empty       E102 malformed XML      E103 parser configuration   E104 I/O reading input
+       (E101-E104 are emitted as a child of WEBSERVICE, AFTER an empty RESPONSE element)
+  E113 promotion is not assigned to the requesting store (RESP_STATUS_CODE COUPON_UNAVAILABLE)
+  E115 no store could be resolved
+  E116 REQ_COUPON_CODE missing or empty
+  E117 coupon already reconciled against an order (RESP_STATUS_CODE COUPON_AUDITED)
+  E118 coupon already scanned (RESP_STATUS_CODE COUPON_REDEEMED)
+  E119 the coupon's promotion is not approved or has ended (RESP_STATUS_CODE PROMO_UNAVAILABLE)
+  E123 coupon expired, or not yet valid (RESP_STATUS_CODE COUPON_UNAVAILABLE)
+  E127 REQ_STORE_ID unknown
+  E841 coupon code not found (COUPON_UNAVAILABLE)
+  E842 REQ_COUPON_TYPE missing or different from the promotion's type (RESP_STATUS_CODE empty)
+  E843 coupon usage limit reached (COUPON_UNAVAILABLE)
+  E855 CUSTOMER_ID supplied but not a known customer
+  E899 accessTokenKey validation failed (bare RESPONSE root)
+  E999 unhandled error (bare RESPONSE root, empty RESPONSE_DATE, no ResponseId)
+    </xs:documentation>
   </xs:annotation>
+
   <xs:element name="WEBSERVICE">
     <xs:annotation>
-      <xs:documentation>Top-level wrapper for the couponPost response envelope.</xs:documentation>
+      <xs:documentation>Top-level wrapper for every response produced by the couponPost operation.</xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
         <xs:element name="RESPONSE">
           <xs:annotation>
-            <xs:documentation>Response payload. Echoes the posted coupon and reports the post outcome.</xs:documentation>
+            <xs:documentation>Response payload. Echoes the posted coupon and reports the post outcome. Empty (attribute only) on E101-E104 and when the request contained no REQUEST element.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="RESP_COUPON_DETAILS">
+              <xs:element name="RESP_COUPON_DETAILS" minOccurs="0">
                 <xs:annotation>
-                  <xs:documentation>Coupon that was posted.</xs:documentation>
+                  <xs:documentation>Echo of the coupon that was posted.</xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="RESP_COUPON_CODE" type="xs:string">
+                    <xs:element name="RESP_COUPON_CODE" type="xs:string" minOccurs="0">
                       <xs:annotation>
-                        <xs:documentation>The coupon code that was posted.</xs:documentation>
+                        <xs:documentation>The coupon code exactly as sent in REQ_COUPON_CODE (including any tenant prefix). Empty when no code was sent (E116).</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:element name="RESP_COUPON_TYPE" type="xs:string" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation>Echo of REQ_COUPON_TYPE as sent (SERIALIZE or NONSERIALIZE; may be empty). Emitted on success and on E113, E117, E118, E119, E841, E842, E843 and on E123 when the coupon has expired; absent on E115, E116, E127, E855 and on E123 when the coupon is not yet valid.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <!-- NOTE: 'TRANSACTOIN' is a genuine misspelling in the LIVE service and is the ONLY spelling emitted — verified against the live service 2026-08-15. Do NOT correct it; it is the real wire contract. -->
-              <xs:element name="RESP_TRANSACTOIN_DETAILS">
+              <!-- NOTE: 'TRANSACTOIN' is a genuine misspelling in the service and is the ONLY spelling emitted. Do NOT correct it; it is the real wire contract. -->
+              <xs:element name="RESP_TRANSACTOIN_DETAILS" minOccurs="0">
                 <xs:annotation>
-                  <xs:documentation>Outcome of the coupon post.</xs:documentation>
+                  <xs:documentation>Outcome of the coupon post. Modeled as a repeating choice: RESP_STATUS_CODE is not returned with every code.</xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
-                  <xs:sequence>
+                  <xs:choice minOccurs="0" maxOccurs="unbounded">
                     <xs:element name="RESP_STATUS_CODE" type="xs:string">
                       <xs:annotation>
-                        <xs:documentation>Status of the posted coupon (e.g., COUPON_REDEEMED, COUPON_UNAVAILABLE).</xs:documentation>
+                        <xs:documentation>Status of the coupon. Values emitted: COUPON_AVAILABLE (with S104: the coupon was valid and has now been posted); COUPON_AUDITED (with E117); COUPON_REDEEMED (with E118); COUPON_UNAVAILABLE (with E113, E123, E841, E843); PROMO_UNAVAILABLE (with E119); EMPTY (with E842). Absent on E115, E116, E127, E855.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
                     <xs:element name="RESPONSE_CODE" type="xs:string">
                       <xs:annotation>
-                        <xs:documentation>Service outcome code for the post request.</xs:documentation>
+                        <xs:documentation>Outcome code. S104 on success; see the catalog in the schema header.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
-                  </xs:sequence>
+                  </xs:choice>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
             <xs:attribute name="ResponseId" type="xs:string">
               <xs:annotation>
-                <xs:documentation>Response tracking identifier used by the log process to correlate this response for reporting and issue tracing.</xs:documentation>
+                <xs:documentation>Request-log correlation id generated by the service for this call. Quote it when reporting an issue.</xs:documentation>
               </xs:annotation>
             </xs:attribute>
           </xs:complexType>
         </xs:element>
+        <xs:element name="RESPONSE_CODE" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Input-level failure code E101-E104 only. These four codes are emitted here, as a child of WEBSERVICE following an empty RESPONSE element, not inside RESP_TRANSACTOIN_DETAILS.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
       </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="RESPONSE">
+    <xs:annotation>
+      <xs:documentation>Bare RESPONSE root (no WEBSERVICE wrapper). Used only for failures raised outside the operation: E899 (accessTokenKey validation failed; carries ResponseId and a RESPONSE_DATE timestamp) and E999 (unhandled error; RESPONSE_DATE is an EMPTY element and there is no ResponseId).</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE_DATE" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Server timestamp "yyyy-MM-dd HH:mm:ss.S" (e.g. 2026-10-12 15:00:02.123) on E899; empty on E999. Deliberately xs:string: the format is not ISO 8601.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="RESPONSE_CODE" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>E899 or E999.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="ResponseId" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Request-log correlation id. Present on E899; absent on E999.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
 </xs:schema>

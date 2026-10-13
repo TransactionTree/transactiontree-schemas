@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SUCCESS, a customer with no address, e-mail, phone, segments or cross-references on file.
+     Shows what arrives EMPTY (elements are emitted empty, not omitted) and the two things that
+     are ABSENT: STATE (only emitted with an address) and CROSS_REFERENCE (none held).
+     BAD_POSTAL_ADDRESS_STATUS / BAD_EMAIL_ADDRESS_STATUS are Y when there is nothing on file. -->
+<RESPONSE ResponseId="100000003">
+  <RESPONSE_DATE>2026-10-12 15:03:00.655</RESPONSE_DATE>
+  <CUSTOMER>
+    <FIRST_NAME>JOHN</FIRST_NAME>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <BIRTHDAY/>
+    <GENDER/>
+    <CUSTOMER_ID>1234569</CUSTOMER_ID>
+    <REQ_REWARD_POINTS>0</REQ_REWARD_POINTS>
+    <EV_BALANCE>0</EV_BALANCE>
+    <CASHIER/>
+    <ASSIGNED_STORE/>
+    <ADDRESS1/>
+    <ADDRESS2/>
+    <CITY/>
+    <ZIP/>
+    <COUNTRY/>
+    <BAD_POSTAL_ADDRESS_STATUS>Y</BAD_POSTAL_ADDRESS_STATUS>
+    <ALLOW_SOLICITATION/>
+    <EMAIL_ID/>
+    <BAD_EMAIL_ADDRESS_STATUS>Y</BAD_EMAIL_ADDRESS_STATUS>
+    <ALLOW_SOLICITATION/>
+    <PHONE_NUMBER/>
+    <ALLOW_SOLICITATION/>
+    <MKT_SEGMENTS/>
+    <POS_SEGMENT/>
+  </CUSTOMER>
+</RESPONSE>

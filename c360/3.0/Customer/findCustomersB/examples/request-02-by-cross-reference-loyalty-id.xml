@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Pattern 1b - loyalty identifier. If 12345 is not found as sent, the service retries with
+     00012345 (left-padded to 8) and then with leading zeros removed. STORE_ID omitted: the
+     deployment's first configured store is used. -->
+<REQUEST>
+  <CRITERIA>
+    <SYSTEM_REFERENCE>LOYALTY_ID</SYSTEM_REFERENCE>
+    <SYSTEM_REFERENCE_ID>12345</SYSTEM_REFERENCE_ID>
+  </CRITERIA>
+</REQUEST>

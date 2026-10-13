@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Every element the service recognises, to show names and formats. This is NOT a recommended search:
+     the filters are not simply AND-ed (see the precedence rules in the request schema). Here CITY/PROVINCE
+     select the name/address search, ZIP_CODE adds postal-code matching, and CUSTOMER_ID restricts the
+     result to that one customer. STATE and REQUEST_DATE are accepted but ignored. -->
+<REQUEST>
+  <CRITERIA>
+    <REQUEST_DATE>2026-10-12 15:00:00</REQUEST_DATE>
+    <CUSTOMER_ID>1234567</CUSTOMER_ID>
+    <SYSTEM_REFERENCE>POS_ID</SYSTEM_REFERENCE>
+    <SYSTEM_REFERENCE_ID>7654321</SYSTEM_REFERENCE_ID>
+    <EMAIL_ID>jane.sample@example.com</EMAIL_ID>
+    <PHONE_NUMBER>5555550100</PHONE_NUMBER>
+    <FIRST_NAME>JANE</FIRST_NAME>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <CITY>SPRINGFIELD</CITY>
+    <PROVINCE>XX</PROVINCE>
+    <STATE>XX</STATE>
+    <ZIP_CODE>00000</ZIP_CODE>
+    <ZIP4>0000</ZIP4>
+    <STORE_ID>001</STORE_ID>
+    <RECORDS_LIMIT>5</RECORDS_LIMIT>
+  </CRITERIA>
+</REQUEST>

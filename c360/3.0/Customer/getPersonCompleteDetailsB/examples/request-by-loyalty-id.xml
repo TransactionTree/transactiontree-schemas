@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Lookup by external identifier. For LOYALTY_ID the service also tries the value zero-padded to 8 digits. -->
+<REQUEST>
+  <CRITERIA>
+    <SYSTEM_REFERENCE>LOYALTY_ID</SYSTEM_REFERENCE>
+    <SYSTEM_REFERENCE_ID>00123456</SYSTEM_REFERENCE_ID>
+    <STORE_ID>001</STORE_ID>
+  </CRITERIA>
+</REQUEST>

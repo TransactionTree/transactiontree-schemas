@@ -1,117 +1,181 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
   <xs:annotation>
-    <xs:documentation>RESPONSE schema for customerCertificateSearch (Customer360). Returned in the response body.</xs:documentation>
+    <xs:documentation>
+RESPONSE schema for customerCertificateSearch (Customer360). Returned in the response body.
+Audited 2026-10-12 against the loyalty-app service generation.
+
+In the loyalty-app service generation this operation is served by the second-generation
+("B") certificate search (alias operation name customerCertificateSearchB). The response
+therefore groups coupons under LOYALTY_COUPONS and MARKETING_COUPONS. The earlier published
+schema described the first-generation shape (TRANSACTION elements directly under RESPONSE,
+with the misspelled COUPON_REDEMED_DATE); that shape is NOT returned by this operation in the
+loyalty-app service generation.
+
+Response shapes (all use a bare RESPONSE root):
+  1. Success      -- RESPONSE_DATE, CUSTOMER_ID, LOYALTY_ID, LOYALTY_DATE, BALANCE_LOYALTY_POINTS,
+                     then LOYALTY_COUPONS and/or MARKETING_COUPONS. NO RESPONSE_CODE on success.
+  2. Early error  -- RESPONSE_DATE + RESPONSE_CODE only (E101-E104, E110, E111, E127, E899, E999).
+  3. Late error   -- RESPONSE_DATE, the four customer elements, then RESPONSE_CODE
+                     (E121 no coupons, E136, E137).
+
+RESPONSE_CODE catalog (kept as xs:string on purpose; new codes must not break validation):
+  E101 XmlInput empty       E102 malformed XML      E103 parser configuration   E104 I/O reading input
+  E110 CUSTOMER_ID missing or empty        E111 customer not found or not enabled
+  E121 no coupons matched                  E127 STORE_ID unknown
+  E136 COUPON_PROMO_TYPE not one of C7, LOYALTY, C3, MARKETING, ALL
+  E137 COUPON_STATUS not one of AVAILABLE, REDEEMED, AUDITED, FUTURE, EXPIRED, ALL
+  E899 accessTokenKey validation failed
+  E999 unhandled error (RESPONSE_DATE is an EMPTY element and there is no ResponseId)
+
+All timestamps are "yyyy-MM-dd HH:mm:ss.S" strings (e.g. 2026-10-12 15:00:02.123), NOT
+xs:dateTime, and are emitted as EMPTY elements when the underlying date is not set.
+    </xs:documentation>
   </xs:annotation>
+
+  <!-- Shared shape of a coupon row under LOYALTY_COUPONS and MARKETING_COUPONS. The service emits all nine elements, in this order, for every row. -->
+  <xs:complexType name="CertificateTransaction">
+    <xs:sequence>
+      <xs:element name="CUSTOMER_DESCRIPTION" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Description stored on the coupon; empty when none is stored.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUPON_NUMBER" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The coupon (certificate) number.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUPON_VALUE" type="xs:decimal" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Always a whole number (no decimals). For loyalty coupons: the redeemed value recorded for this customer's coupon, rounded half-up to a whole number, or 0 when none is recorded. Always 0 for marketing coupons.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUPON_STATUS" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Current status of the coupon. These five values are the complete set the service emits for this element.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="COUPON_AVAILABLE">
+              <xs:annotation>
+                <xs:documentation>Issued, unused, and within its validity window.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="COUPON_UNAVAILABLE">
+              <xs:annotation>
+                <xs:documentation>Issued and unused, but its start date is still in the future.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="COUPON_EXPIRED">
+              <xs:annotation>
+                <xs:documentation>Unused and past its end date.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="COUPON_REDEEMED">
+              <xs:annotation>
+                <xs:documentation>The coupon has been scanned at a POS.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="COUPON_AUDITED">
+              <xs:annotation>
+                <xs:documentation>The redemption has been reconciled against an order.</xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="COUPON_EXPIRY_DATE" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>End of validity, "yyyy-MM-dd HH:mm:ss.S". When the coupon has no end date the service returns its start date plus 120 days; empty when it has neither.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUPON_REDEEMED_DATE" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>When the coupon was scanned at a POS, "yyyy-MM-dd HH:mm:ss.S"; empty if never scanned. Correctly spelled in this operation.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUPON_AUDITED_DATE" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>When the redemption was reconciled against an order, "yyyy-MM-dd HH:mm:ss.S"; empty if not reconciled.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="COUPON_ISSUE_DATE" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>When the coupon was issued, "yyyy-MM-dd HH:mm:ss.S"; empty if not recorded.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="START_DATE" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Start of validity, "yyyy-MM-dd HH:mm:ss.S"; empty if not set.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:element name="RESPONSE">
     <xs:annotation>
-      <xs:documentation>Response payload carrying the customer's loyalty context and the matching coupon certificates.</xs:documentation>
+      <xs:documentation>Response payload carrying the customer's loyalty context and the matching coupons, or an error code.</xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="RESPONSE_DATE" type="xs:dateTime">
+        <xs:element name="RESPONSE_DATE" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Server timestamp when this response was generated. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+            <xs:documentation>Server timestamp, "yyyy-MM-dd HH:mm:ss.S". Always the first element. Deliberately xs:string: the format is not ISO 8601. Empty on E999.</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="CUSTOMER_ID" type="xs:string">
-          <xs:annotation>
-            <xs:documentation>Customer identifier the results belong to.</xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="LOYALTY_ID" type="xs:string">
-          <xs:annotation>
-            <xs:documentation>The customer's loyalty program identifier.</xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="LOYALTY_DATE" type="xs:dateTime">
-          <xs:annotation>
-            <xs:documentation>Date and time the customer joined/enrolled in loyalty. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="BALANCE_LOYALTY_POINTS" type="xs:string">
-          <xs:annotation>
-            <xs:documentation>Current loyalty point balance for the customer.</xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="TRANSACTION" minOccurs="0" maxOccurs="unbounded">
-          <xs:annotation>
-            <xs:documentation>A coupon certificate held by the customer. Repeats once per certificate.</xs:documentation>
-          </xs:annotation>
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="COUPON_NUMBER" type="xs:string">
-                <xs:annotation>
-                  <xs:documentation>The coupon/certificate number.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element name="COUPON_VALUE" type="xs:decimal">
-                <xs:annotation>
-                  <xs:documentation>The value of the coupon.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element name="COUPON_STATUS">
-                <xs:annotation>
-                  <xs:documentation>Current status of the coupon.</xs:documentation>
-                </xs:annotation>
-                <xs:simpleType>
-                  <xs:restriction base="xs:NMTOKEN">
-                    <xs:enumeration value="COUPON_AVAILABLE">
-                      <xs:annotation>
-                        <xs:documentation>The coupon is valid and available to use.</xs:documentation>
-                      </xs:annotation>
-                    </xs:enumeration>
-                    <xs:enumeration value="COUPON_UNAVAILABLE">
-                      <xs:annotation>
-                        <xs:documentation>The coupon code is wrong or not valid.</xs:documentation>
-                      </xs:annotation>
-                    </xs:enumeration>
-                    <xs:enumeration value="COUPON_EXPIRED">
-                      <xs:annotation>
-                        <xs:documentation>This coupon has expired.</xs:documentation>
-                      </xs:annotation>
-                    </xs:enumeration>
-                    <xs:enumeration value="COUPON_REDEEMED">
-                      <xs:annotation>
-                        <xs:documentation>The coupon has been redeemed already.</xs:documentation>
-                      </xs:annotation>
-                    </xs:enumeration>
-                    <xs:enumeration value="COUPON_AUDITED">
-                      <xs:annotation>
-                        <xs:documentation>Order with matching redeemed coupon is in the system.</xs:documentation>
-                      </xs:annotation>
-                    </xs:enumeration>
-                  </xs:restriction>
-                </xs:simpleType>
-              </xs:element>
-              <xs:element name="COUPON_ISSUE_DATE" type="xs:dateTime">
-                <xs:annotation>
-                  <xs:documentation>The date and time the coupon was issued. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element name="COUPON_EXPIRY_DATE" type="xs:dateTime">
-                <xs:annotation>
-                  <xs:documentation>The date and time the coupon expires. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element name="COUPON_SCANNED_DATE" type="xs:dateTime">
-                <xs:annotation>
-                  <xs:documentation>The date and time the coupon was scanned. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <!-- NOTE: 'REDEMED' misspelling CONFIRMED emitted by the certificate search (live service, verified 2026-08-15). Do NOT correct — spelling is method-specific (the customerCertificateSearchB method uses the correct COUPON_REDEEMED_DATE). -->
-              <xs:element name="COUPON_REDEMED_DATE" type="xs:dateTime">
-                <xs:annotation>
-                  <xs:documentation>The date and time the coupon was redeemed. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-            </xs:sequence>
-          </xs:complexType>
-        </xs:element>
+        <!-- Repeating choice: RESPONSE_CODE directly follows RESPONSE_DATE on early errors but follows the customer elements on late errors (E121, E136, E137). -->
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="RESPONSE_CODE" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Outcome code; ABSENT on success. See the catalog in the schema header.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="CUSTOMER_ID" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Customer identifier the results belong to (echo of the request).</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="LOYALTY_ID" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>The customer's loyalty program identifier; empty when the customer is not enrolled.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="LOYALTY_DATE" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>When the loyalty identifier was recorded for the customer, "yyyy-MM-dd HH:mm:ss.S"; empty when the customer is not enrolled.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="BALANCE_LOYALTY_POINTS" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>Current loyalty point balance (earned minus redeemed) as a whole-number string, may be negative; EMPTY when the customer is not enrolled.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="LOYALTY_COUPONS">
+            <xs:annotation>
+              <xs:documentation>Coupons belonging to loyalty promotions. Present only when at least one such coupon matched.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="TRANSACTION" type="CertificateTransaction" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="MARKETING_COUPONS">
+            <xs:annotation>
+              <xs:documentation>Coupons belonging to any promotion type other than loyalty. Present only when at least one such coupon matched. Follows LOYALTY_COUPONS when both are present.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="TRANSACTION" type="CertificateTransaction" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
       </xs:sequence>
       <xs:attribute name="ResponseId" type="xs:string">
         <xs:annotation>
-          <xs:documentation>Response tracking identifier used by the log process to correlate this response for reporting and issue tracing.</xs:documentation>
+          <xs:documentation>Request-log correlation id generated by the service for this call. Present on every response except E999.</xs:documentation>
         </xs:annotation>
       </xs:attribute>
     </xs:complexType>

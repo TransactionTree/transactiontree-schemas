@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
   <xs:annotation>
-    <xs:documentation>REQUEST schema for couponPost (Customer360). This XML is carried in the form field 'XmlInput'.</xs:documentation>
+    <xs:documentation>
+REQUEST schema for couponPost (Customer360). This XML is carried in the form field 'XmlInput'.
+Audited 2026-10-12 against the loyalty-app service generation.
+
+couponPost CONSUMES a coupon: on success (RESPONSE_CODE S104) the coupon is marked as scanned,
+and when CUSTOMER_ID is supplied the coupon is linked to that customer. Use couponAuthentication
+for a read-only check.
+
+Reading rules of the service:
+  - Only the REQUEST child of the root is inspected; the root element name itself is not checked.
+  - REQ_TRANSACTION_DETAILS and REQ_COUPON_DETAILS may appear in either order, as may their children.
+  - Element names are case-sensitive.
+  - When the tenant has a coupon prefix configured and enabled, a leading prefix is stripped
+    from REQ_COUPON_CODE before lookup; the response still echoes the code as sent.
+    </xs:documentation>
   </xs:annotation>
   <xs:element name="WEBSERVICE">
     <xs:annotation>
@@ -14,24 +28,29 @@
             <xs:documentation>Request payload used to post (redeem/record) a coupon against a transaction.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
-            <xs:sequence>
-              <xs:element name="REQ_TRANSACTION_DETAILS">
+            <xs:all>
+              <xs:element name="REQ_TRANSACTION_DETAILS" minOccurs="0">
                 <xs:annotation>
-                  <xs:documentation>Transaction context in which the coupon is being posted.</xs:documentation>
+                  <xs:documentation>Transaction context in which the coupon is being posted. Optional: when REQ_STORE_ID is not supplied the service falls back to a default store of the tenant.</xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="REQ_STORE_ID" type="xs:string">
+                  <xs:all>
+                    <xs:element name="REQ_STORE_ID" type="xs:string" minOccurs="0">
                       <xs:annotation>
-                        <xs:documentation>The store id that the coupon was redeemed.</xs:documentation>
+                        <xs:documentation>The store at which the coupon is redeemed, matched exactly as sent (no zero-padding is applied). An unknown store returns RESPONSE_CODE E127. When omitted or empty, a default store of the tenant is used. The coupon's promotion must be assigned to this store (otherwise E113).</xs:documentation>
                       </xs:annotation>
                     </xs:element>
-                    <xs:element name="REQUEST_DATE" type="xs:dateTime">
+                    <xs:element name="REQUEST_DATE" type="xs:string" minOccurs="0">
                       <xs:annotation>
-                        <xs:documentation>The date and time of this request. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                        <xs:documentation>The date and time of this request. Accepted but not interpreted by the service (any text is tolerated); ISO 8601 is recommended, e.g. 2026-10-12T15:00:00Z. The scan time recorded on the coupon is the server clock.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
-                  </xs:sequence>
+                    <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
+                      <xs:annotation>
+                        <xs:documentation>Optional customer identifier of the person redeeming the coupon. When supplied it must identify an existing customer, otherwise the service returns RESPONSE_CODE E855 and nothing is posted. On success the coupon is linked to this customer.</xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:all>
                 </xs:complexType>
               </xs:element>
               <xs:element name="REQ_COUPON_DETAILS">
@@ -39,15 +58,15 @@
                   <xs:documentation>Identifies the coupon being posted.</xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
-                  <xs:sequence>
+                  <xs:all>
                     <xs:element name="REQ_COUPON_CODE" type="xs:string">
                       <xs:annotation>
-                        <xs:documentation>The coupon code being posted (as scanned or keyed at the POS).</xs:documentation>
+                        <xs:documentation>The coupon code being posted (as scanned or keyed at the POS). Missing or empty returns RESPONSE_CODE E116.</xs:documentation>
                       </xs:annotation>
                     </xs:element>
-                    <xs:element name="REQ_COUPON_TYPE" default="SERIALIZE">
+                    <xs:element name="REQ_COUPON_TYPE">
                       <xs:annotation>
-                        <xs:documentation>Coupon issuance model. Determines whether usage limits and per-code tracking apply. Defaults to SERIALIZE when omitted.</xs:documentation>
+                        <xs:documentation>Coupon issuance model. REQUIRED in practice: it must equal the type of the promotion the coupon belongs to, otherwise the service returns RESPONSE_CODE E842. There is NO server-side default (the earlier published default of SERIALIZE is not applied; a missing or empty value yields E842). NOTE: the non-serialized value is NONSERIALIZE with no hyphen; the previously published value NON-SERIALIZE never matches and always yields E842.</xs:documentation>
                       </xs:annotation>
                       <xs:simpleType>
                         <xs:restriction base="xs:NMTOKEN">
@@ -56,18 +75,18 @@
                               <xs:documentation>Serialized coupons allow merchandisers to create large numbers of coupons with usage limits and randomly generated coupon codes in order to closely target and monitor coupon use.</xs:documentation>
                             </xs:annotation>
                           </xs:enumeration>
-                          <xs:enumeration value="NON-SERIALIZE">
+                          <xs:enumeration value="NONSERIALIZE">
                             <xs:annotation>
-                              <xs:documentation>Non-serialized coupons do not have usage limits.</xs:documentation>
+                              <xs:documentation>Non-serialized coupons: one shared code for the whole promotion.</xs:documentation>
                             </xs:annotation>
                           </xs:enumeration>
                         </xs:restriction>
                       </xs:simpleType>
                     </xs:element>
-                  </xs:sequence>
+                  </xs:all>
                 </xs:complexType>
               </xs:element>
-            </xs:sequence>
+            </xs:all>
           </xs:complexType>
         </xs:element>
       </xs:sequence>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Pattern 5 - name lookup (no phone / e-mail / ZIP). Result capped at 50 customers. -->
+<REQUEST>
+  <CRITERIA>
+    <FIRST_NAME>JANE</FIRST_NAME>
+    <LAST_NAME>SAMPLE</LAST_NAME>
+    <STORE_ID>001</STORE_ID>
+    <RECORDS_LIMIT>10</RECORDS_LIMIT>
+  </CRITERIA>
+</REQUEST>

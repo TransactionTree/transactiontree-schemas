@@ -1,37 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
   <xs:annotation>
-    <xs:documentation>REQUEST schema for customerCertificateSearch (Customer360). This XML is carried in the form field 'XmlInput'.</xs:documentation>
+    <xs:documentation>
+REQUEST schema for customerCertificateSearch (Customer360). This XML is carried in the form
+field 'XmlInput'. Audited 2026-10-12 against the loyalty-app service generation.
+
+In the loyalty-app service generation this operation is served by the second-generation
+("B") certificate search, which is also reachable under the alias operation name
+customerCertificateSearchB. Both names take this request and return the same response.
+
+Reading rules of the service:
+  - Only the criteria child of the root is inspected; the root element name itself is not checked.
+  - The criteria wrapper and all field names are matched case-insensitively.
+  - Fields may appear in any order. An empty element is treated the same as an omitted one.
+    </xs:documentation>
   </xs:annotation>
   <xs:element name="REQUEST">
     <xs:annotation>
-      <xs:documentation>Request payload used to search a customer's coupon certificates.</xs:documentation>
+      <xs:documentation>Request payload used to search the coupons (certificates) held by a customer.</xs:documentation>
     </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <!-- NOTE (verbatim from legacy contract; not renamed — external integrators may depend on it): criteria (lowercase wrapper) -->
+        <!-- NOTE (verbatim from legacy contract; not renamed, external integrators may depend on it): criteria (lowercase wrapper) -->
         <xs:element name="criteria">
           <xs:annotation>
             <xs:documentation>Search criteria container for the certificate search.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
-            <xs:sequence>
-              <xs:element name="REQUEST_DATE" type="xs:dateTime">
+            <xs:all>
+              <xs:element name="REQUEST_DATE" type="xs:string" minOccurs="0">
                 <xs:annotation>
-                  <xs:documentation>The date and time of this request. ISO 8601. Example: 2025-11-01T18:05:00Z.</xs:documentation>
+                  <xs:documentation>The date and time of this request. Not read by the service (any text is tolerated); ISO 8601 is recommended, e.g. 2026-10-12T15:00:00Z.</xs:documentation>
                 </xs:annotation>
               </xs:element>
               <xs:element name="CUSTOMER_ID" type="xs:string">
                 <xs:annotation>
-                  <xs:documentation>Customer identifier whose certificates/coupons are being searched.</xs:documentation>
+                  <xs:documentation>Customer identifier whose coupons are being searched. Missing or empty returns RESPONSE_CODE E110; an unknown or disabled customer returns E111.</xs:documentation>
                 </xs:annotation>
               </xs:element>
-              <xs:element name="RECORD_LIMIT" type="xs:int" minOccurs="0">
+              <xs:element name="RECORD_LIMIT" type="xs:string" minOccurs="0">
                 <xs:annotation>
-                  <xs:documentation>Maximum number of records to return. Defaults to 25 when omitted or invalid.</xs:documentation>
+                  <xs:documentation>Maximum number of coupons returned PER GROUP (applied separately to LOYALTY_COUPONS and to MARKETING_COUPONS). Defaults to 100 when omitted or not a number.</xs:documentation>
                 </xs:annotation>
               </xs:element>
-            </xs:sequence>
+              <xs:element name="FROM_DATE" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>Lower bound on the date the coupon was assigned to the customer. Format yyyy-MM-dd. Defaults to 2000-01-01.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="THRU_DATE" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>Upper bound on the date the coupon was assigned to the customer. Date AND time are required, parsed by the service with the pattern "yyyy-MM-dd hh:mm:ss" (e.g. 2026-10-12 23:59:59); a date-only value does not parse. Defaults to the current server time. No error is returned for an unparseable date: an unparseable THRU_DATE silently removes the upper bound, and an unparseable FROM_DATE silently removes both bounds.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="STORE_ID" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>Store identifier providing context for the search, matched exactly as sent. An unknown store returns RESPONSE_CODE E127. When omitted, a default store of the tenant is used. The store also drives a brand filter: for a numeric store identifier the service resolves a brand code (defaulting to 10 when the store has no brand mapping) and returns ONLY coupons whose number starts with that brand code; a non-numeric store identifier disables the brand filter.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="COUPON_PROMO_TYPE" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>Restricts the result to one promotion type. Any other value returns RESPONSE_CODE E136.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:enumeration value="C7"><xs:annotation><xs:documentation>Loyalty coupons only (same as LOYALTY).</xs:documentation></xs:annotation></xs:enumeration>
+                    <xs:enumeration value="LOYALTY"><xs:annotation><xs:documentation>Loyalty coupons only.</xs:documentation></xs:annotation></xs:enumeration>
+                    <xs:enumeration value="C3"><xs:annotation><xs:documentation>Marketing coupons only (same as MARKETING).</xs:documentation></xs:annotation></xs:enumeration>
+                    <xs:enumeration value="MARKETING"><xs:annotation><xs:documentation>Marketing coupons only.</xs:documentation></xs:annotation></xs:enumeration>
+                    <xs:enumeration value="ALL"><xs:annotation><xs:documentation>No restriction (same as omitting the element).</xs:documentation></xs:annotation></xs:enumeration>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="COUPON_STATUS" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>Restricts the result to coupons in one state. Any other value returns RESPONSE_CODE E137 (only when the customer has at least one coupon in the date range; otherwise E121). Note these request values have no COUPON_ prefix, unlike the COUPON_STATUS values in the response.</xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:enumeration value="AVAILABLE"><xs:annotation><xs:documentation>Issued, not yet used, and currently within its validity window.</xs:documentation></xs:annotation></xs:enumeration>
+                    <xs:enumeration value="REDEEMED"><xs:annotation><xs:documentation>Scanned at a POS (returned with COUPON_STATUS COUPON_REDEEMED).</xs:documentation></xs:annotation></xs:enumeration>
+                    <xs:enumeration value="AUDITED"><xs:annotation><xs:documentation>Redemption reconciled against an order (returned with COUPON_STATUS COUPON_AUDITED).</xs:documentation></xs:annotation></xs:enumeration>
+                    <xs:enumeration value="FUTURE"><xs:annotation><xs:documentation>Issued, not yet used, validity window not started (returned with COUPON_STATUS COUPON_UNAVAILABLE).</xs:documentation></xs:annotation></xs:enumeration>
+                    <xs:enumeration value="EXPIRED"><xs:annotation><xs:documentation>Issued, not used, validity window ended.</xs:documentation></xs:annotation></xs:enumeration>
+                    <xs:enumeration value="ALL"><xs:annotation><xs:documentation>No restriction (same as omitting the element).</xs:documentation></xs:annotation></xs:enumeration>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:all>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
