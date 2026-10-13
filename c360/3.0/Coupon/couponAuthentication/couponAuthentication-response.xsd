@@ -47,97 +47,104 @@ Timestamps are "yyyy-MM-dd HH:mm:ss.S" strings, NOT xs:dateTime.
             <xs:documentation>Response payload. Echoes the coupon and reports the authentication outcome.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
-            <xs:sequence>
-              <xs:element name="RESP_COUPON_DETAILS">
+            <xs:choice>
+              <xs:sequence>
+                <xs:element name="RESP_COUPON_DETAILS">
+                  <xs:annotation>
+                    <xs:documentation>Echo of the coupon that was evaluated. Always present; empty on E101-E104.</xs:documentation>
+                  </xs:annotation>
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="RESP_COUPON_CODE" type="xs:string" minOccurs="0">
+                        <xs:annotation>
+                          <xs:documentation>The coupon code exactly as sent in REQ_COUPON_CODE (including any tenant prefix). Empty when no code was sent (E116). Absent on E101-E104.</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="RESP_COUPON_TYPE" type="xs:string" minOccurs="0">
+                        <xs:annotation>
+                          <xs:documentation>Echo of REQ_COUPON_TYPE as sent (SERIALIZE or NONSERIALIZE; may be empty). Emitted on evaluated coupons and on E113, E841, E842; absent on E101-E104, E115, E116, E119, E123, E127, E843.</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+                <!-- NOTE: 'TRANSACTOIN' is a genuine misspelling in the service and is the ONLY spelling emitted. Do NOT correct it; it is the real wire contract. -->
+                <xs:element name="RESP_TRANSACTOIN_DETAILS">
+                  <xs:annotation>
+                    <xs:documentation>Authentication outcome and transaction context. Always present; empty on E101-E104. Modeled as a repeating choice: the subset returned depends on the outcome (see each element).</xs:documentation>
+                  </xs:annotation>
+                  <xs:complexType>
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                      <xs:element name="RESPONSE_CODE" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>Outcome code; ABSENT when the coupon was found and evaluated (read RESP_STATUS_CODE instead). See the catalog in the schema header.</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="RESP_STORE_ID" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>Store the coupon was evaluated for: the REQ_STORE_ID sent, or the tenant default store when none was sent. Emitted on evaluated coupons and on E113.</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="RESP_DATE" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>Server timestamp of the evaluation, format "yyyy-MM-dd HH:mm:ss.S" (e.g. 2026-10-12 15:00:02.123). Deliberately xs:string: the format is not ISO 8601. Emitted on evaluated coupons and on E113.</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="POS_PROMO_CODE" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>POS-side promotion code configured for the coupon's promotion; empty when none is configured. Emitted (possibly empty) on evaluated coupons and on E113, E841, E842. On E113 only, the service fills this element from the promotion's e-commerce promotion code instead of the POS-side code.</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="INT_PROMO_CODE" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>Internal promotion identifier the coupon belongs to; empty when the coupon was not found (E841). Emitted on evaluated coupons and on E113, E841, E842.</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="PROMOTION_TYPE_ID" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>Promotion type. On evaluated coupons the service maps LOYALTY to C7 and MARKETING to C3; ALL and any other type are passed through unchanged. On E113 and E842 the unmapped internal type is returned (e.g. LOYALTY); on E841 it is empty.</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="RESP_CUSTOMER_ID" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>Reserved. Always emitted EMPTY by the loyalty-app service generation.</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="RESP_STATUS_CODE" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>Status of the coupon. Deliberately xs:string (a closed list previously rejected live values). Values emitted: COUPON_AVAILABLE (valid and usable); COUPON_EXPIRED (past its end date plus grace period); COUPON_REDEEMED (already scanned at a POS); COUPON_AUDITED (redemption reconciled against an order); COUPON_UNAVAILABLE (with E113, E123, E841, E843); PROMO_UNAVAILABLE (with E119); EMPTY (with E842). Absent on E101-E104, E115, E116, E127.</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="RESP_AUTH_CODE" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>Reserved. Always emitted EMPTY by the loyalty-app service generation (on evaluated coupons and on E113).</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="ATG_PROMO_CODE" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>NOT emitted by the loyalty-app service generation. Retained from the earlier published schema so documents from an older service generation still validate (older behaviour not verified).</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                      <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string">
+                        <xs:annotation>
+                          <xs:documentation>NOT emitted by the loyalty-app service generation. Retained from the earlier published schema so documents from an older service generation still validate (older behaviour not verified).</xs:documentation>
+                        </xs:annotation>
+                      </xs:element>
+                    </xs:choice>
+                  </xs:complexType>
+                </xs:element>
+                <xs:element name="RESPONSE_CODE" type="xs:string" minOccurs="0">
+                  <xs:annotation>
+                    <xs:documentation>Input-level failure code E101-E104 only. These four codes are emitted here, as a direct child of RESPONSE after the two (empty) containers, not inside RESP_TRANSACTOIN_DETAILS.</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+              </xs:sequence>
+              <xs:element name="RESPONSE_CODE" type="xs:string">
                 <xs:annotation>
-                  <xs:documentation>Echo of the coupon that was evaluated. Always present; empty on E101-E104.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="RESP_COUPON_CODE" type="xs:string" minOccurs="0">
-                      <xs:annotation>
-                        <xs:documentation>The coupon code exactly as sent in REQ_COUPON_CODE (including any tenant prefix). Empty when no code was sent (E116). Absent on E101-E104.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="RESP_COUPON_TYPE" type="xs:string" minOccurs="0">
-                      <xs:annotation>
-                        <xs:documentation>Echo of REQ_COUPON_TYPE as sent (SERIALIZE or NONSERIALIZE; may be empty). Emitted on evaluated coupons and on E113, E841, E842; absent on E101-E104, E115, E116, E119, E123, E127, E843.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-              <!-- NOTE: 'TRANSACTOIN' is a genuine misspelling in the service and is the ONLY spelling emitted. Do NOT correct it; it is the real wire contract. -->
-              <xs:element name="RESP_TRANSACTOIN_DETAILS">
-                <xs:annotation>
-                  <xs:documentation>Authentication outcome and transaction context. Always present; empty on E101-E104. Modeled as a repeating choice: the subset returned depends on the outcome (see each element).</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                  <xs:choice minOccurs="0" maxOccurs="unbounded">
-                    <xs:element name="RESPONSE_CODE" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Outcome code; ABSENT when the coupon was found and evaluated (read RESP_STATUS_CODE instead). See the catalog in the schema header.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="RESP_STORE_ID" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Store the coupon was evaluated for: the REQ_STORE_ID sent, or the tenant default store when none was sent. Emitted on evaluated coupons and on E113.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="RESP_DATE" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Server timestamp of the evaluation, format "yyyy-MM-dd HH:mm:ss.S" (e.g. 2026-10-12 15:00:02.123). Deliberately xs:string: the format is not ISO 8601. Emitted on evaluated coupons and on E113.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="POS_PROMO_CODE" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>POS-side promotion code configured for the coupon's promotion; empty when none is configured. Emitted (possibly empty) on evaluated coupons and on E113, E841, E842. On E113 only, the service fills this element from the promotion's e-commerce promotion code instead of the POS-side code.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="INT_PROMO_CODE" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Internal promotion identifier the coupon belongs to; empty when the coupon was not found (E841). Emitted on evaluated coupons and on E113, E841, E842.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="PROMOTION_TYPE_ID" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Promotion type. On evaluated coupons the service maps LOYALTY to C7 and MARKETING to C3; ALL and any other type are passed through unchanged. On E113 and E842 the unmapped internal type is returned (e.g. LOYALTY); on E841 it is empty.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="RESP_CUSTOMER_ID" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Reserved. Always emitted EMPTY by the loyalty-app service generation.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="RESP_STATUS_CODE" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Status of the coupon. Deliberately xs:string (a closed list previously rejected live values). Values emitted: COUPON_AVAILABLE (valid and usable); COUPON_EXPIRED (past its end date plus grace period); COUPON_REDEEMED (already scanned at a POS); COUPON_AUDITED (redemption reconciled against an order); COUPON_UNAVAILABLE (with E113, E123, E841, E843); PROMO_UNAVAILABLE (with E119); EMPTY (with E842). Absent on E101-E104, E115, E116, E127.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="RESP_AUTH_CODE" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Reserved. Always emitted EMPTY by the loyalty-app service generation (on evaluated coupons and on E113).</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="ATG_PROMO_CODE" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>NOT emitted by the loyalty-app service generation. Retained from the earlier published schema so documents from an older service generation still validate (older behaviour not verified).</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>NOT emitted by the loyalty-app service generation. Retained from the earlier published schema so documents from an older service generation still validate (older behaviour not verified).</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                  </xs:choice>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="RESPONSE_CODE" type="xs:string" minOccurs="0">
-                <xs:annotation>
-                  <xs:documentation>Input-level failure code E101-E104 only. These four codes are emitted here, as a direct child of RESPONSE after the two (empty) containers, not inside RESP_TRANSACTOIN_DETAILS.</xs:documentation>
+                  <xs:documentation>Gate-error envelope of the older service generation (E888 / E899): RESPONSE carries this element alone, with no containers and no ResponseId.</xs:documentation>
                 </xs:annotation>
               </xs:element>
-            </xs:sequence>
+            </xs:choice>
             <xs:attribute name="ResponseId" type="xs:string">
               <xs:annotation>
                 <xs:documentation>Request-log correlation id generated by the service for this call. Quote it when reporting an issue.</xs:documentation>

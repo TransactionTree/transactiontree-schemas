@@ -12,9 +12,12 @@ Replaces the earlier schema, which omitted the error envelope, 32 live elements
 (CONTACT block, CUSTOMER_ID, TERMINAL_ID, item flags, per-tax detail) and misspelled the
 LEVEL_5 element names (LEVEL5_COMPANYCODE vs the actual LEVEL_5_COMPANY_CODE).
 
-Two response shapes share this document:
+Three response shapes share this document:
   1. Error   -- RESPONSE_DATE + RESPONSE_CODE (+ RESPONSE_MESSAGE or, on the loyalty-app generation, RESPONSE_DATA on E999). No TRANSACTION.
   2. Success -- RESPONSE_DATE + TRANSACTION with one or more ORDER_HEADER blocks.
+  3. Gate error (E888 / E899, raised before the operation runs). The older service generation returns
+     WEBSERVICE / RESPONSE / RESPONSE_CODE only: no RESPONSE_DATE and no ResponseId. The loyalty-app
+     generation returns a bare RESPONSE with RESPONSE_DATE and RESPONSE_CODE.
 
 Transport notes (observed in production):
   - Service-level responses arrive as a bare RESPONSE document.
@@ -40,12 +43,17 @@ transaction type. Amounts are decimal-formatted strings; dates are
   </xs:annotation>
 
   <xs:element name="WEBSERVICE">
-    <xs:annotation><xs:documentation>Wrapper used by gate-level failures (E888 unknown tenant,
-    E899 access-token validation): those documents arrive as WEBSERVICE/RESPONSE without the
-    ResponseId attribute. Service-level responses arrive as a bare RESPONSE root; both roots
-    are therefore declared globally.</xs:documentation></xs:annotation>
+    <xs:annotation><xs:documentation>Gate-error envelope (E888 unknown tenant, E899 access-token validation), raised
+    before the operation runs. The older service generation returns WEBSERVICE / RESPONSE / RESPONSE_CODE,
+    normally with no RESPONSE_DATE and never with ResponseId. Service-level responses arrive as a bare
+    RESPONSE root, which always carries RESPONSE_DATE.</xs:documentation></xs:annotation>
     <xs:complexType><xs:sequence>
-      <xs:element ref="RESPONSE"/>
+      <xs:element name="RESPONSE">
+        <xs:complexType><xs:sequence>
+          <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0"/>
+          <xs:element name="RESPONSE_CODE" type="xs:string"/>
+        </xs:sequence></xs:complexType>
+      </xs:element>
     </xs:sequence></xs:complexType>
   </xs:element>
 
@@ -330,6 +338,7 @@ transaction type. Amounts are decimal-formatted strings; dates are
 
         <xs:element ref="ITEM_ATTRIBUTES" minOccurs="0"/>
         <xs:element ref="ITEM_TAX" minOccurs="0"/>
+        <xs:element ref="ITEM_DISCOUNT" minOccurs="0"/>
       </xs:choice>
     </xs:complexType>
   </xs:element>
@@ -501,6 +510,31 @@ transaction type. Amounts are decimal-formatted strings; dates are
     <xs:annotation><xs:documentation>Attribute value.</xs:documentation></xs:annotation>
   </xs:element>
 
+  <xs:element name="ITEM_DISCOUNT">
+    <xs:annotation><xs:documentation>Per-line discounts, emitted after ITEM_TAX when the line has discount adjustments. One DISCOUNT block per adjustment. Emitted by both service generations; value elements arrive empty when unpopulated.</xs:documentation></xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="DISCOUNT" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="DISCOUNT_PERCENT" type="xs:string"><xs:annotation><xs:documentation>Discount as a fraction (0.2 = 20 percent), when percentage based.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="DISCOUNT_AMOUNT" type="xs:string"><xs:annotation><xs:documentation>Discount amount applied to the line.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="DISCOUNT_DESCRIPTION" type="xs:string"><xs:annotation><xs:documentation>Receipt description of the discount.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="DISCOUNT_CODE" type="xs:string"><xs:annotation><xs:documentation>Discount code.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="DISCOUNT_CODETYPE" type="xs:string"><xs:annotation><xs:documentation>Discount code type.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="DISCOUNT_METHOD" type="xs:string"><xs:annotation><xs:documentation>Discount method.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="DISCOUNT_RATE" type="xs:string"><xs:annotation><xs:documentation>Discount rate.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="PRINT_LINE" type="xs:string"><xs:annotation><xs:documentation>Receipt print line for the discount.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="AMOUNT_DISCOUNTABLE" type="xs:string"><xs:annotation><xs:documentation>Amount the discount was calculated on.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="DISCOUNT_PROMO_CODE" type="xs:string"><xs:annotation><xs:documentation>Promotion code that produced the discount.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="DISCOUNT_VOIDED" type="xs:string"><xs:annotation><xs:documentation>Voided flag for the discount.</xs:documentation></xs:annotation></xs:element>
+              <xs:element name="DISCOUNT_VOIDED_LINE" type="xs:string"><xs:annotation><xs:documentation>Line that voided the discount.</xs:documentation></xs:annotation></xs:element>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="ITEM_TAX">
     <xs:annotation><xs:documentation>Per-line tax details. Its child element is named TAX -- the same name as the header-level amount -- so it is declared locally here with a complex structure.</xs:documentation></xs:annotation>
     <xs:complexType>

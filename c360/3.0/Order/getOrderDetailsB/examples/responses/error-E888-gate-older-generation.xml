@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Gate error on the OLDER service generation: the tenant key was rejected before the operation ran.
+     The whole response is WEBSERVICE / RESPONSE / RESPONSE_CODE - no RESPONSE_DATE, no ResponseId.
+     The loyalty-app generation returns the same error as a bare RESPONSE with RESPONSE_DATE. -->
+<WEBSERVICE>
+  <RESPONSE>
+    <RESPONSE_CODE>E888</RESPONSE_CODE>
+  </RESPONSE>
+</WEBSERVICE>

@@ -1,74 +1,102 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
   <xs:annotation>
-    <xs:documentation>REQUEST schema for getOrderHeaderDetailsB. This XML is carried in the form field 'XmlInput'.</xs:documentation>
+    <xs:documentation>
+      REQUEST schema for getOrderHeaderDetailsB. The XML is carried in the form field 'XmlInput'.
+      Verified against both service generations, 2026-10.
+
+      What it returns
+      ---------------
+      Order headers (no line items) for ONE customer. A customer must be identified, either by
+      CUSTOMER_ID or by a SYSTEM_REFERENCE + SYSTEM_REFERENCE_ID pair; otherwise the service
+      returns E110. To search by product or without a customer, use getOrderHeaderDetailsC.
+
+      How the service reads the request
+      ---------------------------------
+      Elements are direct children of the root (the root name itself is not checked), are matched
+      by local name case-insensitively, may appear in any order, and unknown elements are ignored.
+      Only direct children are read: a filter nested inside a wrapper element is not seen. Empty
+      elements are treated as not supplied. The service does not validate against this schema.
+
+      Checks, in the order the service applies the first five
+      -------------------------------------------------------
+      E101-E104 (XmlInput missing / unparseable), E129 (ORDER_ID not found), E127 (STORE_ID missing
+      or unknown), E122 (FROM_DATE / THRU_DATE not parseable), E124 (ORDER_STATUS too long),
+      E110 (no customer identified), E111 (CUSTOMER_ID unknown), E126 (no order matched).
+    </xs:documentation>
   </xs:annotation>
   <xs:element name="REQUEST">
     <xs:annotation>
-      <xs:documentation>Payload filters understood by the service; all are optional.</xs:documentation>
+      <xs:documentation>Request for getOrderHeaderDetailsB: filters used to locate orders.</xs:documentation>
     </xs:annotation>
     <xs:complexType>
-      <xs:sequence>
+      <xs:all>
         <xs:element name="CUSTOMER_ID" type="xs:string" minOccurs="0">
           <xs:annotation>
-            <xs:documentation>Customer identifier to scope order search (placing/bill-to).</xs:documentation>
+            <xs:documentation>Customer identifier. Required by the service unless the customer is identified by SYSTEM_REFERENCE + SYSTEM_REFERENCE_ID: with neither, the service returns E110. Not a known customer returns E111.</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="REQUEST_DATE" type="xs:dateTime" minOccurs="1">
+        <xs:element name="STORE_ID" type="xs:string" minOccurs="0">
           <xs:annotation>
-            <xs:documentation>Caller timestamp for auditing; not required for filtering (ISO-8601).</xs:documentation>
+            <xs:documentation>Required by the service: missing, empty or unknown returns E127. Declared optional here so that template documents with empty elements validate. Store the orders were placed at.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ORDER_ID" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Order (transaction) identifier. An identifier that matches no stored transaction returns E129.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ORDER_STATUS" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Restricts the search to orders with this status. Longer than 30 characters returns E124.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="FROM_DATE" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Search window start, format yyyy-MM-dd. FROM_DATE and THRU_DATE are parsed together; an unparseable value returns E122.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="THRU_DATE" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Search window end, format yyyy-MM-dd. FROM_DATE and THRU_DATE are parsed together; an unparseable value returns E122.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="RECORD_LIMIT" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>Maximum number of orders returned. Default 25; values above 100 are capped at 100. A non-numeric value is ignored.</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element name="SYSTEM_REFERENCE" type="xs:string" minOccurs="0">
           <xs:annotation>
-            <xs:documentation>External type (ATG_CUST_ID, PRETAIL_ID, LOYALTY_ID, WINDSS_ID). Data-driven from PartyIdentification/CrossReference.</xs:documentation>
+            <xs:documentation>External-system identifier type (for example POS_ID or LOYALTY_ID). Any configured type is accepted; the value is matched exactly. Used with SYSTEM_REFERENCE_ID to identify the customer when CUSTOMER_ID is not supplied.</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element name="SYSTEM_REFERENCE_ID" type="xs:string" minOccurs="0">
           <xs:annotation>
-            <xs:documentation>Value for SYSTEM_REFERENCE (e.g., loyalty number).</xs:documentation>
+            <xs:documentation>Identifier value for SYSTEM_REFERENCE.</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="FROM_DATE" type="xs:dateTime" minOccurs="0">
+        <xs:element name="REQUEST_DATE" type="xs:string" minOccurs="0">
           <xs:annotation>
-            <xs:documentation>Inclusive lower bound for order date/time (ISO-8601).</xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="THRU_DATE" type="xs:dateTime" minOccurs="0">
-          <xs:annotation>
-            <xs:documentation>Inclusive upper bound for order date/time (ISO-8601).</xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="RECORD_LIMIT" type="xs:int" minOccurs="0">
-          <xs:annotation>
-            <xs:documentation>Maximum number of headers to return; defaults to 25 when omitted/invalid.</xs:documentation>
-          </xs:annotation>
-        </xs:element>
-        <xs:element name="STORE_ID" type="xs:string" minOccurs="1">
-          <xs:annotation>
-            <xs:documentation>Store identifier to restrict results.</xs:documentation>
+            <xs:documentation>Timestamp of the request. Read and ignored by the service; any format is accepted.</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element name="REGISTER_NUMBER" type="xs:string" minOccurs="0">
           <xs:annotation>
-            <xs:documentation>Register/till number to restrict results.</xs:documentation>
+            <xs:documentation>Not read by this operation. Retained so documents written against earlier revisions still validate.</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element name="PRODUCTS" minOccurs="0">
           <xs:annotation>
-            <xs:documentation>Container for product filters. Include one PRODUCT_ID per product/SKU to restrict results.</xs:documentation>
+            <xs:documentation>Not read by this operation (it has no product filter). Retained so documents written against earlier revisions still validate. Use getOrderHeaderDetailsC with a bare PRODUCT_ID to search by product.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="PRODUCT_ID" type="xs:string" minOccurs="1" maxOccurs="unbounded">
-                <xs:annotation>
-                  <xs:documentation>Product or SKU identifier to filter by. Repeat the element to filter by multiple products.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
+              <xs:element name="PRODUCT_ID" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>
-      </xs:sequence>
+      </xs:all>
     </xs:complexType>
   </xs:element>
 </xs:schema>

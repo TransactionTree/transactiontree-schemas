@@ -36,12 +36,22 @@ unknown is normally sent EMPTY rather than omitted.
   </xs:annotation>
 
   <xs:element name="WEBSERVICE">
-    <xs:annotation><xs:documentation>Wrapper seen on gate-level failures of sibling operations (WEBSERVICE/RESPONSE,
-without ResponseId). Not produced by this operation's handler on the loyalty-app service generation; declared so
-that such a document still validates.</xs:documentation></xs:annotation>
-    <xs:complexType><xs:sequence>
-      <xs:element ref="RESPONSE"/>
-    </xs:sequence></xs:complexType>
+    <xs:annotation>
+      <xs:documentation>Gate-error envelope of the older service generation: when the tenant key (E888) or the access token (E899) is rejected before the operation runs, the response is WEBSERVICE / RESPONSE / RESPONSE_CODE only - no RESPONSE_DATE and no ResponseId. The loyalty-app service generation returns the same errors as a bare RESPONSE root with RESPONSE_DATE and RESPONSE_CODE.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RESPONSE">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="RESPONSE_DATE" type="xs:string" minOccurs="0"/>
+              <xs:element name="RESPONSE_CODE" type="xs:string"/>
+            </xs:sequence>
+            <xs:attribute name="ResponseId" type="xs:string"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
   </xs:element>
 
   <xs:element name="RESPONSE">

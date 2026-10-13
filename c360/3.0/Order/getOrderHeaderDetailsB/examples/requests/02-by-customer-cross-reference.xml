@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Customer identified by an external identifier instead of CUSTOMER_ID. -->
+<REQUEST>
+  <SYSTEM_REFERENCE>POS_ID</SYSTEM_REFERENCE>
+  <SYSTEM_REFERENCE_ID>10000000000000001</SYSTEM_REFERENCE_ID>
+  <STORE_ID>001</STORE_ID>
+  <ORDER_STATUS>APPROVED</ORDER_STATUS>
+</REQUEST>

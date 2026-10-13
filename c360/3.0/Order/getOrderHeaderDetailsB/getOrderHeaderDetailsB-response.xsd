@@ -336,6 +336,11 @@
 					<xs:documentation>Primary email for the order/customer.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="PRIMARY_PHONE" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Customer primary phone. Emitted by both service generations; empty when none is stored.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 			<xs:element name="TAX" type="Money" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Aggregate header-level tax amount.</xs:documentation>
