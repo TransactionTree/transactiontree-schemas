@@ -9,7 +9,7 @@
           via xs:any (lax) and separately validated by vrg/3.2.2/TTDR-3.2.2.xsd.
      Documents are UNQUALIFIED at the root. Content models are unordered, repeat-tolerant
      choices on purpose. -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified" version="1.0">
   <xs:element name="Transactions">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">

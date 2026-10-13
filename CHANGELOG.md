@@ -26,6 +26,8 @@ these schemas, then confirming each difference in the code of both service gener
   order-free, `ORDER_STATUS` and (B) `ORDER_ID` added, `SYSTEM_REFERENCE` is an open value,
   dates and limit are strings (`RECORD_LIMIT` default 25, capped at 100).
 - **`findCustomersB` request:** empty filter elements (for example `<ZIP_CODE/>`) validate.
+- **`updateCustomerB` request:** elements may appear in any order within `CUSTOMER`, `CONTACT`
+  and `CROSS_REFERENCE`, as the service accepts. The fixed order rejected valid requests.
 
 ### Behaviour now documented correctly
 - **The `PRODUCTS` wrapper is not read.** Only direct children of the request root are read, so
@@ -36,6 +38,12 @@ these schemas, then confirming each difference in the code of both service gener
 
 ### Added
 - A gate-error example per operation and three `getOrderHeaderDetailsB` request examples.
+
+### Versioning
+- Every C360 operation schema corrected in the 2026-10-12 and 2026-10-13 audits now declares
+  `version="2.0"` on `<xs:schema>` (the layaway alternate response is `1.0`), as the README's
+  versioning rule requires for client-visible changes. The gift-card schema is unverified and
+  unchanged, so it carries no version.
 
 ## 2026-10-12 — customer, coupon and getOrderDetailsB audit
 
