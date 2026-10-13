@@ -105,7 +105,9 @@ All C360 endpoints take their XML payload as form field `XmlInput` on a
 POST to `/{web-app}/control/{endpoint}`. Requests carry an `accessTokenKey`
 header (a missing or invalid token returns `RESPONSE_CODE` `E899`);
 multi-tenant deployments also require `X-tenant-Key` (`E888` when missing).
-Errors are returned with HTTP 200 inside the XML document. Element names in
+Errors are returned with HTTP 200 inside the XML document. Gate errors come in two envelopes: the older
+service generation returns `<WEBSERVICE><RESPONSE><RESPONSE_CODE>` alone, the loyalty-app generation a bare
+`RESPONSE` with `RESPONSE_DATE` and `RESPONSE_CODE`; every response schema accepts both. Element names in
 requests are matched case-insensitively, in any order, and unknown elements
 are ignored. No C360 schema uses a target namespace: the services emit plain
 un-namespaced XML.
@@ -187,13 +189,18 @@ its examples are validated in CI on every change.
 
 #### `getOrderHeaderDetailsC` — order lookup by product or order
 - **Files:** `c360/3.0/Order/getOrderHeaderDetailsC/` — request and response XSD, `examples/`
-- **Behavior:** returns order headers with their line items. See
+- **Behavior:** returns order headers with their line items, including
+  per-line taxes and discounts. `STORE_ID` is required (`E127`); a customer
+  is optional. Send `PRODUCT_ID` as a direct child of the root: the
+  `PRODUCTS` wrapper form is not read by the service. See
   `c360/3.0/Order/field-value-domains.md` for value vocabularies.
 
 #### `getOrderHeaderDetailsB` — order header summary
 - **Files:** `c360/3.0/Order/getOrderHeaderDetailsB/` — request and response XSD, `examples/`
-- **Behavior:** filter-driven header lookup; all request filters are
-  optional. Monetary fields in the response may be empty strings.
+- **Behavior:** order headers for one customer. The service requires a
+  customer (`CUSTOMER_ID`, or a `SYSTEM_REFERENCE` + `SYSTEM_REFERENCE_ID`
+  pair; `E110` otherwise) and `STORE_ID` (`E127`). It has no product
+  filter. Monetary fields in the response may be empty strings.
 
 ### Coupon
 

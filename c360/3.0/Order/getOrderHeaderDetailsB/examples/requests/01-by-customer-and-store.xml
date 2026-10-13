@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Order headers for one customer at one store. A customer is required on this operation. -->
+<REQUEST>
+  <CUSTOMER_ID>1234567</CUSTOMER_ID>
+  <STORE_ID>001</STORE_ID>
+  <FROM_DATE>2026-09-01</FROM_DATE>
+  <THRU_DATE>2026-10-12</THRU_DATE>
+  <RECORD_LIMIT>10</RECORD_LIMIT>
+</REQUEST>

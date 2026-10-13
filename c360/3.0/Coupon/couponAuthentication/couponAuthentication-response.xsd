@@ -48,7 +48,7 @@ Timestamps are "yyyy-MM-dd HH:mm:ss.S" strings, NOT xs:dateTime.
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="RESP_COUPON_DETAILS">
+              <xs:element name="RESP_COUPON_DETAILS" minOccurs="0">
                 <xs:annotation>
                   <xs:documentation>Echo of the coupon that was evaluated. Always present; empty on E101-E104.</xs:documentation>
                 </xs:annotation>
@@ -68,7 +68,7 @@ Timestamps are "yyyy-MM-dd HH:mm:ss.S" strings, NOT xs:dateTime.
                 </xs:complexType>
               </xs:element>
               <!-- NOTE: 'TRANSACTOIN' is a genuine misspelling in the service and is the ONLY spelling emitted. Do NOT correct it; it is the real wire contract. -->
-              <xs:element name="RESP_TRANSACTOIN_DETAILS">
+              <xs:element name="RESP_TRANSACTOIN_DETAILS" minOccurs="0">
                 <xs:annotation>
                   <xs:documentation>Authentication outcome and transaction context. Always present; empty on E101-E104. Modeled as a repeating choice: the subset returned depends on the outcome (see each element).</xs:documentation>
                 </xs:annotation>

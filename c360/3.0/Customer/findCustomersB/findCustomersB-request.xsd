@@ -97,9 +97,7 @@
         the ZIP_CODE length.
       </xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:minLength value="1"/>
-		</xs:restriction>
+		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
 	<xs:simpleType name="Zip4Type">
 		<xs:annotation>

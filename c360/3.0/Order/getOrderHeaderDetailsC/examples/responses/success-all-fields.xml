@@ -128,6 +128,22 @@
                             <TAXABLE_AMOUNT>19.99</TAXABLE_AMOUNT>
                         </TAX>
                     </ITEM_TAX>
+                    <ITEM_DISCOUNT>
+                        <DISCOUNT>
+                            <DISCOUNT_PERCENT>0.2</DISCOUNT_PERCENT>
+                            <DISCOUNT_AMOUNT>5.00</DISCOUNT_AMOUNT>
+                            <DISCOUNT_DESCRIPTION>SAMPLE 20 PERCENT OFF</DISCOUNT_DESCRIPTION>
+                            <DISCOUNT_CODE>SALE20</DISCOUNT_CODE>
+                            <DISCOUNT_CODETYPE>PROMO</DISCOUNT_CODETYPE>
+                            <DISCOUNT_METHOD>PCT</DISCOUNT_METHOD>
+                            <DISCOUNT_RATE>20</DISCOUNT_RATE>
+                            <PRINT_LINE/>
+                            <AMOUNT_DISCOUNTABLE>24.99</AMOUNT_DISCOUNTABLE>
+                            <DISCOUNT_PROMO_CODE>FALL</DISCOUNT_PROMO_CODE>
+                            <DISCOUNT_VOIDED>N</DISCOUNT_VOIDED>
+                            <DISCOUNT_VOIDED_LINE/>
+                        </DISCOUNT>
+                    </ITEM_DISCOUNT>
                 </ORDER_ITEM>
                 <ORDER_ITEM>
                     <ORDER_ITEM_SEQ>00002</ORDER_ITEM_SEQ>

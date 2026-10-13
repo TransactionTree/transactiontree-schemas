@@ -9,6 +9,34 @@ and the repository follows [Semantic Versioning](https://semver.org/) at the
 **per-schema** level (C360 3.0, VRG / TTDR 3.3.0). The repo itself is not
 versioned.
 
+## 2026-10-13 — gate-error envelope, header-operation requests, discounts
+
+Found by validating the request bodies and saved examples of the published API portal against
+these schemas, then confirming each difference in the code of both service generations.
+
+### Corrected
+- **Gate errors (`E888` / `E899`) in every response schema.** The older service generation
+  returns `<WEBSERVICE><RESPONSE><RESPONSE_CODE>` alone (no `RESPONSE_DATE`, no `ResponseId`);
+  the loyalty-app generation returns a bare `RESPONSE` with `RESPONSE_DATE` and
+  `RESPONSE_CODE`. Six schemas rejected the older form; all now accept both.
+- **`getOrderHeaderDetailsC` response:** per-line `ITEM_DISCOUNT` / `DISCOUNT` block declared
+  (emitted by both generations, previously undeclared).
+- **`getOrderHeaderDetailsB` response:** `PRIMARY_PHONE` declared.
+- **`getOrderHeaderDetailsB` and `getOrderHeaderDetailsC` requests** rebuilt from the code:
+  order-free, `ORDER_STATUS` and (B) `ORDER_ID` added, `SYSTEM_REFERENCE` is an open value,
+  dates and limit are strings (`RECORD_LIMIT` default 25, capped at 100).
+- **`findCustomersB` request:** empty filter elements (for example `<ZIP_CODE/>`) validate.
+
+### Behaviour now documented correctly
+- **The `PRODUCTS` wrapper is not read.** Only direct children of the request root are read, so
+  a `PRODUCT_ID` nested inside `PRODUCTS` is ignored. Send a bare `PRODUCT_ID`
+  (`getOrderHeaderDetailsC`). An earlier revision described the wrapper as accepted.
+- **`getOrderHeaderDetailsB` requires a customer** (`E110`) and has no product filter. Its
+  request example that searched by product was wrong and is replaced.
+
+### Added
+- A gate-error example per operation and three `getOrderHeaderDetailsB` request examples.
+
 ## 2026-10-12 — customer, coupon and getOrderDetailsB audit
 
 Every schema below was checked against the service implementation. Before this change the
