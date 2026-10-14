@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/common.schema.json",
+  "title": "Customer Custom Fields \u2014 shared definitions",
+  "description": "Reusable definitions for the Customer Custom Fields API (attributes on a customer, plus the field/group definitions behind them). Referenced by the per-endpoint request/response schemas.",
+  "$defs": {
+    "ResponseEnvelope": {
+      "type": "object",
+      "description": "Every endpoint returns HTTP 200 and carries this envelope. Success is response_code 'S200'. On any error response_code is an 'E###' code (or, for an unknown field id on write, a free-text string). ALWAYS branch on response_code, never on HTTP status. The only non-200 is a malformed/empty JSON body, which the JSON layer rejects as HTTP 500 before the application runs.",
+      "properties": {
+        "response_code": {
+          "type": "string",
+          "description": "'S200' on success; otherwise an error code (see the family README error table) or, on updateCustomerField with an unknown field, the free-text '<id> is Invalid, '.",
+          "examples": [
+            "S200",
+            "E135",
+            "E153"
+          ]
+        },
+        "response_ref_id": {
+          "type": "string",
+          "description": "Opaque per-call trace id assigned by the service. Echo it in support tickets."
+        },
+        "response_code_desc": {
+          "type": "string",
+          "description": "Human-readable description of response_code. Empty string for several error codes that have no description row."
+        }
+      },
+      "required": [
+        "response_code"
+      ]
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "description": "Shape of an error reply: the envelope with a non-'S200' response_code and payload fields blank/null. Returned with HTTP 200.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/ResponseEnvelope"
+        }
+      ]
+    },
+    "CustomerIdentifier": {
+      "type": "object",
+      "description": "Identifies the customer. Supply exactly ONE of the four keys. Keys are camelCase.",
+      "properties": {
+        "partyId": {
+          "type": "string",
+          "description": "Internal customer id. Fastest path; no lookup.",
+          "examples": [
+            "10000000215"
+          ]
+        },
+        "externalId": {
+          "type": "string",
+          "description": "An external id (e.g. a POS or loyalty id) resolved via the customer's identification records using the deployment's default identifier type. Unmatched -> E145.",
+          "examples": [
+            "9000001"
+          ]
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email address. Invalid format -> E1020.",
+          "examples": [
+            "jane.doe@example.com"
+          ]
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number; dashes are stripped. Fewer than 10 digits -> E1039.",
+          "examples": [
+            "5555550100"
+          ]
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "GroupType": {
+      "type": "string",
+      "enum": [
+        "CUSTOM_FIELD",
+        "SEGMENTATION",
+        "ECONOMIC_METRIC"
+      ],
+      "description": "Kind of attribute group. CUSTOM_FIELD: a field holds a value. SEGMENTATION: membership IS the value \u2014 the returned field ids are the segments the customer belongs to. ECONOMIC_METRIC: numeric metrics. Any other value -> E153."
+    },
+    "FieldFormat": {
+      "type": "string",
+      "enum": [
+        "TEXT",
+        "TEXT_AREA",
+        "NUMERIC",
+        "BOOLEAN",
+        "CHECK_BOX",
+        "DROP_DOWN",
+        "RADIO",
+        "LABEL_TEXT"
+      ],
+      "description": "Presentation/format of a field value (the CF_FLD_FORMAT vocabulary). A value outside this list -> E1004."
+    },
+    "CustomFieldValue": {
+      "type": "object",
+      "description": "One stored attribute value on a customer, as returned by the read endpoints.",
+      "properties": {
+        "customFieldId": {
+          "type": "string",
+          "description": "Field identifier. For a SEGMENTATION group this is the segment membership itself."
+        },
+        "customFieldName": {
+          "type": "string",
+          "description": "Display name of the field."
+        },
+        "value": {
+          "type": "string",
+          "description": "Stored value."
+        }
+      }
+    },
+    "FieldDefinition": {
+      "type": "object",
+      "description": "A field definition as returned when listing a group's fields.",
+      "properties": {
+        "customFieldId": {
+          "type": "string"
+        },
+        "customFieldName": {
+          "type": "string"
+        },
+        "isEnabled": {
+          "type": "string",
+          "description": "Enabled flag; often returned as an empty string."
+        },
+        "customFieldLength": {
+          "type": "string",
+          "description": "Declared maximum length, as a string."
+        },
+        "customFieldType": {
+          "type": "string",
+          "description": "SINGLE (one value) or MULTIPLE (multi-value)."
+        }
+      }
+    },
+    "GroupObject": {
+      "type": "object",
+      "description": "A group with its fields and (for the per-entity read endpoints) each field's stored value for the requested customer. 'group' is null when the entity has no stored value for the group.",
+      "properties": {
+        "sequence": {
+          "type": "string"
+        },
+        "group_id": {
+          "type": "string"
+        },
+        "group_name": {
+          "type": "string"
+        },
+        "field_list": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sequence": {
+                "type": "string"
+              },
+              "field_id": {
+                "type": "string"
+              },
+              "field_name": {
+                "type": "string"
+              },
+              "field_value": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The customer's stored value for this field; null when unset."
+              },
+              "param_data": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Option metadata for the field, when defined; otherwise null."
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

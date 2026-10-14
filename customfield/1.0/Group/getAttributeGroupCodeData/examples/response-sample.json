@@ -1,0 +1,26 @@
+{
+  "domain_entity_id": "10000000215",
+  "grouping_code": "CUSTOMER_PREFS",
+  "grouping_code_id": "30001",
+  "grouping_code_desc": "Customer Preferences",
+  "group_list": [
+    {
+      "sequence": "2",
+      "field_list": [
+        {
+          "sequence": "1",
+          "param_data": null,
+          "field_value": null,
+          "field_name": "Newsletter Opt-in",
+          "field_id": "NEWSLETTER_OPT_IN"
+        }
+      ],
+      "group_id": "PREFERENCES",
+      "group_name": "Preferences"
+    }
+  ],
+  "domain_entity_type": "CUSTOMER",
+  "response_code": "S200",
+  "response_ref_id": "235157",
+  "response_code_desc": "[S200] Processed Request Successfully"
+}

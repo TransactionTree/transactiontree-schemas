@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Field/deleteField/deleteField-request.schema.json",
+  "title": "deleteField request",
+  "description": "Delete a field definition. Destructive. snake_case body. Errors: E1006 (missing), E1001 (unknown custom_field_id).",
+  "type": "object",
+  "properties": {
+    "custom_field_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "custom_field_id"
+  ],
+  "additionalProperties": false
+}

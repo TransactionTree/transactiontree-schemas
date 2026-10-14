@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Customer/updateCustomerField/updateCustomerField-request.schema.json",
+  "title": "updateCustomerField request",
+  "description": "Set one or more attribute values on a customer. Writes the classification store. Each customFields entry needs a customFieldId that already exists (create it first via createField) and a value. The reply echoes updatedFields with oldValue/newValue. QUIRK: an unknown customFieldId does NOT return an E### code \u2014 response_code comes back as the free-text '<id> is Invalid, ' with empty response_code_desc and null updatedFields; detect success by a leading 'S'. Errors: E135 (customer not found), E151 (customFields empty).",
+  "type": "object",
+  "properties": {
+    "customerIdentifier": {
+      "$ref": "../../common.schema.json#/$defs/CustomerIdentifier"
+    },
+    "customFields": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Fields to set.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "customFieldId": {
+            "type": "string",
+            "description": "Existing field id."
+          },
+          "value": {
+            "type": "string",
+            "description": "New value."
+          }
+        },
+        "required": [
+          "customFieldId",
+          "value"
+        ]
+      }
+    }
+  },
+  "required": [
+    "customerIdentifier",
+    "customFields"
+  ],
+  "additionalProperties": false
+}

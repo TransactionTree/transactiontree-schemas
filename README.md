@@ -1,15 +1,16 @@
 # TransactionTree Integration Schemas
 
-Public XML Schema Definitions (XSDs) and OpenAPI descriptions for
-TransactionTree's customer-facing services. Integrators use this repo to
-generate XML payloads, validate them locally before submitting, and stub
-client SDKs.
+Public schema definitions (XML Schema / XSD for the XML services, JSON Schema
+and OpenAPI for the JSON services) for TransactionTree's customer-facing
+services. Integrators use this repo to generate payloads, validate them
+locally before submitting, and stub client SDKs.
 
-Two product families are published here:
+Product families published here:
 
 | Family | Path | What it describes |
 |---|---|---|
 | **C360** (formerly BORMC — Business Office Receipt Management Center) — loyalty + order API | `c360/3.0/` | Form-encoded POST endpoints under `/loyalty-app/control/*` that exchange XML inside the `XmlInput` form field. |
+| **Customer Custom Fields** (C360 attributes API) | `customfield/1.0/` | **JSON** POST endpoints under `/customfield-app/api/attribute/.../v1` for reading/writing a customer's attribute values and managing field/group definitions. Part of the C360 platform but a separate, JSON contract (bearer auth, not `accessTokenKey`). |
 | **VRG / TTDR** (TransactionTree Digital Receipt — VRG ingest) | `vrg/3.2.2/`, `vrg/3.3.0/` | Versioned Digital Receipt envelopes POSTed to `vrgs.io` (prod) and `receiptx.com` (dev/test) for retailer receipt ingest. |
 
 These schemas are documentation-grade — the runtime services validate input
@@ -69,6 +70,21 @@ internal identifiers.
 │       ├── MIGRATION.md
 │       ├── SECURITY.md
 │       └── examples/
+├── customfield/
+│   └── 1.0/                              # Customer Custom Fields (JSON)
+│       ├── README.md                     # auth, envelope, error table, quirks
+│       ├── common.schema.json            # shared $defs (envelope, identifier, ...)
+│       ├── customfield-1.0-openapi.json  # OpenAPI 3.0 view of all operations
+│       ├── Customer/
+│       │   ├── searchCustomerField/
+│       │   │   ├── searchCustomerField-request.schema.json
+│       │   │   ├── searchCustomerField-response.schema.json
+│       │   │   └── examples/
+│       │   │       ├── request-sample.json
+│       │   │       └── response-sample.json
+│       │   └── updateCustomerField/ ...
+│       ├── Group/   ...                  # searchGroup, searchGroupField, get*, create/update/deleteGroup
+│       └── Field/   ...                  # create/update/deleteField
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md
@@ -89,6 +105,12 @@ internal identifiers.
   `{endpoint}-{request|response}.xsd` and `{endpoint}-openapi.json`.
 - Sample payloads live under `{endpoint}/examples/` named by their role
   (`request-sample.xml`).
+- **JSON families** (e.g. `customfield/1.0/`) follow the same resource-group /
+  endpoint-folder layout, but describe each operation with **JSON Schema**
+  (`{operation}-{request|response}.schema.json`, draft 2020-12) instead of XSD,
+  carry `request-sample.json` / `response-sample.json` examples, and share a
+  family-level `common.schema.json` and `{family}-{version}-openapi.json`. See
+  [`customfield/1.0/README.md`](customfield/1.0/README.md).
 
 ---
 

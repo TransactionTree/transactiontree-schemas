@@ -1,0 +1,19 @@
+{
+  "groups": [
+    {
+      "groupId": "LOYALTY",
+      "groupName": "Loyalty",
+      "groupType": "CUSTOM_FIELD",
+      "customFields": [
+        {
+          "customFieldId": "LOYALTY_TIER",
+          "customFieldName": "Loyalty Tier",
+          "isEnabled": ""
+        }
+      ]
+    }
+  ],
+  "response_code": "S200",
+  "response_ref_id": "235140",
+  "response_code_desc": "[S200] Processed Request Successfully"
+}

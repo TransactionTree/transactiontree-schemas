@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Group/getAttributeGroupCodeData/getAttributeGroupCodeData-request.schema.json",
+  "title": "getAttributeGroupCodeData request",
+  "description": "Read all groups under a grouping code for one customer. Like getAttributeGroupData but keyed by grouping_code; returns every group under that code as group_list. snake_case body. Errors: E1006 (required param missing), E1001/E1002 (unknown grouping code).",
+  "type": "object",
+  "properties": {
+    "grouping_code": {
+      "type": "string",
+      "description": "The grouping-code id or code string. snake_case."
+    },
+    "role_type": {
+      "type": "string",
+      "description": "Optional role filter."
+    },
+    "domain_entity_type": {
+      "type": "string",
+      "description": "Entity kind. Use 'CUSTOMER'."
+    },
+    "domain_entity_id": {
+      "type": "string",
+      "description": "The entity id."
+    }
+  },
+  "required": [
+    "grouping_code",
+    "domain_entity_type",
+    "domain_entity_id"
+  ],
+  "additionalProperties": false
+}

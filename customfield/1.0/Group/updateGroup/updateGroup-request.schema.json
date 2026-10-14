@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Group/updateGroup/updateGroup-request.schema.json",
+  "title": "updateGroup request",
+  "description": "Update an attribute group definition. snake_case body. group_id required and must exist. Errors: E1006 (missing), E1001 (unknown group_id).",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string"
+    },
+    "group_name": {
+      "type": "string"
+    },
+    "grouping_code": {
+      "type": "string"
+    },
+    "sequence": {
+      "type": "string"
+    },
+    "hide": {
+      "type": "string",
+      "enum": [
+        "Y",
+        "N"
+      ]
+    }
+  },
+  "required": [
+    "group_id"
+  ],
+  "additionalProperties": false
+}

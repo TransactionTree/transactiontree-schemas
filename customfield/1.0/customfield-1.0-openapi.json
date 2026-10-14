@@ -1,0 +1,841 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Customer Custom Fields API",
+    "version": "1.0.0",
+    "description": "Read and write custom-field (attribute) values on a customer, and manage the field/group definitions behind them. Part of the C360 platform; distinct from the C360 3.0 XML (XmlInput) API. All operations are POST with a JSON body; every reply is HTTP 200 carrying a response_code envelope (branch on response_code, never HTTP status). See README.md for the auth model, error table and the two storage families. Request/response JSON Schemas live beside each operation."
+  },
+  "servers": [
+    {
+      "url": "{C360BaseURL}/customfield-app/api/attribute",
+      "variables": {
+        "C360BaseURL": {
+          "default": "https://c360.sandbox.example.com",
+          "description": "Your C360 base URL; real hosts are issued with credentials."
+        }
+      }
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Authorization: Bearer <token>, where token = base64(secretCode). secretCode is issued with your credentials. Some read endpoints currently do not enforce the token."
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Customer",
+      "description": "A customer's attribute values."
+    },
+    {
+      "name": "Group",
+      "description": "Attribute group definitions and per-customer group reads."
+    },
+    {
+      "name": "Field",
+      "description": "Attribute field definitions."
+    }
+  ],
+  "paths": {
+    "/customer/v1/searchCustomerField": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "Read a customer's attribute values for one group type.",
+        "description": "Returns the customer's stored values for the given groupType. Reads the classification store. For a SEGMENTATION groupType the returned customFieldId values are the segment memberships themselves. Errors: E145 (externalId unmatched), E135 (customer not found/inactive), E152 (groupType missing), E153 (groupType invalid), E1020 (bad email), E1039 (phone < 10 digits).",
+        "operationId": "searchCustomerField",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Customer/searchCustomerField/searchCustomerField-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "customerIdentifier": {
+                      "partyId": "10000000215"
+                    },
+                    "groupType": "CUSTOM_FIELD"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Customer/searchCustomerField/searchCustomerField-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "email": "jane.doe@example.com",
+                      "customerId": "10000000215",
+                      "customFields": [
+                        {
+                          "customFieldId": "LOYALTY_TIER",
+                          "customFieldName": "Loyalty Tier",
+                          "value": "GOLD"
+                        }
+                      ],
+                      "phone": "5555550100",
+                      "response_code": "S200",
+                      "response_ref_id": "235133",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/customer/v1/updateCustomerField": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "Set one or more attribute values on a customer.",
+        "description": "Writes the classification store. Each customFields entry needs a customFieldId that already exists (create it first via createField) and a value. The reply echoes updatedFields with oldValue/newValue. QUIRK: an unknown customFieldId does NOT return an E### code \u2014 response_code comes back as the free-text '<id> is Invalid, ' with empty response_code_desc and null updatedFields; detect success by a leading 'S'. Errors: E135 (customer not found), E151 (customFields empty).",
+        "operationId": "updateCustomerField",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Customer/updateCustomerField/updateCustomerField-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "customerIdentifier": {
+                      "partyId": "10000000215"
+                    },
+                    "customFields": [
+                      {
+                        "customFieldId": "LOYALTY_TIER",
+                        "value": "GOLD"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Customer/updateCustomerField/updateCustomerField-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "customerId": "10000000215",
+                      "updatedFields": [
+                        {
+                          "customFieldId": "LOYALTY_TIER",
+                          "oldValue": "",
+                          "newValue": "GOLD"
+                        }
+                      ],
+                      "response_code": "S200",
+                      "response_ref_id": "235150",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/group/v1/searchGroup": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "List every group of a type with its fields (definitions only).",
+        "description": "Definition data only \u2014 no customer values. Errors: E152 (groupType missing), E153 (invalid).",
+        "operationId": "searchGroup",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Group/searchGroup/searchGroup-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "groupType": "CUSTOM_FIELD"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Group/searchGroup/searchGroup-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "groups": [
+                        {
+                          "groupId": "LOYALTY",
+                          "groupName": "Loyalty",
+                          "groupType": "CUSTOM_FIELD",
+                          "customFields": [
+                            {
+                              "customFieldId": "LOYALTY_TIER",
+                              "customFieldName": "Loyalty Tier",
+                              "isEnabled": ""
+                            }
+                          ]
+                        }
+                      ],
+                      "response_code": "S200",
+                      "response_ref_id": "235140",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/group/v1/searchGroupField": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "List the field definitions in one group.",
+        "description": "Return the field definitions in a group by groupId. Gives type and length but NOT the permitted option values. There is no list-all endpoint; you must know the groupId. Errors: E154 (groupId missing), E155 (unknown groupId).",
+        "operationId": "searchGroupField",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Group/searchGroupField/searchGroupField-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "groupId": "LOYALTY"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Group/searchGroupField/searchGroupField-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "groupName": "Loyalty",
+                      "groupId": "LOYALTY",
+                      "customFields": [
+                        {
+                          "customFieldId": "LOYALTY_TIER",
+                          "customFieldName": "Loyalty Tier",
+                          "isEnabled": "",
+                          "customFieldLength": "40",
+                          "customFieldType": "SINGLE"
+                        }
+                      ],
+                      "groupType": "CUSTOM_FIELD",
+                      "response_code": "S200",
+                      "response_ref_id": "235146",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/group/v1/getAttributeGroupData": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Read a group's field values for one customer.",
+        "description": "Read the field values of one group for one domain entity. Reads the field-value store (note: a value written via updateCustomerField lands in the classification store and will NOT appear here \u2014 read it back via searchCustomerField). Returns a 'group' object whose field_list carries field_value (null when unset); 'group' is null when the entity has no row for the group. snake_case body. Errors: E1006 (required param missing), E1001 (unknown group_id or entity).",
+        "operationId": "getAttributeGroupData",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Group/getAttributeGroupData/getAttributeGroupData-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "group_id": "PREFERENCES",
+                    "domain_entity_type": "CUSTOMER",
+                    "domain_entity_id": "10000000215"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Group/getAttributeGroupData/getAttributeGroupData-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "domain_entity_id": "10000000215",
+                      "grouping_code": "CUSTOMER_PREFS",
+                      "grouping_code_id": "30001",
+                      "grouping_code_desc": "Customer Preferences",
+                      "domain_entity_type": "CUSTOMER",
+                      "group": {
+                        "sequence": "2",
+                        "field_list": [
+                          {
+                            "sequence": "1",
+                            "param_data": null,
+                            "field_value": null,
+                            "field_name": "Newsletter Opt-in",
+                            "field_id": "NEWSLETTER_OPT_IN"
+                          }
+                        ],
+                        "group_id": "PREFERENCES",
+                        "group_name": "Preferences"
+                      },
+                      "response_code": "S200",
+                      "response_ref_id": "235156",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/group/v1/getAttributeGroupCodeData": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Read all groups under a grouping code for one customer.",
+        "description": "Like getAttributeGroupData but keyed by grouping_code; returns every group under that code as group_list. snake_case body. Errors: E1006 (required param missing), E1001/E1002 (unknown grouping code).",
+        "operationId": "getAttributeGroupCodeData",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Group/getAttributeGroupCodeData/getAttributeGroupCodeData-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "grouping_code": "30001",
+                    "domain_entity_type": "CUSTOMER",
+                    "domain_entity_id": "10000000215"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Group/getAttributeGroupCodeData/getAttributeGroupCodeData-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "domain_entity_id": "10000000215",
+                      "grouping_code": "CUSTOMER_PREFS",
+                      "grouping_code_id": "30001",
+                      "grouping_code_desc": "Customer Preferences",
+                      "group_list": [
+                        {
+                          "sequence": "2",
+                          "field_list": [
+                            {
+                              "sequence": "1",
+                              "param_data": null,
+                              "field_value": null,
+                              "field_name": "Newsletter Opt-in",
+                              "field_id": "NEWSLETTER_OPT_IN"
+                            }
+                          ],
+                          "group_id": "PREFERENCES",
+                          "group_name": "Preferences"
+                        }
+                      ],
+                      "domain_entity_type": "CUSTOMER",
+                      "response_code": "S200",
+                      "response_ref_id": "235157",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/group/v1/createGroup": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Create an attribute group definition.",
+        "description": "snake_case body. group_id and group_name required; hide is 'Y'/'N'. Errors: E1006 (missing), E1001 (group_id already exists).",
+        "operationId": "createGroup",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Group/createGroup/createGroup-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "group_id": "MY_GROUP",
+                    "group_name": "My Group",
+                    "sequence": "1",
+                    "hide": "N"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Group/createGroup/createGroup-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "group_id": "MY_GROUP",
+                      "response_code": "S200",
+                      "response_ref_id": "235140",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/group/v1/updateGroup": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Update an attribute group definition.",
+        "description": "snake_case body. group_id required and must exist. Errors: E1006 (missing), E1001 (unknown group_id).",
+        "operationId": "updateGroup",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Group/updateGroup/updateGroup-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "group_id": "MY_GROUP",
+                    "group_name": "My Group v2"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Group/updateGroup/updateGroup-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "group_id": "MY_GROUP",
+                      "response_code": "S200",
+                      "response_ref_id": "235142",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/group/v1/deleteGroup": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Delete an attribute group definition. Destructive.",
+        "description": "snake_case body. Errors: E1006 (missing), E1001 (unknown group_id).",
+        "operationId": "deleteGroup",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Group/deleteGroup/deleteGroup-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "group_id": "MY_GROUP"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Group/deleteGroup/deleteGroup-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "response_code": "S200",
+                      "response_ref_id": "235154",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/field/v1/createField": {
+      "post": {
+        "tags": [
+          "Field"
+        ],
+        "summary": "Create a field (attribute) definition.",
+        "description": "snake_case body. custom_field_name and custom_field_type required; custom_field_format must be a FieldFormat value; hide is 'Y'/'N'. KNOWN ISSUE: the current build's type validation is inverted \u2014 it rejects the intended values 'SINGLE'/'MULTIPLE' with E1004 and accepts other strings. Until fixed, create fields in the admin UI rather than via this endpoint. Errors: E1006 (missing), E1004 (format not in vocabulary), E1001 (unknown group_id).",
+        "operationId": "createField",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Field/createField/createField-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "custom_field_id": "MY_FIELD",
+                    "group_id": "MY_GROUP",
+                    "custom_field_name": "My Field",
+                    "custom_field_type": "SINGLE",
+                    "custom_field_format": "TEXT",
+                    "custom_field_length": "40",
+                    "sequence_number": "1",
+                    "hide": "N"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Field/createField/createField-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "custom_field_id": "MY_FIELD",
+                      "response_code": "S200",
+                      "response_ref_id": "235144",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/field/v1/updateField": {
+      "post": {
+        "tags": [
+          "Field"
+        ],
+        "summary": "Update a field definition.",
+        "description": "snake_case body. custom_field_id required and must exist. Errors: E1006 (missing), E1001 (unknown id), E1004 (bad format).",
+        "operationId": "updateField",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Field/updateField/updateField-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "custom_field_id": "MY_FIELD",
+                    "group_id": "MY_GROUP",
+                    "custom_field_name": "My Field v2",
+                    "custom_field_type": "SINGLE",
+                    "custom_field_format": "TEXT"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Field/updateField/updateField-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "group_id": "MY_GROUP",
+                      "custom_field_id": "MY_FIELD",
+                      "response_code": "S200",
+                      "response_ref_id": "235145",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    },
+    "/field/v1/deleteField": {
+      "post": {
+        "tags": [
+          "Field"
+        ],
+        "summary": "Delete a field definition. Destructive.",
+        "description": "snake_case body. Errors: E1006 (missing), E1001 (unknown custom_field_id).",
+        "operationId": "deleteField",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "Field/deleteField/deleteField-request.schema.json"
+              },
+              "examples": {
+                "sample": {
+                  "value": {
+                    "custom_field_id": "MY_FIELD"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HTTP 200 with the response envelope; branch on response_code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "Field/deleteField/deleteField-response.schema.json"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "group_id": "MY_GROUP",
+                      "response_code": "S200",
+                      "response_ref_id": "235153",
+                      "response_code_desc": "[S200] Processed Request Successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returned only when the JSON body is malformed or empty (rejected before the application runs)."
+          }
+        }
+      }
+    }
+  }
+}

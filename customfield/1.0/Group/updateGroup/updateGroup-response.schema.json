@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Group/updateGroup/updateGroup-response.schema.json",
+  "title": "updateGroup response (success)",
+  "description": "Success reply (response_code 'S200'). Any call may instead return the error envelope (see common.schema.json#/$defs/ErrorResponse and the family README error table).",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../common.schema.json#/$defs/ResponseEnvelope"
+    }
+  ],
+  "properties": {
+    "group_id": {
+      "type": "string"
+    },
+    "response_code": {
+      "type": "string"
+    },
+    "response_ref_id": {
+      "type": "string"
+    },
+    "response_code_desc": {
+      "type": "string"
+    }
+  }
+}

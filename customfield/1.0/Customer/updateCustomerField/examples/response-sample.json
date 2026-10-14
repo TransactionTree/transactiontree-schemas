@@ -1,0 +1,13 @@
+{
+  "customerId": "10000000215",
+  "updatedFields": [
+    {
+      "customFieldId": "LOYALTY_TIER",
+      "oldValue": "",
+      "newValue": "GOLD"
+    }
+  ],
+  "response_code": "S200",
+  "response_ref_id": "235150",
+  "response_code_desc": "[S200] Processed Request Successfully"
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Group/searchGroupField/searchGroupField-request.schema.json",
+  "title": "searchGroupField request",
+  "description": "List the field definitions in one group. Return the field definitions in a group by groupId. Gives type and length but NOT the permitted option values. There is no list-all endpoint; you must know the groupId. Errors: E154 (groupId missing), E155 (unknown groupId).",
+  "type": "object",
+  "properties": {
+    "groupId": {
+      "type": "string",
+      "description": "The group to list."
+    }
+  },
+  "required": [
+    "groupId"
+  ],
+  "additionalProperties": false
+}

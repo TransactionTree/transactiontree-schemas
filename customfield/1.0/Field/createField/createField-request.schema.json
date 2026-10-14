@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Field/createField/createField-request.schema.json",
+  "title": "createField request",
+  "description": "Create a field (attribute) definition. snake_case body. custom_field_name and custom_field_type required; custom_field_format must be a FieldFormat value; hide is 'Y'/'N'. KNOWN ISSUE: the current build's type validation is inverted \u2014 it rejects the intended values 'SINGLE'/'MULTIPLE' with E1004 and accepts other strings. Until fixed, create fields in the admin UI rather than via this endpoint. Errors: E1006 (missing), E1004 (format not in vocabulary), E1001 (unknown group_id).",
+  "type": "object",
+  "properties": {
+    "custom_field_id": {
+      "type": "string",
+      "description": "Field id to assign."
+    },
+    "group_id": {
+      "type": "string",
+      "description": "Optional group to place the field in."
+    },
+    "custom_field_name": {
+      "type": "string"
+    },
+    "custom_field_type": {
+      "type": "string",
+      "description": "Intended values 'SINGLE' or 'MULTIPLE' (see KNOWN ISSUE)."
+    },
+    "custom_field_format": {
+      "$ref": "../../common.schema.json#/$defs/FieldFormat"
+    },
+    "custom_field_length": {
+      "type": "string",
+      "description": "Optional max length."
+    },
+    "sequence_number": {
+      "type": "string",
+      "description": "Optional display order."
+    },
+    "hide": {
+      "type": "string",
+      "enum": [
+        "Y",
+        "N"
+      ]
+    }
+  },
+  "required": [
+    "custom_field_id",
+    "custom_field_name",
+    "custom_field_type",
+    "custom_field_format"
+  ],
+  "additionalProperties": false
+}
