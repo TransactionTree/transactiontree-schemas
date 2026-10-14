@@ -1,0 +1,15 @@
+{
+  "email": "jane.doe@example.com",
+  "customerId": "10000000215",
+  "customFields": [
+    {
+      "customFieldId": "LOYALTY_TIER",
+      "customFieldName": "Loyalty Tier",
+      "value": "GOLD"
+    }
+  ],
+  "phone": "5555550100",
+  "response_code": "S200",
+  "response_ref_id": "235133",
+  "response_code_desc": "[S200] Processed Request Successfully"
+}

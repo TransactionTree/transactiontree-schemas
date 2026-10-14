@@ -9,6 +9,27 @@ and the repository follows [Semantic Versioning](https://semver.org/) at the
 **per-schema** level (C360 3.0, VRG / TTDR 3.3.0). The repo itself is not
 versioned.
 
+## 2026-10-14 — new family: Customer Custom Fields (JSON) 1.0
+
+New `customfield/1.0/` family describing the C360 custom-field (attribute) JSON API. First family
+published as **JSON Schema** (draft 2020-12) + OpenAPI 3.0 rather than XSD, with JSON examples.
+Built from the service code and verified live against the sandbox (all examples are the real wire
+shapes, resanitized to synthetic values).
+
+### Added
+- 12 operations across `Customer/`, `Group/`, `Field/`, each with a request and response JSON Schema
+  and `request-sample.json` / `response-sample.json`.
+- `customfield/1.0/common.schema.json` (shared envelope / identifier / group definitions),
+  `customfield-1.0-openapi.json` (OpenAPI 3.0 view), and `customfield/1.0/README.md` (auth, response
+  envelope, error table, request-casing and two-storage-family notes, known issues).
+- CI: a JSON-Schema + example-validation step; the internal-identifier guard now also scans
+  `customfield/`.
+
+### Known issues documented (not corrected here — upstream code)
+- `createField` type validation is inverted (rejects `SINGLE`/`MULTIPLE`, accepts other strings).
+- The group-data write operation reports success but does not persist; it is omitted, and
+  `updateCustomerField` is the supported write path.
+
 ## 2026-10-13 — gate-error envelope, header-operation requests, discounts
 
 Found by validating the request bodies and saved examples of the published API portal against

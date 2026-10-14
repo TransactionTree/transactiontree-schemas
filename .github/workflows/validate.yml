@@ -41,8 +41,46 @@ jobs:
               failures += 0 if ok else 1
           sys.exit(1 if failures else 0)
           PY
+      - name: Validate JSON schemas and examples
+        run: |
+          pip install jsonschema referencing
+          python - <<'PY'
+          import glob, json, os, sys
+          from jsonschema import Draft202012Validator
+          from referencing import Registry, Resource
+          failures = 0
+          # every *.json must parse
+          for p in glob.glob('**/*.json', recursive=True):
+              try:
+                  json.load(open(p, encoding='utf-8'))
+              except Exception as e:
+                  failures += 1; print(f'FAIL parse {p}: {e}')
+          # JSON-Schema families: build a registry keyed by $id, validate each example
+          reg = Registry()
+          for p in glob.glob('**/*.schema.json', recursive=True):
+              doc = json.load(open(p, encoding='utf-8'))
+              if '$id' in doc:
+                  reg = reg.with_resource(doc['$id'], Resource.from_contents(doc))
+          for rs in glob.glob('**/*-request.schema.json', recursive=True):
+              opdir = os.path.dirname(rs)
+              op = os.path.basename(rs).replace('-request.schema.json', '')
+              for schema, ex in [
+                  (rs, os.path.join(opdir, 'examples', 'request-sample.json')),
+                  (os.path.join(opdir, f'{op}-response.schema.json'),
+                   os.path.join(opdir, 'examples', 'response-sample.json'))]:
+                  if not (os.path.exists(schema) and os.path.exists(ex)):
+                      continue
+                  doc = json.load(open(schema, encoding='utf-8'))
+                  data = json.load(open(ex, encoding='utf-8'))
+                  errs = list(Draft202012Validator(doc, registry=reg).iter_errors(data))
+                  if errs:
+                      failures += 1; print(f'FAIL {ex}: {errs[0].message}')
+                  else:
+                      print(f'OK   {ex}')
+          sys.exit(1 if failures else 0)
+          PY
       - name: Forbid internal identifiers (public repo)
         run: |
           # network addresses, internal package/class/source-file names, internal module
           # names, and tenant- or brand-specific identifier names
-          ! grep -rn -E '10\.(0|10)\.[0-9]+\.[0-9]+|org\.fio|org\.lms|\bPAL\b|GetOrderServiceV1|\.java\b|CouponServices|CustomerServices|lmsServices|SPERRY|SACY_|KEDS|GRHP|STRI_PERS|GROUP_FIO|[Oo][Ff][Bb]iz' --include='*.xsd' --include='*.md' --include='*.xml' --include='*.json' c360/ vrg/ product/ *.md
+          ! grep -rn -E '10\.(0|10)\.[0-9]+\.[0-9]+|org\.fio|org\.lms|\bPAL\b|GetOrderServiceV1|\.java\b|CouponServices|CustomerServices|lmsServices|SPERRY|SACY_|KEDS|GRHP|STRI_PERS|GROUP_FIO|[Oo][Ff][Bb]iz' --include='*.xsd' --include='*.md' --include='*.xml' --include='*.json' c360/ customfield/ vrg/ product/ *.md

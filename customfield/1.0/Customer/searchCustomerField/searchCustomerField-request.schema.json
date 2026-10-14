@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Customer/searchCustomerField/searchCustomerField-request.schema.json",
+  "title": "searchCustomerField request",
+  "description": "Read a customer's attribute values for one group type. Returns the customer's stored values for the given groupType. Reads the classification store. For a SEGMENTATION groupType the returned customFieldId values are the segment memberships themselves. Errors: E145 (externalId unmatched), E135 (customer not found/inactive), E152 (groupType missing), E153 (groupType invalid), E1020 (bad email), E1039 (phone < 10 digits).",
+  "type": "object",
+  "properties": {
+    "customerIdentifier": {
+      "$ref": "../../common.schema.json#/$defs/CustomerIdentifier"
+    },
+    "groupType": {
+      "$ref": "../../common.schema.json#/$defs/GroupType"
+    }
+  },
+  "required": [
+    "customerIdentifier",
+    "groupType"
+  ],
+  "additionalProperties": false
+}

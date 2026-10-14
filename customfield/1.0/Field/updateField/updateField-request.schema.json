@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Field/updateField/updateField-request.schema.json",
+  "title": "updateField request",
+  "description": "Update a field definition. snake_case body. custom_field_id required and must exist. Errors: E1006 (missing), E1001 (unknown id), E1004 (bad format).",
+  "type": "object",
+  "properties": {
+    "custom_field_id": {
+      "type": "string"
+    },
+    "group_id": {
+      "type": "string"
+    },
+    "custom_field_name": {
+      "type": "string"
+    },
+    "custom_field_type": {
+      "type": "string"
+    },
+    "custom_field_format": {
+      "$ref": "../../common.schema.json#/$defs/FieldFormat"
+    },
+    "custom_field_length": {
+      "type": "string"
+    },
+    "sequence_number": {
+      "type": "string"
+    },
+    "hide": {
+      "type": "string",
+      "enum": [
+        "Y",
+        "N"
+      ]
+    }
+  },
+  "required": [
+    "custom_field_id"
+  ],
+  "additionalProperties": false
+}

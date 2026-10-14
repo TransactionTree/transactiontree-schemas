@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Customer/searchCustomerField/searchCustomerField-response.schema.json",
+  "title": "searchCustomerField response (success)",
+  "description": "Success reply. On error the same envelope is returned with customFields null and the identity fields blank.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../common.schema.json#/$defs/ResponseEnvelope"
+    }
+  ],
+  "properties": {
+    "customerId": {
+      "type": "string",
+      "description": "Resolved internal customer id."
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "customFields": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "../../common.schema.json#/$defs/CustomFieldValue"
+      }
+    },
+    "response_code": {
+      "type": "string"
+    },
+    "response_ref_id": {
+      "type": "string"
+    },
+    "response_code_desc": {
+      "type": "string"
+    }
+  }
+}

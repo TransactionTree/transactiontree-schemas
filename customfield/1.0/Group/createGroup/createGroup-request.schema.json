@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Group/createGroup/createGroup-request.schema.json",
+  "title": "createGroup request",
+  "description": "Create an attribute group definition. snake_case body. group_id and group_name required; hide is 'Y'/'N'. Errors: E1006 (missing), E1001 (group_id already exists).",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string"
+    },
+    "group_name": {
+      "type": "string"
+    },
+    "grouping_code": {
+      "type": "string",
+      "description": "Optional grouping code to file the group under."
+    },
+    "sequence": {
+      "type": "string",
+      "description": "Optional display order."
+    },
+    "hide": {
+      "type": "string",
+      "enum": [
+        "Y",
+        "N"
+      ],
+      "description": "Optional hide flag."
+    }
+  },
+  "required": [
+    "group_id",
+    "group_name"
+  ],
+  "additionalProperties": false
+}

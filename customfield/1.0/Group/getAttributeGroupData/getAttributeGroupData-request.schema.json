@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Group/getAttributeGroupData/getAttributeGroupData-request.schema.json",
+  "title": "getAttributeGroupData request",
+  "description": "Read a group's field values for one customer. Read the field values of one group for one domain entity. Reads the field-value store (note: a value written via updateCustomerField lands in the classification store and will NOT appear here \u2014 read it back via searchCustomerField). Returns a 'group' object whose field_list carries field_value (null when unset); 'group' is null when the entity has no row for the group. snake_case body. Errors: E1006 (required param missing), E1001 (unknown group_id or entity).",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string",
+      "description": "The group to read. snake_case."
+    },
+    "role_type": {
+      "type": "string",
+      "description": "Optional role filter."
+    },
+    "domain_entity_type": {
+      "type": "string",
+      "description": "Entity kind. Use 'CUSTOMER'."
+    },
+    "domain_entity_id": {
+      "type": "string",
+      "description": "The entity id (a customer id when domain_entity_type is CUSTOMER)."
+    }
+  },
+  "required": [
+    "group_id",
+    "domain_entity_type",
+    "domain_entity_id"
+  ],
+  "additionalProperties": false
+}

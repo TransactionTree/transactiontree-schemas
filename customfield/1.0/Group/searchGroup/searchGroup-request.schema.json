@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Group/searchGroup/searchGroup-request.schema.json",
+  "title": "searchGroup request",
+  "description": "List every group of a type with its fields (definitions only). Definition data only \u2014 no customer values. Errors: E152 (groupType missing), E153 (invalid).",
+  "type": "object",
+  "properties": {
+    "groupType": {
+      "$ref": "../../common.schema.json#/$defs/GroupType"
+    }
+  },
+  "required": [
+    "groupType"
+  ],
+  "additionalProperties": false
+}

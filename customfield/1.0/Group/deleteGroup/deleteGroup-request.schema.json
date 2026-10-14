@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TransactionTree/transactiontree-schemas/blob/main/customfield/1.0/Group/deleteGroup/deleteGroup-request.schema.json",
+  "title": "deleteGroup request",
+  "description": "Delete an attribute group definition. Destructive. snake_case body. Errors: E1006 (missing), E1001 (unknown group_id).",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "group_id"
+  ],
+  "additionalProperties": false
+}

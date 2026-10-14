@@ -1,0 +1,11 @@
+{
+  "customerIdentifier": {
+    "partyId": "10000000215"
+  },
+  "customFields": [
+    {
+      "customFieldId": "LOYALTY_TIER",
+      "value": "GOLD"
+    }
+  ]
+}
